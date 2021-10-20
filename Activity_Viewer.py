@@ -4,6 +4,8 @@ import skimage as ski
 from PIL import Image, ImageTk
 from tkinter import filedialog as fd
 import numpy as np
+import matplotlib.pyplot as plt
+import cv2
 
 
 
@@ -40,19 +42,36 @@ class Activity_Viewer():
         
         # Loop GUI
         self.root.mainloop()
-        
+    
+    
+    
     def Load_Tif(self):
+        ''' Load the tif stack file and return a list with each image frame'''
         filename = fd.askopenfilename(title='Select File',initialdir=r'C:\Users\Jake\Desktop\python_code\Activity_Viewer')
-        tif_stack = ski.io.imread(filename)
+        tif_stack = ski.io.imread(filename,plugin='tifffile')
         self.tif_stack = tif_stack
         tif_list = []
         for tif in range(np.shape(tif_stack)[0]):
-            im = Image.fromarray(tif_stack[tif,:,:])
+            i = tif_stack[tif,:,:]
+            out = np.zeros(np.shape(i))
+            i = cv2.normalize(i,out,0,255,cv2.NORM_MINMAX).astype(np.uint8)
+            # Convert to Heatmap for better visualization
+            # cv2 implementation
+            heat = cv2.applyColorMap(i,cv2.COLORMAP_JET)
+            heat = cv2.cvtColor(heat, cv2.COLOR_RGB2BGR)
+            #Matplotlib version (NOT WORKING)
+            # cmap = plt.get_cmap('inferno')
+            # heat = (cmap(i) * 2**16).astype(np.uint16)[:,:,:3]
+            # heat = cv2.cvtColor(heat,cv2.COLOR_RGB2BGR)
+            # h = (heat/255).astype(np.uint8)
+            # Convert np.array into image object
+            im = Image.fromarray(heat)
             img = ImageTk.PhotoImage(im)
             tif_list.append(img)
         self.tif_list = tif_list
     
     def Display_Tif(self):
+        ''' Display the initial tif image in the image pane'''
         self.Load_Tif()
         self.image = tk.Label(self.image_pane,image=self.tif_list[0])
         self.image.pack()
