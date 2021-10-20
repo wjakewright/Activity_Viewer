@@ -53,28 +53,40 @@ class Activity_Viewer():
         tif_list = []
         for tif in range(np.shape(tif_stack)[0]):
             i = tif_stack[tif,:,:]
+            # Convert image from type int16 to uint8
             out = np.zeros(np.shape(i))
             i = cv2.normalize(i,out,0,255,cv2.NORM_MINMAX).astype(np.uint8)
             # Convert to Heatmap for better visualization
             # cv2 implementation
-            heat = cv2.applyColorMap(i,cv2.COLORMAP_JET)
+            heat = cv2.applyColorMap(i,cv2.COLORMAP_JET) # can change heatmap color
             heat = cv2.cvtColor(heat, cv2.COLOR_RGB2BGR)
             #Matplotlib version (NOT WORKING)
             # cmap = plt.get_cmap('inferno')
             # heat = (cmap(i) * 2**16).astype(np.uint16)[:,:,:3]
             # heat = cv2.cvtColor(heat,cv2.COLOR_RGB2BGR)
             # h = (heat/255).astype(np.uint8)
-            # Convert np.array into image object
+            # Convert np.array into Tkinter image object
             im = Image.fromarray(heat)
+            im = im.resize((700,700),Image.ANTIALIAS) ## Need to make this adaptable to screensize
             img = ImageTk.PhotoImage(im)
             tif_list.append(img)
         self.tif_list = tif_list
-    
+
     def Display_Tif(self):
         ''' Display the initial tif image in the image pane'''
         self.Load_Tif()
         self.image = tk.Label(self.image_pane,image=self.tif_list[0])
-        self.image.pack()
+        self.image.grid(column=0,row=0,sticky='nswe')
+        self.slider = tk.Scale(self.image_pane,from_=0,to=len(self.tif_list),
+                               orient='horizontal',command=self.Update_Image)
+        self.slider.grid(column=0,row=1,sticky='nswe')
+        
+    def Update_Image(self):
+        ''' Function to update displayed image based on the slider'''
+        
+        
+    
+        
         
         
         
