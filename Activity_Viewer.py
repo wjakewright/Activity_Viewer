@@ -18,7 +18,7 @@ class Activity_Viewer():
         from two-photon imaging videos.
         
         CREATOR
-            Williame (Jake) Wright - 10/20/2021  
+            William (Jake) Wright - 10/20/2021  
             
     '''
     
@@ -65,7 +65,7 @@ class Activity_Viewer():
         tif_list = []
         for tif in range(np.shape(tif_stack)[0]):
             i = tif_stack[tif,:,:]
-            heat = cv2.applyColorMap(i,cv2.COLORMAP_HOT) # can change heatmap color
+            heat = cv2.applyColorMap(i,cv2.COLORMAP_INFERNO) # can change heatmap color
             h = cv2.cvtColor(heat, cv2.COLOR_RGB2BGR)
             # Matplotlib version (NOT WORKING)
             # cmap = plt.get_cmap('inferno')
@@ -122,25 +122,25 @@ class Activity_Viewer():
             self.image.configure(image=self.tif_list[newvalue])
             self.slider.set(newvalue)
         
-    def Play_Update(self,start_v=None):
+    def Play_Update(self,v=None):
         ''' Function to play through the images'''
 
         if self.play_button_on is True:
-            if start_v is None:
-                start_v = self.slider.get()
+            if v is None:
+                v = self.slider.get()
             else:
-                start_v = start_v
-                if start_v < (len(self.tif_list)):
-                    self.image['image'] = self.tif_list[start_v]
-                    self.slider.set(start_v)
+                v = v
+                if v < (len(self.tif_list)):
+                    self.image['image'] = self.tif_list[v]
+                    self.slider.set(v)
                     
                 else:
-                    start_v = 0
+                    v = 0
                     self.image['image'] = self.tif_list[0]
                     self.slider.set(0)
         else:
             return
-        self.root.after(100,self.Play_Update,start_v+1)
+        self.root.after(100,self.Play_Update,v+1)
     
     def Play_Button_Play(self):
         ''' Function to control Play Button State'''
