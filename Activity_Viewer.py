@@ -41,7 +41,7 @@ class Activity_Viewer():
         
         # Load file button
         self.file_button = tk.Button(self.root,text='Open File',
-                                     command=self.Display_Tif)
+                                     command=self.Display_Tif,padx=30)
         self.file_button.grid(column=0,row=0)
         
         ## additional states
@@ -124,8 +124,7 @@ class Activity_Viewer():
         
     def Play_Update(self,start_v=None):
         ''' Function to play through the images'''
-        #st = next(self.play_button_state)
-        #if st == 0:
+
         if self.play_button_on is True:
             if start_v is None:
                 start_v = self.slider.get()
@@ -136,6 +135,7 @@ class Activity_Viewer():
                     self.slider.set(start_v)
                     
                 else:
+                    start_v = 0
                     self.image['image'] = self.tif_list[0]
                     self.slider.set(0)
         else:
