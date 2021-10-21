@@ -38,6 +38,10 @@ class Activity_Viewer():
         # Frame for image display
         self.image_pane = tk.Frame(self.root)
         self.image_pane.grid(row=1,column=1)
+        ### Canvas is an item in the image_pane display
+        self.image_canvas = tk.Canvas(self.image_pane,height=700,width=700,
+                                       highlightthickness=0) #Change to match image
+        self.image_canvas.grid(column=0,row=0,columnspan=4,sticky='nswe')
         
         # Load file button
         self.file_button = tk.Button(self.root,text='Open File',
@@ -82,13 +86,13 @@ class Activity_Viewer():
     def Display_Tif(self):
         ''' Display the initial tif image in the image pane'''
         self.Load_Tif()
-        self.image = tk.Label(self.image_pane,image=self.tif_list[0])
-        self.image.grid(column=0,row=0,columnspan=4,sticky='nswe')
+        self.image = self.image_canvas.create_image((self.tif_list[0].width()/2),
+                                                    (self.tif_list[0].height()/2),
+                                                    anchor='center',image=self.tif_list[0])
         self.slider = tk.Scale(self.image_pane,from_=0,to=len(self.tif_list)-1,
                                orient='horizontal',command=self.Slider_Update,
                                length=(self.tif_list[0].width()*0.85))
         self.slider.grid(column=2,row=1)
-        # Additing buttons to play or go through frames individually
         self.forward_button = tk.Button(self.image_pane,text ='>>',
                                         command=self.Forward_Update)
         self.forward_button.grid(column=3,row=1,sticky='swe')
@@ -102,7 +106,7 @@ class Activity_Viewer():
     def Slider_Update(self,master):
         ''' Function to update displayed image based on the slider'''
         value = self.slider.get()
-        self.image.configure(image=self.tif_list[value])
+        self.image_canvas.itemconfig(self.image,image=self.tif_list[value])
     
     def Forward_Update(self):
         ''' Function to update image to the next image by 1'''
@@ -110,7 +114,7 @@ class Activity_Viewer():
             pass
         else:
             newvalue = self.slider.get()+1
-            self.image.configure(image=self.tif_list[newvalue])
+            self.image_canvas.itemconfig(self.image,image=self.tif_list[newvalue])
             self.slider.set(newvalue)
     
     def Backward_Update(self):
@@ -119,7 +123,7 @@ class Activity_Viewer():
             pass
         else:
             newvalue = self.slider.get()-1
-            self.image.configure(image=self.tif_list[newvalue])
+            self.image_canvas.itemconfig(self.image,image=self.tif_list[newvalue])
             self.slider.set(newvalue)
         
     def Play_Update(self,v=None):
@@ -131,12 +135,12 @@ class Activity_Viewer():
             else:
                 v = v
                 if v < (len(self.tif_list)):
-                    self.image['image'] = self.tif_list[v]
+                    self.image_canvas.itemconfig(self.image,image=self.tif_list[v])
                     self.slider.set(v)
                     
                 else:
                     v = 0
-                    self.image['image'] = self.tif_list[0]
+                    self.image_canvas.itemconfig(self.image,image=self.tif_list[v])
                     self.slider.set(0)
         else:
             return
