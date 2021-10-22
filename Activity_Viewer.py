@@ -4,7 +4,7 @@ from tkinter import ttk
 import os
 import skimage as ski
 from skimage import io
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk, ImageEnhance
 from tkinter import filedialog as fd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -37,19 +37,32 @@ class Activity_Viewer():
         
         # Frame for image display
         self.image_pane = tk.Frame(self.root)
-        self.image_pane.grid(row=1,column=1)
+        self.image_pane.grid(row=1,column=1,columnspan=8)
         ### Canvas is an item in the image_pane display
-        self.image_canvas = tk.Canvas(self.image_pane,height=700,width=700,
+        self.image_canvas = tk.Canvas(self.image_pane,height=500,width=500,
                                        highlightthickness=0) #Change to match image
         self.image_canvas.grid(column=0,row=0,columnspan=4,sticky='nswe')
         
         # Load file button
         self.file_button = tk.Button(self.root,text='Open File',
-                                     command=self.Display_Tif,padx=30)
+                                     command=self.Display_Tif,padx=30,pady=5)
         self.file_button.grid(column=0,row=0)
+        
+        # Image options button
+        self.image_options = ['Timecourse', 'Max Project', 'Avg Project']
+        self.img_opt_click = tk.StringVar()
+        self.img_opt_click.set(self.image_options[0])
+        self.img_opt_dropdown = tk.OptionMenu(self.root, self.img_opt_click, *self.image_options,
+                                              command=self.Change_Image_Display)
+        self.img_opt_dropdown.config(width=15)
+        self.img_opt_dropdown.grid(column=1,row=0,stick='w')
+        
         
         ## additional states
         self.play_button_on = False ## controls play button state
+        
+        
+        self.filename = None
 
         
         # Loop GUI
@@ -60,13 +73,15 @@ class Activity_Viewer():
     def Load_Tif(self):
         ''' Load the tif stack file and return a list with each image frame'''
         filename = fd.askopenfilename(title='Select File')
+        self.filename = filename
         ## Change path to what you would like with initialdir = path
         tif_stack = io.imread(filename,plugin='tifffile')
         # Convert image from int16 to uint8 dtype
         out = np.zeros(np.shape(tif_stack))
+        tif_stack = cv2.normalize(tif_stack,out,0,255,cv2.NORM_MINMAX,dtype=cv2.CV_8U)
         self.tif_stack = tif_stack
-        tif_stack = cv2.normalize(tif_stack,out,0,255,cv2.NORM_MINMAX).astype(np.uint8)
         tif_list = []
+        tif_images = []
         for tif in range(np.shape(tif_stack)[0]):
             i = tif_stack[tif,:,:]
             heat = cv2.applyColorMap(i,cv2.COLORMAP_INFERNO) # can change heatmap color
@@ -77,30 +92,39 @@ class Activity_Viewer():
             # heat = cv2.cvtColor(heat,cv2.COLOR_RGB2BGR)
             # h = (heat/255).astype(np.uint8)
             # Convert np.array into Tkinter image object
-            im = Image.fromarray(h)
-            im = im.resize((700,700),Image.ANTIALIAS) ## Need to make this adaptable to screensize
+            img = Image.fromarray(h)
+            enhancer = ImageEnhance.Brightness(img)
+            im = enhancer.enhance(5)
+            im = im.resize((500,500),Image.ANTIALIAS) ## Need to make this adaptable to screensize
             img = ImageTk.PhotoImage(im)
             tif_list.append(img)
+            tif_images.append(im)
         self.tif_list = tif_list
+        self.tif_images = tif_images
 
     def Display_Tif(self):
         ''' Display the initial tif image in the image pane'''
-        self.Load_Tif()
+        if self.filename is None:
+            self.Load_Tif()
+        else:
+            pass
         self.image = self.image_canvas.create_image((self.tif_list[0].width()/2),
                                                     (self.tif_list[0].height()/2),
                                                     anchor='center',image=self.tif_list[0])
         self.slider = tk.Scale(self.image_pane,from_=0,to=len(self.tif_list)-1,
                                orient='horizontal',command=self.Slider_Update,
-                               length=(self.tif_list[0].width()*0.85))
+                               length=(self.tif_list[0].width()*0.75))
         self.slider.grid(column=2,row=1)
         self.forward_button = tk.Button(self.image_pane,text ='>>',
-                                        command=self.Forward_Update)
+                                        command=self.Forward_Update,
+                                        pady=3)
         self.forward_button.grid(column=3,row=1,sticky='swe')
         self.back_button = tk.Button(self.image_pane,text='<<',
-                                     command=self.Backward_Update)
+                                     command=self.Backward_Update,
+                                     pady=3)
         self.back_button.grid(column=1,row=1,sticky='swe')
         self.play_button = tk.Button(self.image_pane, text='>',
-                                     command=self.Play_Button_Play)
+                                     command=self.Play_Button_Play,pady=3)
         self.play_button.grid(column=0,row=1,sticky='swe')
         
     def Slider_Update(self,master):
@@ -130,6 +154,7 @@ class Activity_Viewer():
         ''' Function to play through the images'''
 
         if self.play_button_on is True:
+            self.play_button['text'] = '||'
             if v is None:
                 v = self.slider.get()
             else:
@@ -143,6 +168,7 @@ class Activity_Viewer():
                     self.image_canvas.itemconfig(self.image,image=self.tif_list[v])
                     self.slider.set(0)
         else:
+            self.play_button['text'] = '>'
             return
         self.root.after(100,self.Play_Update,v+1)
     
@@ -153,6 +179,55 @@ class Activity_Viewer():
         else:
             self.play_button_on = False
         self.Play_Update()
+    
+    def Change_Image_Display(self,master):
+        ''' Function to change the display of the image'''
+        option = self.img_opt_click.get()
+        if option == 'Timecourse':
+            self.Display_Tif()
+        elif option == 'Max Project':
+            self.Max_Project()
+        elif option == 'Avg Project':
+            self.Avg_Project()
+        else:
+            return
+    
+    def Max_Project(self):
+        ''' Function to generated a max projection of the image'''
+        tif_stack = self.tif_stack
+        max_array = np.amax(tif_stack,axis=0)
+        heat = cv2.applyColorMap(max_array,cv2.COLORMAP_INFERNO) # can change heatmap color
+        h_max = cv2.cvtColor(heat, cv2.COLOR_RGB2BGR)
+        ima = Image.fromarray(h_max)
+        enhancer = ImageEnhance.Brightness(ima)
+        im = enhancer.enhance(5)
+        im = im.resize((500,500),Image.ANTIALIAS)
+        img = ImageTk.PhotoImage(im)
+        self.max_project = img
+        self.slider['state'] = 'disabled'
+        self.play_button['state'] = 'disabled'
+        self.forward_button['state'] = 'disabled'
+        self.back_button['state'] = 'disabled'
+        self.image_canvas.itemconfig(self.image,image=self.max_project)
+
+    
+    def Avg_Project(self):
+        ''' Function to generate an avg projection of the image'''
+        tif_stack = self.tif_stack
+        avg_array = np.mean(tif_stack,axis=0).astype(np.uint8)
+        heat = cv2.applyColorMap(avg_array,cv2.COLORMAP_INFERNO) # can change heatmap color
+        h_avg = cv2.cvtColor(heat, cv2.COLOR_RGB2BGR)
+        ima = Image.fromarray(h_avg)
+        enhancer = ImageEnhance.Brightness(ima)
+        im = enhancer.enhance(5)
+        im = im.resize((500,500),Image.ANTIALIAS)
+        img = ImageTk.PhotoImage(im)
+        self.avg_project = img
+        self.slider['state'] = 'disabled'
+        self.play_button['state'] = 'disabled'
+        self.forward_button['state'] = 'disabled'
+        self.back_button['state'] = 'disabled'
+        self.image_canvas.itemconfig(self.image,image=self.avg_project)
         
 
 
