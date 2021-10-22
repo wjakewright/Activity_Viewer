@@ -11,8 +11,6 @@ import matplotlib.pyplot as plt
 import cv2
 
 
-
-
 class Activity_Viewer():
     ''' GUI to label neural ROIs and extract fluorescence timecourse from 
         from two-photon imaging videos.
@@ -50,12 +48,11 @@ class Activity_Viewer():
         
         # Image options button
         self.image_options = ['Timecourse', 'Max Project', 'Avg Project']
-        self.img_opt_click = tk.StringVar()
-        self.img_opt_click.set(self.image_options[0])
-        self.img_opt_dropdown = tk.OptionMenu(self.root, self.img_opt_click, *self.image_options,
-                                              command=self.Change_Image_Display)
+        self.img_opt_dropdown = ttk.Combobox(self.root,value=self.image_options)
+        self.img_opt_dropdown.current(0)
+        self.img_opt_dropdown.bind('<<ComboboxSelected>>',self.Change_Image_Display)
+        self.img_opt_dropdown.grid(column=1,row=0,sticky='w')
         self.img_opt_dropdown.config(width=15)
-        self.img_opt_dropdown.grid(column=1,row=0,stick='w')
         
         
         ## additional states
@@ -84,6 +81,7 @@ class Activity_Viewer():
         tif_images = []
         for tif in range(np.shape(tif_stack)[0]):
             i = tif_stack[tif,:,:]
+            # pseudocolor with heatmap
             heat = cv2.applyColorMap(i,cv2.COLORMAP_INFERNO) # can change heatmap color
             h = cv2.cvtColor(heat, cv2.COLOR_RGB2BGR)
             # Matplotlib version (NOT WORKING)
@@ -104,10 +102,12 @@ class Activity_Viewer():
 
     def Display_Tif(self):
         ''' Display the initial tif image in the image pane'''
+        # Load images if not yet loaded
         if self.filename is None:
             self.Load_Tif()
         else:
             pass
+        # create the image up on the canvas
         self.image = self.image_canvas.create_image((self.tif_list[0].width()/2),
                                                     (self.tif_list[0].height()/2),
                                                     anchor='center',image=self.tif_list[0])
@@ -182,7 +182,7 @@ class Activity_Viewer():
     
     def Change_Image_Display(self,master):
         ''' Function to change the display of the image'''
-        option = self.img_opt_click.get()
+        option = self.img_opt_dropdown.get()
         if option == 'Timecourse':
             self.Display_Tif()
         elif option == 'Max Project':
