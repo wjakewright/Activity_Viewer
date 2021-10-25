@@ -38,8 +38,12 @@ class Activity_Viewer():
         self.image_pane.grid(row=1,column=1,columnspan=8)
         ### Canvas is an item in the image_pane display
         self.image_canvas = tk.Canvas(self.image_pane,height=500,width=500,
-                                       highlightthickness=0) #Change to match image
+                                       highlightthickness=0,bg='white') #Change to match image
         self.image_canvas.grid(column=0,row=0,columnspan=4,sticky='nswe')
+        self.image_canvas.bind('<Motion>', self.position) ## Binding mouse position
+        
+        ## Adding zoom functionality to the canvas
+        # self.root.bind_all('<MouseWheel>', self.zoom)
         
         # Load file button
         self.file_button = tk.Button(self.root,text='Open File',
@@ -60,13 +64,21 @@ class Activity_Viewer():
         
         
         self.filename = None
+        self.image = None
 
         
         # Loop GUI
         self.root.mainloop()
     
     
-    
+    def position(self,event):
+        ''' Function to display the x y position of the mouse over the canvas'''
+        self.x, self.y = event.x, event.y
+        self.myxy = tk.Label(self.image_canvas, text = "Position: " + str(self.x) + ", " + str(self.y),
+                             bg='black',fg='white',padx=5)
+        self.myxy.place(x=0,y=0)
+
+        
     def Load_Tif(self):
         ''' Load the tif stack file and return a list with each image frame'''
         filename = fd.askopenfilename(title='Select File')
@@ -113,15 +125,13 @@ class Activity_Viewer():
                                                     anchor='center',image=self.tif_list[0])
         self.slider = tk.Scale(self.image_pane,from_=0,to=len(self.tif_list)-1,
                                orient='horizontal',command=self.Slider_Update,
-                               length=(self.tif_list[0].width()*0.75))
+                               length=(self.tif_list[0].width()*0.65))
         self.slider.grid(column=2,row=1)
         self.forward_button = tk.Button(self.image_pane,text ='>>',
-                                        command=self.Forward_Update,
-                                        pady=3)
+                                        command=self.Forward_Update,pady=3)
         self.forward_button.grid(column=3,row=1,sticky='swe')
         self.back_button = tk.Button(self.image_pane,text='<<',
-                                     command=self.Backward_Update,
-                                     pady=3)
+                                     command=self.Backward_Update,pady=3)
         self.back_button.grid(column=1,row=1,sticky='swe')
         self.play_button = tk.Button(self.image_pane, text='>',
                                      command=self.Play_Button_Play,pady=3)
