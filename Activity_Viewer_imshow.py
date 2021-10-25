@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 import tkinter as tk
 from tkinter import ttk
-import os
 import skimage as ski
 from skimage import io
 from PIL import Image, ImageTk, ImageEnhance
 from tkinter import filedialog as fd
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.backends.backend_tkagg as tkagg
+from matplotlib.figure import Figure
 import cv2
 
 
@@ -37,11 +38,13 @@ class Activity_Viewer():
         self.image_pane = tk.Frame(self.root)
         self.image_pane.grid(row=1,column=1,columnspan=8)
         ### Canvas is an item in the image_pane display
-        self.image_canvas = tk.Canvas(self.image_pane,height=500,width=500,
-                                       highlightthickness=0,bg='white') #Change to match image
-        self.image_canvas.grid(column=0,row=0,columnspan=4,sticky='nswe')
-        self.image_canvas.bind('<Motion>', self.position) ## Binding mouse position
-        
+        self.fig = Figure()
+        self.image_frame = tk.Frame(self.image_pane)
+        self.image_frame.grid(column=0,row=0,columnspan=4,sticky='nswe')
+        self.image_canvas = tkagg.FigureCanvasTkAgg(self.fig,master=self.image_frame)
+        self.image_canvas.get_tk_widget().config(width=500,height=500)
+        self.image_canvas.get_tk_widget().pack(side=tk.TOP,fill=tk.BOTH)
+        self.image_canvas.get_tk_widget().bind('<Motion>',self.position)
         ## Adding zoom functionality to the canvas
         # self.root.bind_all('<MouseWheel>', self.zoom)
         
@@ -74,9 +77,23 @@ class Activity_Viewer():
     def position(self,event):
         ''' Function to display the x y position of the mouse over the canvas'''
         self.x, self.y = event.x, event.y
-        self.myxy = tk.Label(self.image_canvas, text = "Position: " + str(self.x) + ", " + str(self.y),
+        self.myxy = tk.Label(self.image_frame, text = "Position: " + str(self.x) + ", " + str(self.y),
                              bg='black',fg='white',padx=5)
         self.myxy.place(x=0,y=0)
+        
+    def plt_fig(self,value,image=None):
+        ''' Function to display the image on the Canvas'''
+        self.fig.clear()
+        self.axes = self.fig.add_axes([0,0,1,1])
+        self.fig.subplots_adjust(left=None,bottom=None,right=None,top=None,wspace=None,hspace=None)
+        if image is None:
+            self.axes.imshow(self.tif_list[value])
+            self.axes.axis('off') 
+            self.image_canvas.draw()
+        else:
+            self.axes.imshow(image)
+            self.axes.axis('off')
+            self.image_canvas.draw()
 
         
     def Load_Tif(self):
@@ -99,14 +116,13 @@ class Activity_Viewer():
             # Matplotlib version (NOT WORKING)
             # cmap = plt.get_cmap('inferno')
             # heat = (cmap(i) * 2**16).astype(np.uint16)[:,:,:3]
-            # heat = cv2.cvtColor(heat,cv2.COLOR_RGB2BGR)
             # h = (heat/255).astype(np.uint8)
             # Convert np.array into Tkinter image object
             img = Image.fromarray(h)
             enhancer = ImageEnhance.Brightness(img)
             im = enhancer.enhance(5)
-            im = im.resize((500,500),Image.ANTIALIAS) ## Need to make this adaptable to screensize
-            img = ImageTk.PhotoImage(im)
+            im = im.resize((500,500),Image.ANTIALIAS)## Need to make this adaptable to screensize
+            img = np.array(im)
             tif_list.append(img)
             tif_images.append(im)
         self.tif_list = tif_list
@@ -120,12 +136,9 @@ class Activity_Viewer():
         else:
             pass
         # create the image up on the canvas
-        self.image = self.image_canvas.create_image((self.tif_list[0].width()/2),
-                                                    (self.tif_list[0].height()/2),
-                                                    anchor='center',image=self.tif_list[0])
+        self.plt_fig(0)
         self.slider = tk.Scale(self.image_pane,from_=0,to=len(self.tif_list)-1,
-                               orient='horizontal',command=self.Slider_Update,
-                               length=(self.tif_list[0].width()*0.65))
+                               orient='horizontal',command=self.Slider_Update)
         self.slider.grid(column=2,row=1)
         self.forward_button = tk.Button(self.image_pane,text ='>>',
                                         command=self.Forward_Update,pady=3)
@@ -140,7 +153,7 @@ class Activity_Viewer():
     def Slider_Update(self,master):
         ''' Function to update displayed image based on the slider'''
         value = self.slider.get()
-        self.image_canvas.itemconfig(self.image,image=self.tif_list[value])
+        self.plt_fig(value)
     
     def Forward_Update(self):
         ''' Function to update image to the next image by 1'''
@@ -148,7 +161,7 @@ class Activity_Viewer():
             pass
         else:
             newvalue = self.slider.get()+1
-            self.image_canvas.itemconfig(self.image,image=self.tif_list[newvalue])
+            self.plt_fig(newvalue)
             self.slider.set(newvalue)
     
     def Backward_Update(self):
@@ -157,7 +170,7 @@ class Activity_Viewer():
             pass
         else:
             newvalue = self.slider.get()-1
-            self.image_canvas.itemconfig(self.image,image=self.tif_list[newvalue])
+            self.plt_fig(newvalue)
             self.slider.set(newvalue)
         
     def Play_Update(self,v=None):
@@ -170,12 +183,12 @@ class Activity_Viewer():
             else:
                 v = v
                 if v < (len(self.tif_list)):
-                    self.image_canvas.itemconfig(self.image,image=self.tif_list[v])
+                    self.plt_fig(v)
                     self.slider.set(v)
                     
                 else:
                     v = 0
-                    self.image_canvas.itemconfig(self.image,image=self.tif_list[v])
+                    self.plt_fig(v)
                     self.slider.set(0)
         else:
             self.play_button['text'] = '>'
@@ -212,13 +225,13 @@ class Activity_Viewer():
         enhancer = ImageEnhance.Brightness(ima)
         im = enhancer.enhance(5)
         im = im.resize((500,500),Image.ANTIALIAS)
-        img = ImageTk.PhotoImage(im)
+        img = np.array(im)
         self.max_project = img
         self.slider['state'] = 'disabled'
         self.play_button['state'] = 'disabled'
         self.forward_button['state'] = 'disabled'
         self.back_button['state'] = 'disabled'
-        self.image_canvas.itemconfig(self.image,image=self.max_project)
+        self.plt_fig(value=0,image=img)
 
     
     def Avg_Project(self):
@@ -231,13 +244,13 @@ class Activity_Viewer():
         enhancer = ImageEnhance.Brightness(ima)
         im = enhancer.enhance(5)
         im = im.resize((500,500),Image.ANTIALIAS)
-        img = ImageTk.PhotoImage(im)
+        img = np.array(im)
         self.avg_project = img
         self.slider['state'] = 'disabled'
         self.play_button['state'] = 'disabled'
         self.forward_button['state'] = 'disabled'
         self.back_button['state'] = 'disabled'
-        self.image_canvas.itemconfig(self.image,image=self.avg_project)
+        self.plt_fig(value=0,image=img)
         
 
 
