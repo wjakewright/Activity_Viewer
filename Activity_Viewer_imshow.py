@@ -58,7 +58,7 @@ class Activity_Viewer():
         # Load file button
         self.file_button = tk.Button(self.root,text='Open File',
                                      command=self.Display_Tif,padx=30,pady=5)
-        self.file_button.grid(column=0,row=0)
+        self.file_button.grid(column=0,row=0,padx=3)
         
         # Image options button
         self.image_options = ['Timecourse', 'Max Project', 'Avg Project']
@@ -71,7 +71,7 @@ class Activity_Viewer():
 
         # Draw ROI panel
         self.ROI_frame = tk.Frame(self.root,bg='white',highlightbackground="black",highlightthickness=1)
-        self.ROI_frame.grid(column=0,row=1,sticky='nswe',padx=5,pady=5)
+        self.ROI_frame.grid(column=0,row=1,sticky='nswe',padx=3,pady=3)
 
     
         ## additional states
