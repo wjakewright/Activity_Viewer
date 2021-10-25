@@ -8,6 +8,7 @@ from tkinter import filedialog as fd
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.backends.backend_tkagg as tkagg
+import matplotlib.widgets as mwidget
 from matplotlib.figure import Figure
 import cv2
 
@@ -33,10 +34,13 @@ class Activity_Viewer():
         c_x = int(root.winfo_screenwidth()/2 - sc_w/2)
         c_y = int(root.winfo_screenheight()/2 - sc_h/2)
         self.root.geometry(f'{sc_w}x{sc_h}+{c_x}+{c_y}')
+        #self.root.config(bg='white')
+
+        
         
         # Frame for image display
         self.image_pane = tk.Frame(self.root)
-        self.image_pane.grid(row=1,column=1,columnspan=8)
+        self.image_pane.grid(row=1,column=1,columnspan=2)
         ### Canvas is an item in the image_pane display
         self.fig = Figure()
         self.image_frame = tk.Frame(self.image_pane)
@@ -45,6 +49,9 @@ class Activity_Viewer():
         self.image_canvas.get_tk_widget().config(width=500,height=500)
         self.image_canvas.get_tk_widget().pack(side=tk.TOP,fill=tk.BOTH)
         self.image_canvas.get_tk_widget().bind('<Motion>',self.position)
+        ## Adding frame to put scale bar and buttons in
+        self.slider_frame = tk.Frame(self.image_pane,height=50)
+        self.slider_frame.grid(column=0,row=1,sticky='nswe')
         ## Adding zoom functionality to the canvas
         tkagg.NavigationToolbar2Tk(self.image_canvas,self.image_frame)
         
@@ -61,7 +68,12 @@ class Activity_Viewer():
         self.img_opt_dropdown.grid(column=1,row=0,sticky='w')
         self.img_opt_dropdown.config(width=15)
         
-        
+
+        # Draw ROI panel
+        self.ROI_frame = tk.Frame(self.root,bg='white',highlightbackground="black",highlightthickness=1)
+        self.ROI_frame.grid(column=0,row=1,sticky='nswe',padx=5,pady=5)
+
+    
         ## additional states
         self.play_button_on = False ## controls play button state
         
@@ -69,7 +81,6 @@ class Activity_Viewer():
         self.filename = None
         self.image = None
 
-        
         # Loop GUI
         self.root.mainloop()
     
@@ -80,6 +91,7 @@ class Activity_Viewer():
         self.myxy = tk.Label(self.image_frame, text = "Position: " + str(self.x) + ", " + str(self.y),
                              bg='black',fg='white',padx=5)
         self.myxy.place(x=0,y=0)
+        
         
     def plt_fig(self,value,image=None):
         ''' Function to display the image on the Canvas'''
@@ -128,6 +140,7 @@ class Activity_Viewer():
         self.tif_list = tif_list
         self.tif_images = tif_images
 
+
     def Display_Tif(self):
         ''' Display the initial tif image in the image pane'''
         # Load images if not yet loaded
@@ -137,8 +150,10 @@ class Activity_Viewer():
             pass
         # create the image up on the canvas
         self.plt_fig(0)
+        
         self.slider = tk.Scale(self.image_pane,from_=0,to=len(self.tif_list)-1,
-                               orient='horizontal',command=self.Slider_Update)
+                               orient='horizontal',command=self.Slider_Update,
+                               length=300)
         self.slider.grid(column=2,row=1)
         self.forward_button = tk.Button(self.image_pane,text ='>>',
                                         command=self.Forward_Update,pady=3)
@@ -150,10 +165,12 @@ class Activity_Viewer():
                                      command=self.Play_Button_Play,pady=3)
         self.play_button.grid(column=0,row=1,sticky='swe')
         
+        
     def Slider_Update(self,master):
         ''' Function to update displayed image based on the slider'''
         value = self.slider.get()
         self.plt_fig(value)
+    
     
     def Forward_Update(self):
         ''' Function to update image to the next image by 1'''
@@ -164,6 +181,7 @@ class Activity_Viewer():
             self.plt_fig(newvalue)
             self.slider.set(newvalue)
     
+    
     def Backward_Update(self):
         ''' Function to update image to the previous image by 1 '''
         if self.slider.get() == 0:
@@ -172,6 +190,7 @@ class Activity_Viewer():
             newvalue = self.slider.get()-1
             self.plt_fig(newvalue)
             self.slider.set(newvalue)
+        
         
     def Play_Update(self,v=None):
         ''' Function to play through the images'''
@@ -193,7 +212,8 @@ class Activity_Viewer():
         else:
             self.play_button['text'] = '>'
             return
-        self.root.after(100,self.Play_Update,v+1)
+        self.root.after(50,self.Play_Update,v+1)
+    
     
     def Play_Button_Play(self):
         ''' Function to control Play Button State'''
@@ -202,6 +222,7 @@ class Activity_Viewer():
         else:
             self.play_button_on = False
         self.Play_Update()
+    
     
     def Change_Image_Display(self,master):
         ''' Function to change the display of the image'''
@@ -214,6 +235,7 @@ class Activity_Viewer():
             self.Avg_Project()
         else:
             return
+    
     
     def Max_Project(self):
         ''' Function to generated a max projection of the image'''
