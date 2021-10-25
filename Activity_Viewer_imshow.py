@@ -46,7 +46,7 @@ class Activity_Viewer():
         self.image_canvas.get_tk_widget().pack(side=tk.TOP,fill=tk.BOTH)
         self.image_canvas.get_tk_widget().bind('<Motion>',self.position)
         ## Adding zoom functionality to the canvas
-        # self.root.bind_all('<MouseWheel>', self.zoom)
+        tkagg.NavigationToolbar2Tk(self.image_canvas,self.image_frame)
         
         # Load file button
         self.file_button = tk.Button(self.root,text='Open File',
