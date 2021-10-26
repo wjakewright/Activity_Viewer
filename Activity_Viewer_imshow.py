@@ -34,29 +34,30 @@ class Activity_Viewer():
         c_x = int(root.winfo_screenwidth()/2 - sc_w/2)
         c_y = int(root.winfo_screenheight()/2 - sc_h/2)
         self.root.geometry(f'{sc_w}x{sc_h}+{c_x}+{c_y}')
-        #self.root.config(bg='white')
+        self.root.config(bg='#161616')
 
         
         
         # Frame for image display
-        self.image_pane = tk.Frame(self.root)
+        self.image_pane = tk.Frame(self.root,bg='#161616')
         self.image_pane.grid(row=1,column=1,columnspan=2)
         ### Canvas is an item in the image_pane display
         self.fig = Figure()
-        self.image_frame = tk.Frame(self.image_pane)
+        self.image_frame = tk.Frame(self.image_pane,bg='#161616')
         self.image_frame.grid(column=0,row=0,columnspan=4,sticky='nswe')
         self.image_canvas = tkagg.FigureCanvasTkAgg(self.fig,master=self.image_frame)
         self.image_canvas.get_tk_widget().config(width=500,height=500)
         self.image_canvas.get_tk_widget().pack(side=tk.TOP,fill=tk.BOTH)
         self.image_canvas.get_tk_widget().bind('<Motion>',self.position)
         ## Adding frame to put scale bar and buttons in
-        self.slider_frame = tk.Frame(self.image_pane,height=50)
+        self.slider_frame = tk.Frame(self.image_pane,height=50,bg='#161616')
         self.slider_frame.grid(column=0,row=1,sticky='nswe')
         ## Adding zoom functionality to the canvas
         tkagg.NavigationToolbar2Tk(self.image_canvas,self.image_frame)
         
         # Load file button
-        self.file_button = tk.Button(self.root,text='Open File',
+        self.file_button = tk.Button(self.root,text='Open File', highlightbackground='#161616',
+                                     fg='white',relief='flat',
                                      command=self.Display_Tif,padx=30,pady=5)
         self.file_button.grid(column=0,row=0,padx=3)
         
@@ -70,7 +71,7 @@ class Activity_Viewer():
         
 
         # Draw ROI panel
-        self.ROI_frame = tk.Frame(self.root,bg='white',highlightbackground="black",highlightthickness=1)
+        self.ROI_frame = tk.Frame(self.root,bg='#161616',highlightbackground='#5A5A5A',highlightthickness=2)
         self.ROI_frame.grid(column=0,row=1,sticky='nswe',padx=3,pady=3)
 
     
