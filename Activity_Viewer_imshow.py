@@ -56,13 +56,30 @@ class Activity_Viewer():
         tkagg.NavigationToolbar2Tk(self.image_canvas,self.image_frame)
         
         # Load file button
-        self.file_button = tk.Button(self.root,text='Open File', highlightbackground='#161616',
-                                     fg='white',relief='flat',
-                                     command=self.Display_Tif,padx=30,pady=5)
-        self.file_button.grid(column=0,row=0,padx=3)
+        self.file_button = tk.Button(self.root,text='Open File', bg='#3C3C3C',
+                                     fg='white',relief='groove',
+                                     command=self.Display_Tif,padx=30,pady=2)
+        self.file_button.grid(column=0,row=0,padx=3, pady=3)
         
         # Image options button
         self.image_options = ['Timecourse', 'Max Project', 'Avg Project']
+        self.combostyle = ttk.Style()
+        self.root.option_add("*TCombobox*Listbox.background", '#3C3C3C')
+        self.root.option_add("*TCombobox*Listbox.foreground", '#D3D3D3')
+        self.root.option_add("*TCombobox*Listbox.selectBackground", '#181818')
+        self.root.option_add("*TCombobox*Listbox.selectForeground", 'white')
+        self.combostyle.theme_create('combostyle', parent='alt',
+                                      settings = {'TCombobox':
+                                                  {'configure':
+                                                  {'fieldforeground': 'white',
+                                                    'selctforeground': 'white',
+                                                    'selectbackground': '#3C3C3C',
+                                                    'fieldbackground': '#3C3C3C',
+                                                    'background': '#3C3C3C',
+                                                    'foreground': 'white',
+                                                    'arrowcolor': 'white'
+                                                    }}})
+        self.combostyle.theme_use('combostyle')
         self.img_opt_dropdown = ttk.Combobox(self.root,value=self.image_options)
         self.img_opt_dropdown.current(0)
         self.img_opt_dropdown.bind('<<ComboboxSelected>>',self.Change_Image_Display)
@@ -72,13 +89,32 @@ class Activity_Viewer():
 
         # Draw ROI panel
         self.ROI_frame = tk.Frame(self.root,bg='#161616',highlightbackground='#5A5A5A',highlightthickness=2)
-        self.ROI_frame.grid(column=0,row=1,sticky='nswe',padx=3,pady=3)
+        self.ROI_frame.grid(column=0,row=1,sticky='nswe',padx=3,pady=0)
+        self.ROI_frame_label = tk.Label(self.ROI_frame,bg='#161616',fg='#8C8C8C', text='Draw ROIs')
+        self.ROI_frame_label.grid(column=0,row=0)
+        ## Draw ROI buttons
+        self.Draw_Background_Button = tk.Button(self.ROI_frame, text ='Draw Background', bg='#3C3C3C',
+                                                fg='white',relief='groove',command=self.draw_background_roi,
+                                                width = 14)
+        self.Draw_Background_Button.grid(column=0,row=1,padx=4, pady=5)
+        self.Draw_Soma_Button = tk.Button(self.ROI_frame, text = 'Draw Soma ROI', bg = '#3C3C3C',
+                                          fg='white', relief='groove',command=self.draw_soma_roi,
+                                          width = 14)
+        self.Draw_Soma_Button.grid(column=0,row=2,padx=4, pady=5)
+        self.Draw_Dendrite_Button = tk.Button(self.ROI_frame, text = 'Draw Dendrite ROI', bg = '#3C3C3C',
+                                              fg='white', relief='groove',command=self.draw_dendrite_roi,
+                                              width = 14)
+        self.Draw_Dendrite_Button.grid(column=0,row=3,padx=4, pady=5)
+        self.Draw_Spine_Button = tk.Button(self.ROI_frame, text = 'Draw Spine ROI', bg = '#3C3C3C',
+                                           fg='white', relief='groove',command=self.draw_spine_roi,
+                                           width = 14)
+        self.Draw_Spine_Button.grid(column=0,row=4,padx=4, pady=5)
 
     
         ## additional states
         self.play_button_on = False ## controls play button state
         
-        
+        # important variables
         self.filename = None
         self.image = None
 
@@ -154,16 +190,20 @@ class Activity_Viewer():
         
         self.slider = tk.Scale(self.image_pane,from_=0,to=len(self.tif_list)-1,
                                orient='horizontal',command=self.Slider_Update,
-                               length=300)
+                               length=300, bg='#3C3C3C',fg='white',bd=0,
+                               highlightbackground='#3C3C3C', troughcolor='#535353')
         self.slider.grid(column=2,row=1)
         self.forward_button = tk.Button(self.image_pane,text ='>>',
-                                        command=self.Forward_Update,pady=3)
+                                        command=self.Forward_Update,pady=3,
+                                        bg='#3C3C3C',fg='white',relief='groove')
         self.forward_button.grid(column=3,row=1,sticky='swe')
         self.back_button = tk.Button(self.image_pane,text='<<',
-                                     command=self.Backward_Update,pady=3)
+                                     command=self.Backward_Update,pady=3,
+                                     bg='#3C3C3C',fg='white',relief='groove')
         self.back_button.grid(column=1,row=1,sticky='swe')
         self.play_button = tk.Button(self.image_pane, text='>',
-                                     command=self.Play_Button_Play,pady=3)
+                                     command=self.Play_Button_Play,pady=3,
+                                     bg='#3C3C3C',fg='white',relief='groove')
         self.play_button.grid(column=0,row=1,sticky='swe')
         
         
@@ -274,6 +314,21 @@ class Activity_Viewer():
         self.forward_button['state'] = 'disabled'
         self.back_button['state'] = 'disabled'
         self.plt_fig(value=0,image=img)
+    
+    def draw_background_roi(self):
+        ''' Function to draw backgrouond ROI'''
+        return
+    
+    def draw_soma_roi(self):
+        ''' Function to draw soma ROIs'''
+        return
+    
+    def draw_dendrite_roi(self):
+        ''' Function to draw dendrite ROIs'''
+        return
+    
+    def draw_spine_roi(self):
+        ''' Function to draw spine ROIs''' 
         
 
 
