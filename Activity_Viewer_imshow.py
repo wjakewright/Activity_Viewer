@@ -192,19 +192,19 @@ class Activity_Viewer():
                                orient='horizontal',command=self.Slider_Update,
                                length=300, bg='#3C3C3C',fg='white',bd=0,
                                highlightbackground='#3C3C3C', troughcolor='#535353')
-        self.slider.grid(column=2,row=1)
+        self.slider.grid(column=2,row=1, sticky='nwe')
         self.forward_button = tk.Button(self.image_pane,text ='>>',
                                         command=self.Forward_Update,pady=3,
                                         bg='#3C3C3C',fg='white',relief='groove')
-        self.forward_button.grid(column=3,row=1,sticky='swe')
+        self.forward_button.grid(column=3,row=1,sticky='nwe')
         self.back_button = tk.Button(self.image_pane,text='<<',
                                      command=self.Backward_Update,pady=3,
                                      bg='#3C3C3C',fg='white',relief='groove')
-        self.back_button.grid(column=1,row=1,sticky='swe')
+        self.back_button.grid(column=1,row=1,sticky='nwe')
         self.play_button = tk.Button(self.image_pane, text='>',
                                      command=self.Play_Button_Play,pady=3,
                                      bg='#3C3C3C',fg='white',relief='groove')
-        self.play_button.grid(column=0,row=1,sticky='swe')
+        self.play_button.grid(column=0,row=1,sticky='nwe')
         
         
     def Slider_Update(self,master):
