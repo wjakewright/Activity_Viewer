@@ -16,7 +16,11 @@ class Activity_Viewer(QMainWindow):
     def __init__(self):
         super(Activity_Viewer,self).__init__()
         
-        self.setGeometry(200,200,200,200)
+        # Set up some window properties
+        screen_size = Widgets.QDesktopWidget().screenGeometry()
+        win_h = int(screen_size.height() * 0.8)
+        win_w = int(screen_size.width() * 0.9)
+        self.setGeometry(50,50,win_w,win_h)
         self.initUI()
         
     def initUI(self):
