@@ -3,7 +3,8 @@
 import sys
 import pyqtgraph as pg
 from PyQt5 import QtWidgets, QtGui, QtCore
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QFileDialog
+from PyQt5.QtCore import Qt
 import menus 
 
 
@@ -41,9 +42,22 @@ class Activity_Viewer(QMainWindow):
         
     def initUI(self):
         '''Creating the GUI'''
+        # Initialize some attributes
+        self.filename = 'none'
         # Main menu bar
         menus.mainMenu(self)
         
+        self.label = QLabel(self)
+        self.label.setStyleSheet('''QLabel {background-color: white;
+                                             color-white;}''')
+        self.label.move(100,100)
+        self.label.setText(str(self.filename))
+        
+
+    def Load_file(self):
+        filename = QFileDialog.getOpenFileName(self, 'Open File')
+        self.filename = filename
+        self.label.setText(str(self.filename))
         
 
         
