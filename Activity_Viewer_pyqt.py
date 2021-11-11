@@ -4,7 +4,7 @@ import sys
 import pyqtgraph as pg
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtWidgets import QApplication, QMainWindow
-from . import menus 
+import menus 
 
 
 
@@ -41,6 +41,8 @@ class Activity_Viewer(QMainWindow):
         
     def initUI(self):
         '''Creating the GUI'''
+        # Main menu bar
+        menus.mainMenu(self)
         
         
 
