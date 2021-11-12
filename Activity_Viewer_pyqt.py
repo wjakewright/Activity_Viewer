@@ -3,8 +3,9 @@
 import sys
 import pyqtgraph as pg
 from PyQt5 import QtWidgets, QtGui, QtCore
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QFileDialog
-from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import (QApplication, QMainWindow, QLabel, 
+                             QFileDialog)
+# Import package specific modules
 import menus 
 
 
@@ -45,16 +46,20 @@ class Activity_Viewer(QMainWindow):
         # Initialize some attributes
         self.filename = 'none'
         # Main menu bar
-        menus.mainMenu(self)
+        menus.fileMenu(self)
         
         self.label = QLabel(self)
         self.label.setStyleSheet('''QLabel {background-color: white;
-                                             color-white;}''')
+                                             color:grey;}''')
         self.label.move(100,100)
         self.label.setText(str(self.filename))
         
 
+
+
+
     def Load_file(self):
+        # Just testing cross file functionality
         filename = QFileDialog.getOpenFileName(self, 'Open File')
         self.filename = filename
         self.label.setText(str(self.filename))
