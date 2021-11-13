@@ -47,6 +47,7 @@ class Activity_Viewer(QMainWindow):
         self.filename = 'none'
         # Main menu bar
         menus.fileMenu(self)
+        menus.imageMenu(self)
         
         self.label = QLabel(self)
         self.label.setStyleSheet('''QLabel {background-color: white;

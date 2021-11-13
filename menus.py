@@ -56,7 +56,47 @@ def fileMenu(parent):
     file_menu.addAction(parent.load_ROIs)
     file_menu.addAction(parent.save_ROIs)
     
+def imageMenu(parent):
+    main_menu = parent.menuBar()
+    #------Image Settings Menu-----
     
+    main_menu = parent.menuBar()
+    image_menu = main_menu.addMenu('&Image')
+    
+    # Select Colormap
+    parent.cmap = image_menu.addMenu('&Color Map')
+    ## Colormap Options
+    parent.inferno = QAction('&Inferno', parent)
+    parent.inferno.triggered.connect(lambda: print('add functionality'))
+    parent.cividis = QAction('&Cividis', parent)
+    parent.cividis.triggered.connect(lambda: print('add functionality'))
+    parent.plasma = QAction('&Plasma', parent)
+    parent.plasma.triggered.connect(lambda: print('add functionality'))
+    parent.hot = QAction('&Hot', parent)
+    parent.hot.triggered.connect(lambda: print('add functionality'))
+    parent.gray = QAction('&Gray',parent)
+    parent.gray.triggered.connect(lambda: print('add functionality'))
+    
+    parent.cmap.addAction(parent.gray)
+    parent.cmap.addAction(parent.hot)
+    parent.cmap.addAction(parent.inferno)
+    parent.cmap.addAction(parent.plasma)
+    parent.cmap.addAction(parent.cividis)
+
+    # Select Display Options
+    parent.disp_options = image_menu.addMenu('&Display Options')
+    ## Display options
+    parent.img_video = QAction('&Video', parent)
+    parent.img_video.triggered.connect(lambda: print('add functionality'))
+    parent.img_max_z = QAction('&Max Project', parent)
+    parent.img_max_z.triggered.connect(lambda: print('add functionality'))
+    parent.img_avg_z = QAction('&Avg Project', parent)
+    parent.img_avg_z.triggered.connect(lambda: print('add functionality'))
+    
+    parent.disp_options.addAction(parent.img_video)
+    parent.disp_options.addAction(parent.img_max_z)
+    parent.disp_options.addAction(parent.img_avg_z)
+
 
     
     
