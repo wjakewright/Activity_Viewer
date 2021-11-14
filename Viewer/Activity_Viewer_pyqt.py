@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import sys
 import pyqtgraph as pg
-from PyQt5 import QtGui, QtCore
+from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtWidgets import (QWidget, QApplication, QMainWindow, QLabel, 
                              QFileDialog)
 # Import package specific modules
