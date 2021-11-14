@@ -29,6 +29,11 @@ def fileMenu(parent):
     parent.save_ROIs = QAction('&Save ROIs', parent)
     parent.save_ROIs.setShortcut('Ctrl+S')
     parent.save_ROIs.triggered.connect(lambda: print('add functionality'))
+
+    # Exit Viewer
+    parent.exit_viewer = QAction('&Exit', parent)
+    parent.exit_viewer.setShortcut('Ctrl+ESC')
+    parent.exit_viewer.triggered.connect(lambda: print('add functionality'))
     
     
     # Make Main Menu Bar
@@ -55,6 +60,7 @@ def fileMenu(parent):
     file_menu.addAction(parent.open_image)
     file_menu.addAction(parent.load_ROIs)
     file_menu.addAction(parent.save_ROIs)
+    file_menu.addAction(parent.exit_viewer)
     
 def imageMenu(parent):
     main_menu = parent.menuBar()
