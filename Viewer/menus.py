@@ -30,6 +30,11 @@ def fileMenu(parent):
     parent.save_ROIs.setShortcut('Ctrl+S')
     parent.save_ROIs.triggered.connect(lambda: print('add functionality'))
 
+    # Start new session
+    parent.new_session = QAction('&New Session', parent)
+    parent.new_session.setShortcut('Ctrl+N')
+    parent.new_session.triggered.connect(lambda: print('add functionality'))
+
     # Exit Viewer
     parent.exit_viewer = QAction('&Exit', parent)
     parent.exit_viewer.setShortcut('Ctrl+ESC')
@@ -60,6 +65,7 @@ def fileMenu(parent):
     file_menu.addAction(parent.open_image)
     file_menu.addAction(parent.load_ROIs)
     file_menu.addAction(parent.save_ROIs)
+    file_menu.addAction(parent.new_session)
     file_menu.addAction(parent.exit_viewer)
     
 def imageMenu(parent):
