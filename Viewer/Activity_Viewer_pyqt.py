@@ -76,6 +76,5 @@ if __name__ == '__main__':
     win = Activity_Viewer()
     win.show()
     ## This if running in interactive IDE
-    ## Change to sys.exit(app.exec_()) for running from command line
-    app.exec_()
+    sys.exit(app.exec_()) 
     
