@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import (QWidget, QApplication, QMainWindow, QLabel,
                              QFileDialog)
 # Import package specific modules
 import menus 
+import images
 
 
 
@@ -39,6 +40,13 @@ class Activity_Viewer(QMainWindow):
                               "background-color: rgb(120,120,120); "
                               "color:gray;}")
         self.setWindowTitle('Activity Viewer')
+
+        # Default image parameters
+        self.color_map = 'Inferno' # Default heatmap set to inferno
+        self.img_threshold = 50 # Default low threshold
+        self.gamma = 1
+        self.image_size = (500,500) # Need to make this adjustable to windowsize
+
         self.initUI()
         
     def initUI(self):
@@ -55,16 +63,18 @@ class Activity_Viewer(QMainWindow):
         self.label.move(100,100)
         self.label.setText(str(self.filename))
 
-        
-
-
-
 
     def Load_file(self):
-        # Just testing cross file functionality
-        filename = QFileDialog.getOpenFileName(self, 'Open File')
+        # Get the filename
+        filename = QFileDialog.getOpenFileName(self, 'Open File')[0]
         self.filename = filename
-        self.label.setText(str(self.filename))
+        # Load the image stack
+        ## set_display_images will set self.tif_images
+        images.set_display_image(self,filename)
+
+
+
+
         
 
         
