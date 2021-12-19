@@ -39,7 +39,7 @@ def fileMenu(parent):
     # Exit Viewer
     parent.exit_viewer = QAction('&Exit', parent)
     parent.exit_viewer.setShortcut('Ctrl+ESC')
-    parent.exit_viewer.triggered.connect(lambda: print('add functionality'))
+    parent.exit_viewer.triggered.connect(lambda: parent.close())
     
     
     # Make Main Menu Bar
