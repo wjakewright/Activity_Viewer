@@ -53,3 +53,21 @@ def gamma_correction(gamma,image):
     table = np.array(table,np.uint8)
 
     return cv2.LUT(image,table)
+
+def set_cmap_inferno(parent):
+    # Sets image color map to inferno
+    parent.color_map = 'Inferno'
+    set_display_image(parent,parent.filename)
+
+def set_cmap_cividis(parent):
+    # Sets image color map to cividis
+    parent.color_map = 'Cividis'
+    set_display_image(parent,parent.filename)
+
+def set_cmap_plasma(parent):
+    parent.color_map = 'Plasma'
+    set_display_image(parent,parent.filename)
+
+def set_cmap_hot(parent):
+    parent.color_map = 'Hot'
+    set_display_image(parent,parent.filename)

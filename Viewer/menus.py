@@ -8,6 +8,7 @@
 
 from PyQt5 import QtGui
 from PyQt5.QtWidgets import QAction, QMenu, QFileDialog
+import images
         
 def fileMenu(parent):
     ''' Main Menu bar for the GUI'''
@@ -79,13 +80,13 @@ def imageMenu(parent):
     parent.cmap = image_menu.addMenu('&Color Map')
     ## Colormap Options
     parent.inferno = QAction('&Inferno', parent)
-    parent.inferno.triggered.connect(lambda: print('add functionality'))
+    parent.inferno.triggered.connect(lambda: images.set_cmap_inferno(parent))
     parent.cividis = QAction('&Cividis', parent)
-    parent.cividis.triggered.connect(lambda: print('add functionality'))
+    parent.cividis.triggered.connect(lambda: images.set_cmap_cividis(parent))
     parent.plasma = QAction('&Plasma', parent)
-    parent.plasma.triggered.connect(lambda: print('add functionality'))
+    parent.plasma.triggered.connect(lambda: images.set_cmap_plasma(parent))
     parent.hot = QAction('&Hot', parent)
-    parent.hot.triggered.connect(lambda: print('add functionality'))
+    parent.hot.triggered.connect(lambda: images.set_cmap_hot(parent))
     parent.gray = QAction('&Gray',parent)
     parent.gray.triggered.connect(lambda: print('add functionality'))
     
