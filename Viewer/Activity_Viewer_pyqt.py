@@ -2,14 +2,13 @@
 # -*- coding: utf-8 -*-
 import sys
 import pyqtgraph as pg
-from PyQt5 import QtWidgets,QtGui, QtCore
-from PyQt5.QtWidgets import (QWidget, QApplication, QMainWindow, QLabel, 
-                             QFileDialog)
+from PyQt5 import QtWidgets,QtGui
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import (QGridLayout, QScrollBar, QVBoxLayout, QWidget, QApplication, QMainWindow, QLabel, 
+                             QFileDialog, QGroupBox)
 # Import package specific modules
 import menus 
 import images
-
-
 
 
 class Activity_Viewer(QMainWindow):
@@ -41,28 +40,73 @@ class Activity_Viewer(QMainWindow):
                               "color:gray;}")
         self.setWindowTitle('Activity Viewer')
 
-        # Default image parameters
-        self.color_map = 'Inferno' # Default heatmap set to inferno
-        self.img_threshold = 50 # Default low threshold
-        self.gamma = 1
-        self.image_size = (500,500) # Need to make this adjustable to windowsize
 
         self.initUI()
         
     def initUI(self):
         '''Creating the GUI'''
-        # Initialize some attributes
-        self.filename = 'none'
+        # Initialize some attributes and parameters
+        self.color_map = 'Inferno' # Default heatmap set to inferno
+        self.img_threshold = 0 # Default low threshold
+        self.gamma = 1
+        self.image_size = (500,500) # Need to make this adjustable to windowsize
+        self.image_status = 'video'
+        self.idx = 0
+        self.tif_stack = None
+        self.tif_images = None
+
         # Main menu bar
         menus.fileMenu(self)
         menus.imageMenu(self)
-        
-        self.label = QLabel(self)
-        self.label.setStyleSheet('''QLabel {background-color: white;
-                                             color:grey;}''')
-        self.label.move(100,100)
-        self.label.setText(str(self.filename))
 
+        # Setting central widget
+        self.cwidget = QWidget(self)
+        self.setCentralWidget(self.cwidget)
+
+        # Grid Layout
+        self.grid_layout = QGridLayout()
+        self.cwidget.setLayout(self.grid_layout)
+        self.vbox_layout = QVBoxLayout()
+
+        # Frames
+        self.ROI_btn_box = QGroupBox(self,title='Manage ROIs')
+        self.ROI_btn_box.setStyleSheet('background:black;color:white;border:2px solid #132743')
+        self.ROI_btn_box.setLayout(self.vbox_layout)
+        
+        # Image display window
+        self.win = pg.GraphicsLayoutWidget(self)
+        self.win.setGeometry(30,30,600,600)
+        self.display_image = self.win.addPlot(title="FULL VIEW",row=0,col=0)
+        #self.image_slider = pg.TickSliderItem(orientation='bottom')
+        #self.win.addItem(self.image_slider,row=1,col=0)
+
+        # Image view slider
+        self.image_slider = QScrollBar(Qt.Horizontal)
+        self.image_slider.setFocusPolicy(Qt.StrongFocus)
+        #self.image_slider.setTickPosition(QScrollBar.TicksBothSides)
+        self.image_slider.setStyleSheet('''QScrollBar:horizontal {background-color:#131416;
+                                                                  border: 1px solid #24272D;
+                                                                  margin:0px 20px 0px 20px}
+                                           QScrollBar::handle:horizontal {background:#24272D;
+                                                                          color:white}
+                                           QScrollBar::add-line:horizontal {background:#24272D;
+                                                                            width:15px;
+                                                                            subcontrol-position: right;
+                                                                            subcontrol-origin: margin}
+                                           QScrollBar::sub-line:horizontal {background:#24272D;
+                                                                            width:15px;
+                                                                            subcontrol-position: left;
+                                                                            subcontrol-origin: margin}
+                                           QScrollBar:left-arrow:horizontal,QScrollBar:right-arrow:horizontal{
+                                                                            width:3px;
+                                                                            height:3px;
+                                                                            background:white}''')
+
+        # Add widgets to MainWindow
+        self.grid_layout.addWidget(self.ROI_btn_box,0,0)
+        self.grid_layout.addWidget(self.win,0,1)
+        self.grid_layout.addWidget(self.image_slider,1,1)
+        
 
     def Load_file(self):
         # Get the filename
@@ -72,12 +116,21 @@ class Activity_Viewer(QMainWindow):
         ## set_display_images will set self.tif_images
         images.set_display_image(self,filename)
 
-
-
-
+    def Display_Image(self):
+        if self.tif_images is None:
+            self.Load_file()
+        self.current_image = pg.ImageItem(self.tif_images[0],boarder='w')
+        self.display_image.addItem(self.current_image)
+        self.image_slider.setMinimum(0)
+        self.image_slider.setMaximum(len(self.tif_images)-1)
+        self.image_slider.valueChanged.connect(self.Slider_Update_Video)
+    
+    def Slider_Update_Video(self):
+        self.idx = self.image_slider.value()
+        self.current_image.setImage(self.tif_images[self.idx])
         
 
-        
+
 
 
 

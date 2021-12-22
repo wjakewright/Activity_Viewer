@@ -8,6 +8,7 @@
 
 from PyQt5 import QtGui
 from PyQt5.QtWidgets import QAction, QMenu, QFileDialog
+from cv2 import Param_UNSIGNED_INT
 import images
         
 def fileMenu(parent):
@@ -19,7 +20,7 @@ def fileMenu(parent):
     # Load Image Files
     parent.open_image = QAction('&Open Image', parent)
     parent.open_image.setShortcut('Ctrl+O')
-    parent.open_image.triggered.connect(lambda: parent.Load_file())
+    parent.open_image.triggered.connect(lambda: parent.Display_Image())
     
     # Load ROIs
     parent.load_ROIs = QAction('&Load ROIs', parent)
@@ -80,13 +81,13 @@ def imageMenu(parent):
     parent.cmap = image_menu.addMenu('&Color Map')
     ## Colormap Options
     parent.inferno = QAction('&Inferno', parent)
-    parent.inferno.triggered.connect(lambda: images.set_cmap_inferno(parent))
+    parent.inferno.triggered.connect(lambda: images.set_cmap(parent,'Inferno'))
     parent.cividis = QAction('&Cividis', parent)
-    parent.cividis.triggered.connect(lambda: images.set_cmap_cividis(parent))
+    parent.cividis.triggered.connect(lambda: images.set_cmap(parent,'Cividis'))
     parent.plasma = QAction('&Plasma', parent)
-    parent.plasma.triggered.connect(lambda: images.set_cmap_plasma(parent))
+    parent.plasma.triggered.connect(lambda: images.set_cmap(parent,'Plasma'))
     parent.hot = QAction('&Hot', parent)
-    parent.hot.triggered.connect(lambda: images.set_cmap_hot(parent))
+    parent.hot.triggered.connect(lambda: images.set_cmap(parent,'Hot'))
     parent.gray = QAction('&Gray',parent)
     parent.gray.triggered.connect(lambda: print('add functionality'))
     
@@ -100,11 +101,11 @@ def imageMenu(parent):
     parent.disp_options = image_menu.addMenu('&Display Options')
     ## Display options
     parent.img_video = QAction('&Video', parent)
-    parent.img_video.triggered.connect(lambda: print('add functionality'))
+    parent.img_video.triggered.connect(lambda: images.display_video(parent))
     parent.img_max_z = QAction('&Max Project', parent)
-    parent.img_max_z.triggered.connect(lambda: print('add functionality'))
+    parent.img_max_z.triggered.connect(lambda: images.get_max_project(parent))
     parent.img_avg_z = QAction('&Avg Project', parent)
-    parent.img_avg_z.triggered.connect(lambda: print('add functionality'))
+    parent.img_avg_z.triggered.connect(lambda: images.get_avg_project(parent))
     
     parent.disp_options.addAction(parent.img_video)
     parent.disp_options.addAction(parent.img_max_z)
