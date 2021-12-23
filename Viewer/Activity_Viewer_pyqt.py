@@ -4,7 +4,7 @@ import sys
 import pyqtgraph as pg
 from PyQt5 import QtWidgets,QtGui
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import (QGridLayout, QScrollBar, QVBoxLayout, QWidget, QApplication, QMainWindow, QLabel, 
+from PyQt5.QtWidgets import (QGridLayout, QScrollBar, QSizePolicy, QVBoxLayout, QWidget, QApplication, QMainWindow, QLabel, 
                              QFileDialog, QGroupBox)
 # Import package specific modules
 import menus 
@@ -75,10 +75,12 @@ class Activity_Viewer(QMainWindow):
         
         # Image display window
         self.win = pg.GraphicsLayoutWidget(self)
-        self.win.setGeometry(30,30,600,600)
         self.display_image = self.win.addPlot(title="FULL VIEW",row=0,col=0)
-        #self.image_slider = pg.TickSliderItem(orientation='bottom')
-        #self.win.addItem(self.image_slider,row=1,col=0)
+        self.display_image.setAspectLocked(True)
+        self.lut = pg.HistogramLUTItem()
+        self.LUT = self.win.addItem(self.lut)
+        
+        
 
         # Image view slider
         self.image_slider = QScrollBar(Qt.Horizontal)
@@ -121,13 +123,22 @@ class Activity_Viewer(QMainWindow):
             self.Load_file()
         self.current_image = pg.ImageItem(self.tif_images[0],boarder='w')
         self.display_image.addItem(self.current_image)
+        self.lut.setImageItem(self.current_image)
         self.image_slider.setMinimum(0)
         self.image_slider.setMaximum(len(self.tif_images)-1)
         self.image_slider.valueChanged.connect(self.Slider_Update_Video)
     
     def Slider_Update_Video(self):
+        self.level = self.lut.getLevels()
         self.idx = self.image_slider.value()
         self.current_image.setImage(self.tif_images[self.idx])
+        self.lut.setLevels(self.level[0],self.level[1])
+
+    def stretch_image(self):
+        self.display_image.setAspectLocked(False)
+
+    def square_image(self):
+        self.display_image.setAspectLocked(True)
         
 
 

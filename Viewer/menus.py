@@ -111,6 +111,17 @@ def imageMenu(parent):
     parent.disp_options.addAction(parent.img_max_z)
     parent.disp_options.addAction(parent.img_avg_z)
 
+    # Select Display Aspect Raio
+    parent.aspect_options = image_menu.addMenu('&Aspect Ratio')
+    ## Aspect Raio Options
+    parent.fixed_aspect_ratio = QAction('&Square', parent)
+    parent.fixed_aspect_ratio.triggered.connect(lambda: parent.square_image())
+    parent.stretched_aspect_ratio = QAction('&Stretched', parent)
+    parent.stretched_aspect_ratio.triggered.connect(lambda: parent.stretch_image())
+
+    parent.aspect_options.addAction(parent.fixed_aspect_ratio)
+    parent.aspect_options.addAction(parent.stretched_aspect_ratio)
+
 
     
     
