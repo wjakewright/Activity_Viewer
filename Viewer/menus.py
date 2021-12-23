@@ -89,7 +89,7 @@ def imageMenu(parent):
     parent.hot = QAction('&Hot', parent)
     parent.hot.triggered.connect(lambda: images.set_cmap(parent,'Hot'))
     parent.gray = QAction('&Gray',parent)
-    parent.gray.triggered.connect(lambda: print('add functionality'))
+    parent.gray.triggered.connect(lambda: images.set_cmap(parent, 'Gray'))
     
     parent.cmap.addAction(parent.gray)
     parent.cmap.addAction(parent.hot)

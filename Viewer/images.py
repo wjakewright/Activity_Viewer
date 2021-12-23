@@ -43,7 +43,10 @@ def process_images(parent,image):
         heat = cv2.applyColorMap(i,cv2.COLORMAP_HOT)
     else:
         pass
-    heat = cv2.cvtColor(heat,cv2.COLOR_BGR2RGB)
+    if parent.color_map == 'Gray':
+        heat = i
+    else:
+        heat = cv2.cvtColor(heat,cv2.COLOR_BGR2RGB)
 
     # Threshold Image
     _, img = cv2.threshold(heat,parent.img_threshold,255,cv2.THRESH_TOZERO)

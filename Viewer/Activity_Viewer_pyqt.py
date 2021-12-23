@@ -4,8 +4,8 @@ import sys
 import pyqtgraph as pg
 from PyQt5 import QtWidgets,QtGui
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import (QGridLayout, QScrollBar, QSizePolicy, QVBoxLayout, QWidget, QApplication, QMainWindow, QLabel, 
-                             QFileDialog, QGroupBox)
+from PyQt5.QtWidgets import (QGridLayout, QScrollBar, QSizePolicy, QVBoxLayout, QWidget, 
+                             QApplication, QMainWindow, QLabel, QFileDialog, QGroupBox)
 # Import package specific modules
 import menus 
 import images
@@ -70,8 +70,23 @@ class Activity_Viewer(QMainWindow):
 
         # Frames
         self.ROI_btn_box = QGroupBox(self,title='Manage ROIs')
-        self.ROI_btn_box.setStyleSheet('background:black;color:white;border:2px solid #132743')
+        self.ROI_btn_box.setStyleSheet('''QGroupBox {
+                                                     font:bold;
+                                                     background:black;
+                                                     color:white;
+                                                     border:2px solid #132743;
+                                                     border-radius: 6px;
+                                                     margin-top: 6px}
+                                          QGroupBox::title {
+                                                     subcontrol-origin:margin;
+                                                     subcontrol-position:top;
+                                                     padding:0 3px 0 3px}''')
         self.ROI_btn_box.setLayout(self.vbox_layout)
+        self.ROI_btn_box.setMinimumWidth(150)
+
+        # Buttons
+        
+
         
         # Image display window
         self.win = pg.GraphicsLayoutWidget(self)
@@ -79,8 +94,6 @@ class Activity_Viewer(QMainWindow):
         self.display_image.setAspectLocked(True)
         self.lut = pg.HistogramLUTItem()
         self.LUT = self.win.addItem(self.lut)
-        
-        
 
         # Image view slider
         self.image_slider = QScrollBar(Qt.Horizontal)
