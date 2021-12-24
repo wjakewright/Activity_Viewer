@@ -6,9 +6,7 @@
     CREATOR
         William (Jake) Wright - 11/11/2021'''
 
-from PyQt5 import QtGui
-from PyQt5.QtWidgets import QAction, QMenu, QFileDialog
-from cv2 import Param_UNSIGNED_INT
+from PyQt5.QtWidgets import QAction
 import images
         
 def fileMenu(parent):

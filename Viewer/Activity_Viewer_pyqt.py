@@ -2,13 +2,14 @@
 # -*- coding: utf-8 -*-
 import sys
 import pyqtgraph as pg
-from PyQt5 import QtWidgets,QtGui
+from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import (QGridLayout, QScrollBar, QSizePolicy, QVBoxLayout, QWidget, 
+from PyQt5.QtWidgets import (QGridLayout, QScrollBar, QVBoxLayout, QWidget, 
                              QApplication, QMainWindow, QLabel, QFileDialog, QGroupBox)
 # Import package specific modules
 import menus 
 import images
+import buttons
 
 
 class Activity_Viewer(QMainWindow):
@@ -29,15 +30,6 @@ class Activity_Viewer(QMainWindow):
         win_w = int(screen_size.width() * 0.9)
         self.setGeometry(50,50,win_w,win_h)
         self.setStyleSheet('background:black')
-        self.stylePressed = ("QPushButton {Text-align: left; "
-                             "background-color: rgb(55,55,138); "
-                             "color:white;}")
-        self.styleUnpressed = ("QPushButton {Text-align: left; "
-                               "background-color: rgb(50,50,50); "
-                               "color:white;}")
-        self.styleInactive = ("QPushButton {Text-align: left; "
-                              "background-color: rgb(120,120,120); "
-                              "color:gray;}")
         self.setWindowTitle('Activity Viewer')
 
 
@@ -66,28 +58,10 @@ class Activity_Viewer(QMainWindow):
         # Grid Layout
         self.grid_layout = QGridLayout()
         self.cwidget.setLayout(self.grid_layout)
-        self.vbox_layout = QVBoxLayout()
-
-        # Frames
-        self.ROI_btn_box = QGroupBox(self,title='Manage ROIs')
-        self.ROI_btn_box.setStyleSheet('''QGroupBox {
-                                                     font:bold;
-                                                     background:black;
-                                                     color:white;
-                                                     border:2px solid #132743;
-                                                     border-radius: 6px;
-                                                     margin-top: 6px}
-                                          QGroupBox::title {
-                                                     subcontrol-origin:margin;
-                                                     subcontrol-position:top;
-                                                     padding:0 3px 0 3px}''')
-        self.ROI_btn_box.setLayout(self.vbox_layout)
-        self.ROI_btn_box.setMinimumWidth(150)
-
+        
         # Buttons
-        
+        buttons.ROI_Buttons(self)
 
-        
         # Image display window
         self.win = pg.GraphicsLayoutWidget(self)
         self.display_image = self.win.addPlot(title="FULL VIEW",row=0,col=0)
