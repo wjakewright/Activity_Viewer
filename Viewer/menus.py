@@ -8,6 +8,7 @@
 
 from PyQt5.QtWidgets import QAction
 import images
+import styles
         
 def fileMenu(parent):
     ''' Main Menu bar for the GUI'''
@@ -43,23 +44,7 @@ def fileMenu(parent):
     
     # Make Main Menu Bar
     main_menu = parent.menuBar()
-    main_menu.setStyleSheet('''QMenuBar {
-                                        background-color: #132743;
-                                        color:white;}
-                                QMenuBar::item {
-                                        background-color: #132743;
-                                        color:white;}
-                                QMenuBar::item:selected {
-                                        background-color: #02449B;}
-                                QMenu {
-                                        background-color: #132743;
-                                        color:white;}
-                                QMenu::item {
-                                        background-color: #132743;
-                                        color:white;}
-                                QMenu::item:selected {
-                                        background-color: #02449B;
-                                        color:white;}''')
+    main_menu.setStyleSheet(styles.menuStyle())
     main_menu.setNativeMenuBar(False)
     file_menu = main_menu.addMenu('&File')
     file_menu.addAction(parent.open_image)

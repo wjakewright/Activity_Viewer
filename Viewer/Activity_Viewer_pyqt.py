@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import (QGridLayout, QScrollBar, QVBoxLayout, QWidget,
 import menus 
 import images
 import buttons
-
+import styles
 
 class Activity_Viewer(QMainWindow):
     '''GUI to label neural ROIs and extract fluorescence timecourse from 
@@ -72,24 +72,7 @@ class Activity_Viewer(QMainWindow):
         # Image view slider
         self.image_slider = QScrollBar(Qt.Horizontal)
         self.image_slider.setFocusPolicy(Qt.StrongFocus)
-        #self.image_slider.setTickPosition(QScrollBar.TicksBothSides)
-        self.image_slider.setStyleSheet('''QScrollBar:horizontal {background-color:#131416;
-                                                                  border: 1px solid #24272D;
-                                                                  margin:0px 20px 0px 20px}
-                                           QScrollBar::handle:horizontal {background:#24272D;
-                                                                          color:white}
-                                           QScrollBar::add-line:horizontal {background:#24272D;
-                                                                            width:15px;
-                                                                            subcontrol-position: right;
-                                                                            subcontrol-origin: margin}
-                                           QScrollBar::sub-line:horizontal {background:#24272D;
-                                                                            width:15px;
-                                                                            subcontrol-position: left;
-                                                                            subcontrol-origin: margin}
-                                           QScrollBar:left-arrow:horizontal,QScrollBar:right-arrow:horizontal{
-                                                                            width:3px;
-                                                                            height:3px;
-                                                                            background:white}''')
+        self.image_slider.setStyleSheet(styles.sliderStyle())
 
         # Add widgets to MainWindow
         self.grid_layout.addWidget(self.roi_btn_widget,0,0)

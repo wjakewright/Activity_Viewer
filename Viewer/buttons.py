@@ -4,6 +4,7 @@
         William (Jake) Wright - 12/24/2021'''
 
 from PyQt5.QtWidgets import QGroupBox, QPushButton, QVBoxLayout, QWidget
+import styles
 
 def ROI_Buttons(parent):
     # Main layout
@@ -12,30 +13,8 @@ def ROI_Buttons(parent):
     parent.roi_btn_widget.setLayout(roi_btn_layout)
 
     # Make buttons stylesheet
-    roi_frame_style = ('''QGroupBox {
-                                    font:bold;
-                                    background:black;
-                                    color:white;
-                                    border:2px solid #132743;
-                                    border-radius: 6px;
-                                    margin-top: 6px}
-                           QGroupBox::title {
-                                    subcontrol-origin:margin;
-                                    subcontrol-position:top;
-                                    padding:0 3px 0 3px}''')
-    roi_btn_style = ('''QPushButton {
-                                     background:#132743;
-                                     color:white;
-                                     border-radius: 4px;
-                                     text-align:center;
-                                     border-style:outset;
-                                     border-width: 0.5px;
-                                     border-color:#24272D
-                                     }
-                        QPushButton:pressed {
-                                     background:#02449B;
-                                     color:white
-                                     } ''')
+    roi_frame_style = styles.roiFrameStyle()
+    roi_btn_style = styles.roiBtnStyle()
 
     # --------------DRAW BUTTONS--------------
     # Frame for the draw buttons
