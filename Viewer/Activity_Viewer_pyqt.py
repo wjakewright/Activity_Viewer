@@ -92,7 +92,7 @@ class Activity_Viewer(QMainWindow):
                                                                             background:white}''')
 
         # Add widgets to MainWindow
-        self.grid_layout.addWidget(self.ROI_btn_box,0,0)
+        self.grid_layout.addWidget(self.roi_btn_widget,0,0)
         self.grid_layout.addWidget(self.win,0,1)
         self.grid_layout.addWidget(self.image_slider,1,1)
         

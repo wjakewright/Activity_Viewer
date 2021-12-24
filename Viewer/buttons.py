@@ -3,27 +3,26 @@
     CREATOR
         William (Jake) Wright - 12/24/2021'''
 
-from PyQt5.QtWidgets import QGroupBox, QPushButton, QVBoxLayout
+from PyQt5.QtWidgets import QGroupBox, QPushButton, QVBoxLayout, QWidget
 
 def ROI_Buttons(parent):
-    # Frame for the buttons
+    # Main layout
+    parent.roi_btn_widget = QWidget(parent)
     roi_btn_layout = QVBoxLayout()
-    parent.ROI_btn_box = QGroupBox(parent,title='Manage ROIs')
-    parent.ROI_btn_box.setStyleSheet('''QGroupBox {
-                                                     font:bold;
-                                                     background:black;
-                                                     color:white;
-                                                     border:2px solid #132743;
-                                                     border-radius: 6px;
-                                                     margin-top: 6px}
-                                          QGroupBox::title {
-                                                     subcontrol-origin:margin;
-                                                     subcontrol-position:top;
-                                                     padding:0 3px 0 3px}''')
-    parent.ROI_btn_box.setLayout(roi_btn_layout)
-    parent.ROI_btn_box.setMinimumWidth(150)
+    parent.roi_btn_widget.setLayout(roi_btn_layout)
 
     # Make buttons stylesheet
+    roi_frame_style = ('''QGroupBox {
+                                    font:bold;
+                                    background:black;
+                                    color:white;
+                                    border:2px solid #132743;
+                                    border-radius: 6px;
+                                    margin-top: 6px}
+                           QGroupBox::title {
+                                    subcontrol-origin:margin;
+                                    subcontrol-position:top;
+                                    padding:0 3px 0 3px}''')
     roi_btn_style = ('''QPushButton {
                                      background:#132743;
                                      color:white;
@@ -38,7 +37,14 @@ def ROI_Buttons(parent):
                                      color:white
                                      } ''')
 
-    # Make buttons
+    # --------------DRAW BUTTONS--------------
+    # Frame for the draw buttons
+    draw_btn_layout = QVBoxLayout()
+    parent.draw_btn_box = QGroupBox(parent,title='Draw ROIs')
+    parent.draw_btn_box.setStyleSheet(roi_frame_style)
+    parent.draw_btn_box.setLayout(draw_btn_layout)
+    parent.draw_btn_box.setMinimumWidth(150)
+
     ### Draw Background
     parent.draw_background_btn = QPushButton('Draw Background')
     parent.draw_background_btn.setStyleSheet(roi_btn_style)
@@ -60,9 +66,39 @@ def ROI_Buttons(parent):
     parent.draw_soma_btn.setMinimumHeight(30)
     parent.draw_soma_btn.clicked.connect(lambda: print('Add function'))
 
-    # Add buttons to frame
-    roi_btn_layout.addWidget(parent.draw_background_btn)
-    roi_btn_layout.addWidget(parent.draw_dendrite_btn)
-    roi_btn_layout.addWidget(parent.draw_spine_btn)
-    roi_btn_layout.addWidget(parent.draw_soma_btn)
+    # Add draw buttons to draw frame
+    draw_btn_layout.addWidget(parent.draw_background_btn)
+    draw_btn_layout.addWidget(parent.draw_dendrite_btn)
+    draw_btn_layout.addWidget(parent.draw_spine_btn)
+    draw_btn_layout.addWidget(parent.draw_soma_btn)
+    draw_btn_layout.addStretch()
+
+    #---------------MANAGE BUTTONS-----------------
+    # Frame for the draw buttons
+    manage_btn_layout = QVBoxLayout()
+    parent.manage_btn_box = QGroupBox(parent,title='Manage ROIs')
+    parent.manage_btn_box.setStyleSheet(roi_frame_style)
+    parent.manage_btn_box.setLayout(manage_btn_layout)
+    parent.manage_btn_box.setMinimumWidth(150)
+
+    ### Draw Shift ROIs
+    parent.shift_roi_btn = QPushButton('Shift ROIs')
+    parent.shift_roi_btn.setStyleSheet(roi_btn_style)
+    parent.shift_roi_btn.setMinimumHeight(30)
+    parent.shift_roi_btn.clicked.connect(lambda: print('Add function'))
+
+    ### Draw Edit ROIs
+    parent.edit_roi_btn = QPushButton('Edit ROIs')
+    parent.edit_roi_btn.setStyleSheet(roi_btn_style)
+    parent.edit_roi_btn.setMinimumHeight(30)
+    parent.edit_roi_btn.clicked.connect(lambda: print('Add function'))
+
+    # Add manage buttons to manage frame
+    manage_btn_layout.addWidget(parent.shift_roi_btn)
+    manage_btn_layout.addWidget(parent.edit_roi_btn)
+
+    # Add frames to main layout
+    roi_btn_layout.addWidget(parent.draw_btn_box)
+    roi_btn_layout.addWidget(parent.manage_btn_box)
+    roi_btn_layout.addStretch()
 
