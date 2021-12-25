@@ -74,3 +74,20 @@ def roiBtnStyle():
                                      color:white
                                      } ''')
     return roi_btn_style
+
+def playBtnStyle():
+    # Style for play button
+    play_btn_style = ('''QPushButton {
+                                      background:#131416;
+                                      color:white;
+                                      border-radius: 3px;
+                                      text-align:center;
+                                      border-style:outset;
+                                      border-color:#24272D;
+                                      border-width: 0.5px
+                                      }
+                         QPushButton:pressed {
+                                      background:#24272D;
+                                      color:white
+                                      }''')
+    return play_btn_style

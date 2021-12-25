@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 import sys
 import pyqtgraph as pg
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import (QGridLayout, QScrollBar, QVBoxLayout, QWidget, 
-                             QApplication, QMainWindow, QLabel, QFileDialog, QGroupBox)
+from PyQt5.QtWidgets import (QGridLayout, QHBoxLayout, QScrollBar, QWidget, 
+                             QApplication, QMainWindow, QFileDialog,QPushButton)
 # Import package specific modules
 import menus 
 import images
@@ -45,7 +45,8 @@ class Activity_Viewer(QMainWindow):
         self.image_status = 'video'
         self.idx = 0
         self.tif_stack = None
-        self.tif_images = None
+        self.tif_images = []
+        self.playBtnStatus = 'Off'
 
         # Main menu bar
         menus.fileMenu(self)
@@ -69,15 +70,28 @@ class Activity_Viewer(QMainWindow):
         self.lut = pg.HistogramLUTItem()
         self.LUT = self.win.addItem(self.lut)
 
+        # Video timer
+        self.video_timer = QtCore.QTimer(self)
+
         # Image view slider
+        self.slider_widget = QWidget(self)
+        slider_layout = QHBoxLayout()
+        self.slider_widget.setLayout(slider_layout)
+        self.play_btn = QPushButton('➤')
+        self.play_btn.setStyleSheet(styles.playBtnStyle())
+        self.play_btn.setMaximumWidth(30)
+        self.play_btn.clicked.connect(lambda: self.play_video())
         self.image_slider = QScrollBar(Qt.Horizontal)
         self.image_slider.setFocusPolicy(Qt.StrongFocus)
         self.image_slider.setStyleSheet(styles.sliderStyle())
+        slider_layout.addWidget(self.play_btn)
+        slider_layout.addWidget(self.image_slider)
+
 
         # Add widgets to MainWindow
         self.grid_layout.addWidget(self.roi_btn_widget,0,0)
         self.grid_layout.addWidget(self.win,0,1)
-        self.grid_layout.addWidget(self.image_slider,1,1)
+        self.grid_layout.addWidget(self.slider_widget,1,1)
         
 
     def Load_file(self):
@@ -89,7 +103,8 @@ class Activity_Viewer(QMainWindow):
         images.set_display_image(self,filename)
 
     def Display_Image(self):
-        if self.tif_images is None:
+        # Display the Image after loading
+        if not self.tif_images:
             self.Load_file()
         self.current_image = pg.ImageItem(self.tif_images[0],boarder='w')
         self.display_image.addItem(self.current_image)
@@ -99,16 +114,44 @@ class Activity_Viewer(QMainWindow):
         self.image_slider.valueChanged.connect(self.Slider_Update_Video)
     
     def Slider_Update_Video(self):
+        # Update displayed image when slider is moved
         self.level = self.lut.getLevels()
         self.idx = self.image_slider.value()
         self.current_image.setImage(self.tif_images[self.idx])
         self.lut.setLevels(self.level[0],self.level[1])
 
     def stretch_image(self):
+        # Stretch the image to fill space
         self.display_image.setAspectLocked(False)
 
     def square_image(self):
+        # Lock image in square aspect ratio
         self.display_image.setAspectLocked(True)
+
+    def play_video(self):
+        # Play the video of tif images
+        if self.playBtnStatus == 'Off':
+            self.video_timer.timeout.connect(lambda: self.play_update())
+            self.playBtnStatus = 'On'
+            self.video_timer.start(100)
+            self.play_update()
+        else:
+            self.playBtnStatus = 'Off'
+            self.video_timer.stop()
+    
+    def play_update(self):
+        # Updates display image while playing video
+        if self.idx < len(self.tif_images)-1:
+            self.idx = self.idx + 1
+        else:
+            self.idx = 0
+        self.level = self.lut.getLevels()
+        self.image_slider.setValue(self.idx)
+        self.current_image.setImage(self.tif_images[self.idx])
+        self.lut.setLevels(self.level[0],self.level[1])
+        
+
+
         
 
 
