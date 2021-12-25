@@ -19,7 +19,7 @@ def fileMenu(parent):
     # Load Image Files
     parent.open_image = QAction('&Open Image', parent)
     parent.open_image.setShortcut('Ctrl+O')
-    parent.open_image.triggered.connect(lambda: parent.Display_Image())
+    parent.open_image.triggered.connect(lambda: parent.Load_file())
     
     # Load ROIs
     parent.load_ROIs = QAction('&Load ROIs', parent)

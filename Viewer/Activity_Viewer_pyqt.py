@@ -31,8 +31,7 @@ class Activity_Viewer(QMainWindow):
         self.setGeometry(50,50,win_w,win_h)
         self.setStyleSheet('background:black')
         self.setWindowTitle('Activity Viewer')
-
-
+        
         self.initUI()
         
     def initUI(self):
@@ -97,22 +96,20 @@ class Activity_Viewer(QMainWindow):
         
 
     def Load_file(self):
-        # Get the filename
+        # Load and display image
         filename = QFileDialog.getOpenFileName(self, 'Open File')[0]
         self.filename = filename
         # Load the image stack
         ## set_display_images will set self.tif_images
         images.set_display_image(self,filename)
-
-    def Display_Image(self):
-        # Display the Image after loading
-        if not self.tif_images:
-            self.Load_file()
+        # Toggle status of slider and play btn
         self.image_slider.setEnabled(True)
         self.play_btn.setEnabled(True)
+        # Generate display image
         self.current_image = pg.ImageItem(self.tif_images[0],boarder='w')
         self.display_image.addItem(self.current_image)
         self.lut.setImageItem(self.current_image)
+        # Set slider range
         self.image_slider.setMinimum(0)
         self.image_slider.setMaximum(len(self.tif_images)-1)
         self.image_slider.valueChanged.connect(self.Slider_Update_Video)
