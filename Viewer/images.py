@@ -100,6 +100,7 @@ def get_max_project(parent):
     max_tif = get_projection(parent,t)
     parent.current_image.setImage(max_tif)
     parent.image_slider.setEnabled(False)
+    parent.play_btn.setEnabled(False)
     parent.image_status = 'max'
 
 def get_avg_project(parent):
@@ -107,10 +108,12 @@ def get_avg_project(parent):
     avg_tif = get_projection(parent,t)
     parent.current_image.setImage(avg_tif)
     parent.image_slider.setEnabled(False)
+    parent.play_btn.setEnabled(False)
     parent.image_status = 'avg'
 
 def display_video(parent):
     parent.image_slider.setEnabled(True)
+    parent.play_btn.setEnabled(True)
     parent.image_slider.setValue(0)
     parent.current_image.setImage(parent.tif_images[0])
     parent.image_status = 'video'

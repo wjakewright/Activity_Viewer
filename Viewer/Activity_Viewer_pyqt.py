@@ -86,6 +86,8 @@ class Activity_Viewer(QMainWindow):
         self.image_slider.setStyleSheet(styles.sliderStyle())
         slider_layout.addWidget(self.play_btn)
         slider_layout.addWidget(self.image_slider)
+        self.image_slider.setEnabled(False)
+        self.play_btn.setEnabled(False)
 
 
         # Add widgets to MainWindow
@@ -106,6 +108,8 @@ class Activity_Viewer(QMainWindow):
         # Display the Image after loading
         if not self.tif_images:
             self.Load_file()
+        self.image_slider.setEnabled(True)
+        self.play_btn.setEnabled(True)
         self.current_image = pg.ImageItem(self.tif_images[0],boarder='w')
         self.display_image.addItem(self.current_image)
         self.lut.setImageItem(self.current_image)
