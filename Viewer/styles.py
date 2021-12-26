@@ -1,6 +1,8 @@
 ''' Module containing all the styles for Activity_Viewer
     GUI widgets'''
 
+from PyQt5.QtGui import QFont
+
 def menuStyle():
     # Style for main menu bar
     menu_style = ('''QMenuBar {
@@ -91,3 +93,12 @@ def playBtnStyle():
                                       color:white
                                       }''')
     return play_btn_style
+
+def roi_btn_font(bold=False):
+    # Font style for the ROI buttons
+    if bold is False:
+        roi_btn_font = QFont('Arial',11)
+    else:
+        roi_btn_font = QFont('Arial', 11, QFont.Bold)
+
+    return roi_btn_font
