@@ -3,7 +3,9 @@
     CREATOR
         William (Jake) Wright - 12/24/2021'''
 
-from PyQt5.QtWidgets import QGroupBox, QPushButton, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import (QGroupBox, QPushButton, QScrollBar, QVBoxLayout, QWidget,
+                             QHBoxLayout)
+from PyQt5.QtCore import Qt
 import styles
 
 def ROI_Buttons(parent):
@@ -60,24 +62,71 @@ def ROI_Buttons(parent):
     parent.manage_btn_box.setLayout(manage_btn_layout)
     parent.manage_btn_box.setMinimumWidth(150)
 
-    ### Draw Shift ROIs
+    ### Select ROIs
+    parent.select_roi_btn = QPushButton('Select ROIs')
+    parent.select_roi_btn.setStyleSheet(roi_btn_style)
+    parent.select_roi_btn.setMinimumHeight(30)
+    parent.select_roi_btn.clicked.connect(lambda: print('Add function'))
+
+    ### Shift ROIs
     parent.shift_roi_btn = QPushButton('Shift ROIs')
     parent.shift_roi_btn.setStyleSheet(roi_btn_style)
     parent.shift_roi_btn.setMinimumHeight(30)
     parent.shift_roi_btn.clicked.connect(lambda: print('Add function'))
 
-    ### Draw Edit ROIs
+    ### Edit ROIs
     parent.edit_roi_btn = QPushButton('Edit ROIs')
     parent.edit_roi_btn.setStyleSheet(roi_btn_style)
     parent.edit_roi_btn.setMinimumHeight(30)
     parent.edit_roi_btn.clicked.connect(lambda: print('Add function'))
 
+    ### Delete ROIs
+    parent.delete_roi_btn = QPushButton('Delete ROIs')
+    parent.delete_roi_btn.setStyleSheet(roi_btn_style)
+    parent.delete_roi_btn.setMinimumHeight(30)
+    parent.delete_roi_btn.clicked.connect(lambda: print('add function'))
+
+    ### Extract ROIs
+    parent.extract_roi_btn = QPushButton('Extract ROIs')
+    parent.extract_roi_btn.setStyleSheet(roi_btn_style)
+    parent.extract_roi_btn.setMinimumHeight(30)
+    parent.extract_roi_btn.clicked.connect(lambda: print('add function'))
+
+    ### Display ROIs
+    parent.display_roi_btn = QPushButton('Display ROIs')
+    parent.display_roi_btn.setStyleSheet(roi_btn_style)
+    parent.display_roi_btn.setMinimumHeight(30)
+    parent.display_roi_btn.clicked.connect(lambda: print('add function'))
+
+
     # Add manage buttons to manage frame
+    manage_btn_layout.addWidget(parent.select_roi_btn)
     manage_btn_layout.addWidget(parent.shift_roi_btn)
     manage_btn_layout.addWidget(parent.edit_roi_btn)
+    manage_btn_layout.addWidget(parent.delete_roi_btn)
+    manage_btn_layout.addWidget(parent.extract_roi_btn)
+    manage_btn_layout.addWidget(parent.display_roi_btn)
 
     # Add frames to main layout
     roi_btn_layout.addWidget(parent.draw_btn_box)
     roi_btn_layout.addWidget(parent.manage_btn_box)
     roi_btn_layout.addStretch()
+
+
+def image_slider(parent):
+    parent.slider_widget = QWidget(parent)
+    parent.slider_layout = QHBoxLayout()
+    parent.slider_widget.setLayout(parent.slider_layout)
+    parent.play_btn = QPushButton('➤')
+    parent.play_btn.setStyleSheet(styles.playBtnStyle())
+    parent.play_btn.setMaximumWidth(30)
+    parent.play_btn.clicked.connect(lambda: parent.play_video())
+    parent.image_slider = QScrollBar(Qt.Horizontal)
+    parent.image_slider.setFocusPolicy(Qt.StrongFocus)
+    parent.image_slider.setStyleSheet(styles.sliderStyle())
+    parent.slider_layout.addWidget(parent.play_btn)
+    parent.slider_layout.addWidget(parent.image_slider)
+    parent.image_slider.setEnabled(False)
+    parent.play_btn.setEnabled(False)
+
 

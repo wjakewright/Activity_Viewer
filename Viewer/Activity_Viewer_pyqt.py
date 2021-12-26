@@ -31,7 +31,7 @@ class Activity_Viewer(QMainWindow):
         self.setGeometry(50,50,win_w,win_h)
         self.setStyleSheet('background:black')
         self.setWindowTitle('Activity Viewer')
-        
+
         self.initUI()
         
     def initUI(self):
@@ -73,21 +73,7 @@ class Activity_Viewer(QMainWindow):
         self.video_timer = QtCore.QTimer(self)
 
         # Image view slider
-        self.slider_widget = QWidget(self)
-        slider_layout = QHBoxLayout()
-        self.slider_widget.setLayout(slider_layout)
-        self.play_btn = QPushButton('➤')
-        self.play_btn.setStyleSheet(styles.playBtnStyle())
-        self.play_btn.setMaximumWidth(30)
-        self.play_btn.clicked.connect(lambda: self.play_video())
-        self.image_slider = QScrollBar(Qt.Horizontal)
-        self.image_slider.setFocusPolicy(Qt.StrongFocus)
-        self.image_slider.setStyleSheet(styles.sliderStyle())
-        slider_layout.addWidget(self.play_btn)
-        slider_layout.addWidget(self.image_slider)
-        self.image_slider.setEnabled(False)
-        self.play_btn.setEnabled(False)
-
+        buttons.image_slider(self)
 
         # Add widgets to MainWindow
         self.grid_layout.addWidget(self.roi_btn_widget,0,0)
@@ -151,12 +137,6 @@ class Activity_Viewer(QMainWindow):
         self.current_image.setImage(self.tif_images[self.idx])
         self.lut.setLevels(self.level[0],self.level[1])
         
-
-
-        
-
-
-
 
 
 if __name__ == '__main__':
