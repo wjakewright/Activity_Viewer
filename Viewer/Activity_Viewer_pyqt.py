@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import (QGridLayout, QHBoxLayout, QScrollBar, QWidget,
 import menus 
 import images
 import buttons
-import styles
+import display
 
 class Activity_Viewer(QMainWindow):
     '''GUI to label neural ROIs and extract fluorescence timecourse from 
@@ -60,19 +60,18 @@ class Activity_Viewer(QMainWindow):
         self.cwidget.setLayout(self.grid_layout)
         
         # Buttons
+        ## creates self.roi_btn_widget
         buttons.ROI_Buttons(self)
 
         # Image display window
-        self.win = pg.GraphicsLayoutWidget(self)
-        self.display_image = self.win.addPlot(title="FULL VIEW",row=0,col=0)
-        self.display_image.setAspectLocked(True)
-        self.lut = pg.HistogramLUTItem()
-        self.LUT = self.win.addItem(self.lut)
+        ## creates self.win, self.display_image, self.lut, self.LUT
+        display.create_display(self)
 
         # Video timer
         self.video_timer = QtCore.QTimer(self)
 
         # Image view slider
+        ## creates self.slider_widget
         buttons.image_slider(self)
 
         # Add widgets to MainWindow
@@ -80,62 +79,6 @@ class Activity_Viewer(QMainWindow):
         self.grid_layout.addWidget(self.win,0,1)
         self.grid_layout.addWidget(self.slider_widget,1,1)
         
-
-    def Load_file(self):
-        # Load and display image
-        filename = QFileDialog.getOpenFileName(self, 'Open File')[0]
-        self.filename = filename
-        # Load the image stack
-        ## set_display_images will set self.tif_images
-        images.set_display_image(self,filename)
-        # Toggle status of slider and play btn
-        self.image_slider.setEnabled(True)
-        self.play_btn.setEnabled(True)
-        # Generate display image
-        self.current_image = pg.ImageItem(self.tif_images[0],boarder='w')
-        self.display_image.addItem(self.current_image)
-        self.lut.setImageItem(self.current_image)
-        # Set slider range
-        self.image_slider.setMinimum(0)
-        self.image_slider.setMaximum(len(self.tif_images)-1)
-        self.image_slider.valueChanged.connect(self.Slider_Update_Video)
-    
-    def Slider_Update_Video(self):
-        # Update displayed image when slider is moved
-        self.level = self.lut.getLevels()
-        self.idx = self.image_slider.value()
-        self.current_image.setImage(self.tif_images[self.idx])
-        self.lut.setLevels(self.level[0],self.level[1])
-
-    def stretch_image(self):
-        # Stretch the image to fill space
-        self.display_image.setAspectLocked(False)
-
-    def square_image(self):
-        # Lock image in square aspect ratio
-        self.display_image.setAspectLocked(True)
-
-    def play_video(self):
-        # Play the video of tif images
-        if self.playBtnStatus == 'Off':
-            self.video_timer.timeout.connect(lambda: self.play_update())
-            self.playBtnStatus = 'On'
-            self.video_timer.start(100)
-            self.play_update()
-        else:
-            self.playBtnStatus = 'Off'
-            self.video_timer.stop()
-    
-    def play_update(self):
-        # Updates display image while playing video
-        if self.idx < len(self.tif_images)-1:
-            self.idx = self.idx + 1
-        else:
-            self.idx = 0
-        self.level = self.lut.getLevels()
-        self.image_slider.setValue(self.idx)
-        self.current_image.setImage(self.tif_images[self.idx])
-        self.lut.setLevels(self.level[0],self.level[1])
         
 
 

@@ -9,6 +9,7 @@
 from PyQt5.QtWidgets import QAction
 import images
 import styles
+import display
         
 def fileMenu(parent):
     ''' Main Menu bar for the GUI'''
@@ -19,7 +20,7 @@ def fileMenu(parent):
     # Load Image Files
     parent.open_image = QAction('&Open Image', parent)
     parent.open_image.setShortcut('Ctrl+O')
-    parent.open_image.triggered.connect(lambda: parent.Load_file())
+    parent.open_image.triggered.connect(lambda: display.Load_File(parent))
     
     # Load ROIs
     parent.load_ROIs = QAction('&Load ROIs', parent)
@@ -98,9 +99,9 @@ def imageMenu(parent):
     parent.aspect_options = image_menu.addMenu('&Aspect Ratio')
     ## Aspect Raio Options
     parent.fixed_aspect_ratio = QAction('&Square', parent)
-    parent.fixed_aspect_ratio.triggered.connect(lambda: parent.square_image())
+    parent.fixed_aspect_ratio.triggered.connect(lambda: display.Square_Image(parent))
     parent.stretched_aspect_ratio = QAction('&Stretched', parent)
-    parent.stretched_aspect_ratio.triggered.connect(lambda: parent.stretch_image())
+    parent.stretched_aspect_ratio.triggered.connect(lambda: display.Stretch_Image(parent))
 
     parent.aspect_options.addAction(parent.fixed_aspect_ratio)
     parent.aspect_options.addAction(parent.stretched_aspect_ratio)

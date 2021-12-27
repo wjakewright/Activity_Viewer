@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import (QGroupBox, QPushButton, QScrollBar, QVBoxLayout, QW
                              QHBoxLayout)
 from PyQt5.QtCore import Qt
 import styles
+import display
 
 def ROI_Buttons(parent):
     # Main layout
@@ -134,7 +135,7 @@ def image_slider(parent):
     parent.play_btn = QPushButton('➤')
     parent.play_btn.setStyleSheet(styles.playBtnStyle())
     parent.play_btn.setMaximumWidth(30)
-    parent.play_btn.clicked.connect(lambda: parent.play_video())
+    parent.play_btn.clicked.connect(lambda: display.Play_Video(parent))
     parent.image_slider = QScrollBar(Qt.Horizontal)
     parent.image_slider.setFocusPolicy(Qt.StrongFocus)
     parent.image_slider.setStyleSheet(styles.sliderStyle())
