@@ -12,7 +12,7 @@ import images
 
 def create_display(parent):
     parent.win = pg.GraphicsLayoutWidget(parent)
-    parent.display_image = parent.win.addPlot(title='Main Image',row=0,col=0)
+    parent.display_image = parent.win.addViewBox(name='Main Image',row=0,col=0)
     parent.display_image.setAspectLocked(True)
     parent.lut = pg.HistogramLUTItem()
     parent.LUT = parent.win.addItem(parent.lut)
