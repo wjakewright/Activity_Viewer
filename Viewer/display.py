@@ -4,7 +4,6 @@
     CREATOR
         William (Jake) Wright - 12/27/2021'''
 
-from PyQt5.QtCore import QFile
 import pyqtgraph as pg
 from PyQt5.QtWidgets import QFileDialog
 
