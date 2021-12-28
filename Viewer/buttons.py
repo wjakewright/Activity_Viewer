@@ -92,6 +92,13 @@ def ROI_Buttons(parent):
     parent.edit_roi_btn.setFont(roi_btn_font)
     parent.edit_roi_btn.clicked.connect(lambda: print('Add function'))
 
+    ### Label ROIs
+    parent.label_roi_btn = QPushButton('Label ROIs')
+    parent.label_roi_btn.setStyleSheet(roi_btn_style)
+    parent.label_roi_btn.setMaximumHeight(25)
+    parent.label_roi_btn.setFont(roi_btn_font)
+    parent.label_roi_btn.clicked.connect(lambda: print('Add function'))
+
     ### Delete ROIs
     parent.delete_roi_btn = QPushButton('Delete ROIs')
     parent.delete_roi_btn.setStyleSheet(roi_btn_style)
@@ -118,6 +125,7 @@ def ROI_Buttons(parent):
     manage_btn_layout.addWidget(parent.select_roi_btn)
     manage_btn_layout.addWidget(parent.shift_roi_btn)
     manage_btn_layout.addWidget(parent.edit_roi_btn)
+    manage_btn_layout.addWidget(parent.label_roi_btn)
     manage_btn_layout.addWidget(parent.delete_roi_btn)
     manage_btn_layout.addWidget(parent.extract_roi_btn)
     manage_btn_layout.addWidget(parent.display_roi_btn)

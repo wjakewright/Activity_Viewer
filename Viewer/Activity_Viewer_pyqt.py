@@ -3,12 +3,10 @@
 import sys
 import pyqtgraph as pg
 from PyQt5 import QtWidgets, QtCore
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import (QGridLayout, QHBoxLayout, QScrollBar, QWidget, 
-                             QApplication, QMainWindow, QFileDialog,QPushButton)
+from PyQt5.QtWidgets import (QGridLayout, QWidget, 
+                             QApplication, QMainWindow)
 # Import package specific modules
 import menus 
-import images
 import buttons
 import display
 
