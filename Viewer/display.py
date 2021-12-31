@@ -89,13 +89,14 @@ class ImageViewBox(pg.ViewBox):
 
         # Custom Ellipse object to aid in ROI drawing
         self.ImageEllipse = QGraphicsEllipseItem(0,0,1,1)
-        self.ImageEllipse.setPen(pg.mkPen((255, 255, 255),width=2))
+        self.ImageEllipse.setPen(pg.mkPen((240, 134, 5),width=4))
         self.ImageEllipse.setZValue(1e9)
         self.ImageEllipse.hide()
         self.addItem(self.ImageEllipse,ignoreBounds=True)
 
     def UpdateEllipse(self,p1,p2):
         rect = QRectF(p1,p2)
+        # Ensure ellipse edge is snapped to cursor
         h = rect.height()
         w = rect.width()
         x1 = p1[0] -0.14647*w
