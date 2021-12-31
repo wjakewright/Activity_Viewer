@@ -5,14 +5,20 @@
         William (Jake) Wright - 12/27/2021'''
 
 import pyqtgraph as pg
-from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtWidgets import QFileDialog, QGraphicsEllipseItem, QApplication
+from PyQt5.QtCore import QPointF, Qt, QRectF
+from PyQt5.QtGui import QTransform
+import numpy as np
 
 import images
+import ROIs
 
 
 def create_display(parent):
     parent.win = pg.GraphicsLayoutWidget(parent)
-    parent.display_image = parent.win.addViewBox(name='Main Image',row=0,col=0)
+    parent.display_image = ImageViewBox(parent)
+    #parent.display_image = parent.win.addViewBox(name='Main Image',row=0,col=0)
+    parent.win.addItem(parent.display_image,row=0,col=0)
     parent.display_image.setAspectLocked(True)
     parent.lut = pg.HistogramLUTItem()
     parent.LUT = parent.win.addItem(parent.lut)
@@ -72,4 +78,67 @@ def Play_Update(parent):
     parent.image_slider.setValue(parent.idx)
     parent.current_image.setImage(parent.tif_images[parent.idx])
     parent.lut.setLevels(parent.level[0],parent.level[1])
+
+
+class ImageViewBox(pg.ViewBox):
+    '''Custom ViewBox class to display image in.
+        Allows mouse click and drag events to be toggled'''
+    def __init__(self,parent,*args,**kwargs):
+        super(ImageViewBox,self).__init__(*args,**kwargs)
+        self.parent = parent
+
+        # Custom Ellipse object to aid in ROI drawing
+        self.ImageEllipse = QGraphicsEllipseItem(0,0,1,1)
+        self.ImageEllipse.setPen(pg.mkPen((255, 255, 255),width=2))
+        self.ImageEllipse.setZValue(1e9)
+        self.ImageEllipse.hide()
+        self.addItem(self.ImageEllipse,ignoreBounds=True)
+
+    def UpdateEllipse(self,p1,p2):
+        rect = QRectF(p1,p2)
+        h = rect.height()
+        w = rect.width()
+        x1 = p1[0] -0.14647*w
+        y1 = p1[1] -0.14647*h
+        x2 = p2[0] +0.14647*w
+        y2 = p2[1] +0.14647*h
+        np1 = QPointF(x1,y1)
+        np2 = QPointF(x2,y2)
+        r = QRectF(np1,np2)
+        #angle = np.rad2deg(np.arctan(r.width()/r.height()))
+        r = self.childGroup.mapRectFromScene(r)
+        self.ImageEllipse.setPos(r.topLeft())
+        #self.ImageEllipse.prepareGeometryChange()
+        # br = self.ImageEllipse.boundingRect()
+        # center = br.center()
+        trScale = QTransform.fromScale(r.width(),r.height())
+        # trRotation = QTransform()
+        # trRotation.translate(center.x(),center.y()).rotate(angle).translate(-center.x(),-center.y())
+        # self.ImageEllipse.setTransform(trScale*trRotation)
+        self.ImageEllipse.setTransform(trScale)
+        self.ImageEllipse.update()
+        self.ImageEllipse.show()
+
+
+    def mouseDragEvent(self,ev, axis=None):
+        # Custom mouseDragEvent method
+        if self.state['mouseMode'] == pg.ViewBox.RectMode:
+            #print('Drag being triggered')
+            ev.accept()
+            pos = ev.pos()
+            dif = (pos-ev.lastPos()) * -1
+            mouseEnabled = np.array(self.state['mouseEnabled'],dtype=np.float)
+            mask = mouseEnabled.copy()
+            if ev.button() & Qt.LeftButton:
+                if ev.isFinish():
+                    QApplication.restoreOverrideCursor()
+                    self.setMouseMode(pg.ViewBox.PanMode)
+                    ROIs.Draw_ROI(self.parent)
+
+                else:
+                    self.UpdateEllipse(ev.buttonDownScenePos(ev.button()),ev.scenePos())
+        
+        else:
+            super(ImageViewBox,self).mouseDragEvent(ev)
+
 

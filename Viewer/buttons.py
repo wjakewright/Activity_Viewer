@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import (QGroupBox, QPushButton, QScrollBar, QVBoxLayout, QW
 from PyQt5.QtCore import Qt
 import styles
 import display
+import ROIs
 
 def ROI_Buttons(parent):
     # Main layout
@@ -35,7 +36,7 @@ def ROI_Buttons(parent):
     parent.draw_background_btn.setStyleSheet(roi_btn_style)
     parent.draw_background_btn.setMinimumHeight(25)
     parent.draw_background_btn.setFont(roi_btn_font)
-    parent.draw_background_btn.clicked.connect(lambda: print('Add function'))
+    parent.draw_background_btn.clicked.connect(lambda: ROIs.Trigger_Draw_ROI(parent.display_image))
     ### Draw Dendrite
     parent.draw_dendrite_btn = QPushButton('Dendrite')
     parent.draw_dendrite_btn.setStyleSheet(roi_btn_style)
@@ -95,7 +96,7 @@ def ROI_Buttons(parent):
     ### Label ROIs
     parent.label_roi_btn = QPushButton('Label ROIs')
     parent.label_roi_btn.setStyleSheet(roi_btn_style)
-    parent.label_roi_btn.setMaximumHeight(25)
+    parent.label_roi_btn.setMinimumHeight(25)
     parent.label_roi_btn.setFont(roi_btn_font)
     parent.label_roi_btn.clicked.connect(lambda: print('Add function'))
 
