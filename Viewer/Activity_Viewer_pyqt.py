@@ -41,6 +41,7 @@ class Activity_Viewer(QMainWindow):
         self.image_size = (500,500) # Need to make this adjustable to windowsize
         self.image_status = 'video'
         self.idx = 0
+        self.filename = None
         self.tif_stack = None
         self.tif_images = []
         self.playBtnStatus = 'Off'

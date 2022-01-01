@@ -36,7 +36,7 @@ def ROI_Buttons(parent):
     parent.draw_background_btn.setStyleSheet(roi_btn_style)
     parent.draw_background_btn.setMinimumHeight(25)
     parent.draw_background_btn.setFont(roi_btn_font)
-    parent.draw_background_btn.clicked.connect(lambda: ROIs.Trigger_Draw_ROI(parent.display_image))
+    parent.draw_background_btn.clicked.connect(lambda: ROIs.Trigger_Draw_ROI(parent,parent.display_image))
     ### Draw Dendrite
     parent.draw_dendrite_btn = QPushButton('Dendrite')
     parent.draw_dendrite_btn.setStyleSheet(roi_btn_style)
