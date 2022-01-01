@@ -5,7 +5,7 @@
         William (Jake) Wright - 12/27/2021'''
 
 import pyqtgraph as pg
-from PyQt5.QtWidgets import QFileDialog, QGraphicsEllipseItem, QApplication
+from PyQt5.QtWidgets import QFileDialog, QGraphicsEllipseItem, QApplication, QGraphicsRectItem
 from PyQt5.QtCore import QPointF, Qt, QRectF
 from PyQt5.QtGui import QTransform
 import numpy as np

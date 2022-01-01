@@ -4,7 +4,7 @@
 
 import pyqtgraph as pg
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QCursor
+from PyQt5.QtGui import QCursor, QTransform
 from PyQt5.QtWidgets import QApplication
 
 def Trigger_Draw_ROI(parent):
@@ -18,9 +18,14 @@ def Draw_ROI(parent):
     '''Function to draw ROI'''
     # Get coordinates of the ellipses bounding rect in the ViewBox
     br = parent.display_image.ImageEllipse.boundingRect()
-    sbr = parent.display_image.ImageEllipse.mapRectToItem(parent.current_image,br)
-    print(sbr)
+    sbr = parent.display_image.ImageEllipse.mapRectToParent(br)
+    center = sbr.center()
+    transformer = QTransform()
+    transformer.translate(center.x(),center.y()).scale(0.2,0.2).translate(-center.x(),-center.y())
+    sbr = transformer.mapRect(sbr)
     sbr_rect = sbr.getRect()
+
+    # Make the ROI
     ROI_pen = pg.mkPen((76,38,212),width=4)
     parent.ellipseROI = pg.EllipseROI(pos=(sbr_rect[0],sbr_rect[1]),
                                       size=(sbr_rect[2],sbr_rect[3]),
