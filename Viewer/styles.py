@@ -1,11 +1,12 @@
-''' Module containing all the styles for Activity_Viewer
-    GUI widgets'''
+""" Module containing all the styles for Activity_Viewer
+    GUI widgets"""
 
 from PyQt5.QtGui import QFont
 
+
 def menuStyle():
     # Style for main menu bar
-    menu_style = ('''QMenuBar {
+    menu_style = """QMenuBar {
                                 background-color: #132743;
                                 color:white;}
                      QMenuBar::item {
@@ -21,12 +22,13 @@ def menuStyle():
                                 color:white;}
                      QMenu::item:selected {
                                 background-color: #02449B;
-                                color:white;}''')
+                                color:white;}"""
     return menu_style
+
 
 def sliderStyle():
     # Style for slider
-    slider_style = ('''QScrollBar:horizontal {background-color:#131416;
+    slider_style = """QScrollBar:horizontal {background-color:#131416;
                                               border: 1px solid #24272D;
                                               margin:0px 20px 0px 20px}
                        QScrollBar::handle:horizontal {background:#24272D;
@@ -42,12 +44,13 @@ def sliderStyle():
                        QScrollBar:left-arrow:horizontal,QScrollBar:right-arrow:horizontal{
                                                         width:3px;
                                                         height:3px;
-                                                        background:white}''')
+                                                        background:white}"""
     return slider_style
+
 
 def roiFrameStyle():
     # Style for roi button frame
-    roi_frame_style = ('''QGroupBox {
+    roi_frame_style = """QGroupBox {
                                     font:bold;
                                     background:black;
                                     color:white;
@@ -57,12 +60,13 @@ def roiFrameStyle():
                            QGroupBox::title {
                                     subcontrol-origin:margin;
                                     subcontrol-position:top;
-                                    padding:0 3px 0 3px}''')
+                                    padding:0 3px 0 3px}"""
     return roi_frame_style
+
 
 def roiBtnStyle():
     # Style for roi buttons
-    roi_btn_style = ('''QPushButton {
+    roi_btn_style = """QPushButton {
                                      background:#132743;
                                      color:white;
                                      border-radius: 4px;
@@ -74,12 +78,13 @@ def roiBtnStyle():
                         QPushButton:pressed {
                                      background:#02449B;
                                      color:white
-                                     } ''')
+                                     } """
     return roi_btn_style
+
 
 def playBtnStyle():
     # Style for play button
-    play_btn_style = ('''QPushButton {
+    play_btn_style = """QPushButton {
                                       background:#131416;
                                       color:white;
                                       border-radius: 3px;
@@ -91,14 +96,15 @@ def playBtnStyle():
                          QPushButton:pressed {
                                       background:#24272D;
                                       color:white
-                                      }''')
+                                      }"""
     return play_btn_style
+
 
 def roi_btn_font(bold=False):
     # Font style for the ROI buttons
     if bold is False:
-        roi_btn_font = QFont('Arial',11)
+        roi_btn_font = QFont("Arial", 11)
     else:
-        roi_btn_font = QFont('Arial', 11, QFont.Bold)
+        roi_btn_font = QFont("Arial", 11, QFont.Bold)
 
     return roi_btn_font
