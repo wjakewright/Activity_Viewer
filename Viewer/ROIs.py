@@ -13,7 +13,7 @@ class ROI:
     def __init__(self, parent, type):
         self.parent = parent
         self.type = type
-        self.obj = None
+        self.roi = None
         self.label = None
 
         self.create_roi(type)
@@ -31,6 +31,9 @@ class ROI:
             self.create_spine_roi()
         else:
             pass
+
+    def create_background_roi(self):
+        """Method for the creation of the background ROI"""
 
 
 def Trigger_Draw_ROI(parent, view):
