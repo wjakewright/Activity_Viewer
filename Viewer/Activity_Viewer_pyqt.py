@@ -8,8 +8,6 @@ from PyQt5.QtWidgets import QApplication, QGridLayout, QMainWindow, QWidget
 
 import buttons
 import display
-
-# Import package specific modules
 import menus
 
 

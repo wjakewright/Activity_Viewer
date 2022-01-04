@@ -7,6 +7,32 @@ from PyQt5.QtGui import QCursor, QTransform
 from PyQt5.QtWidgets import QApplication
 
 
+class ROI:
+    """Class for the creation of individual ROI objects"""
+
+    def __init__(self, parent, type):
+        self.parent = parent
+        self.type = type
+        self.obj = None
+        self.label = None
+
+        self.create_roi(type)
+
+    def create_roi(self):
+        """Method for the initial creation of the ROI"""
+        # Assess the type of ROI to draw
+        if self.type == "Background":
+            self.create_background_roi()
+        elif self.type == "Soma":
+            self.create_soma_roi()
+        elif self.type == "Dendrite":
+            self.create_dendrite_roi()
+        elif self.type == "Spine":
+            self.create_spine_roi()
+        else:
+            pass
+
+
 def Trigger_Draw_ROI(parent, view):
     """Function to trigger ROI drawing"""
     # Reset cursor
