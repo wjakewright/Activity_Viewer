@@ -46,7 +46,7 @@ class Activity_Viewer(QMainWindow):
         self.tif_stack = None
         self.tif_images = []
         self.playBtnStatus = "Off"
-        self.ROI_pen = pg.mkPen((76, 38, 212), width=4)
+        self.ROI_pen = pg.mkPen((255, 255, 255), width=4)
         self.ROI_label_color = "w"
         self.current_ROI_type = None
         self.ROIs = {"Background": [], "Somas": [], "Dendrites": [], "Spines": []}
@@ -54,6 +54,7 @@ class Activity_Viewer(QMainWindow):
         # Main menu bar
         menus.fileMenu(self)
         menus.imageMenu(self)
+        menus.roiMenu(self)
 
         # Setting central widget
         self.cwidget = QWidget(self)

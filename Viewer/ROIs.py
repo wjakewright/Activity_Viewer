@@ -3,8 +3,8 @@
 
 import pyqtgraph as pg
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QCursor, QTransform
-from PyQt5.QtWidgets import QApplication, QMessageBox
+from PyQt5.QtGui import QColor, QCursor, QTransform
+from PyQt5.QtWidgets import QApplication, QColorDialog
 
 import messages
 
@@ -85,6 +85,18 @@ def redraw_background(parent, view):
     parent.display_image.removeItem(parent.ROIs["Background"][0].label)
     del parent.ROIs["Background"][0]
     Trigger_Background_ROI(parent, view)
+
+
+def set_ROI_pen_color(parent):
+    """Function to change the outline color of ROIs"""
+    color = QColorDialog.getColor()
+    parent.ROI_pen = pg.mkPen(color, width=4)
+    for value in parent.ROIs.values():
+        if not value:
+            pass
+        else:
+            for v in value:
+                v.roi.setPen(color, width=4)
 
 
 class ROI:

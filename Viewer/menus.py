@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import QAction
 
 import display
 import images
+import ROIs
 import styles
 
 
@@ -110,3 +111,14 @@ def imageMenu(parent):
     parent.aspect_options.addAction(parent.fixed_aspect_ratio)
     parent.aspect_options.addAction(parent.stretched_aspect_ratio)
 
+
+def roiMenu(parent):
+    main_menu = parent.menuBar()
+    # ---------ROI Settings Menu-----------
+    parent.roi_menu = main_menu.addMenu("&ROIs")
+
+    # Set ROI pen color
+    parent.roi_color_option = QAction("&ROI Color")
+    parent.roi_color_option.triggered.connect(lambda: ROIs.set_ROI_pen_color(parent))
+
+    parent.roi_menu.addAction(parent.roi_color_option)
