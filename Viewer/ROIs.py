@@ -6,6 +6,8 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QCursor, QTransform
 from PyQt5.QtWidgets import QApplication, QMessageBox
 
+import messages
+
 
 def Draw_ROI(parent):
     """General function to handle ROI drawing"""
@@ -32,32 +34,35 @@ def Draw_ROI(parent):
 
 def Trigger_Background_ROI(parent, view):
     """Function to trigger background ROI drawing"""
+    if parent.filename is None:
+        messages.load_image_warning(parent)
     if not parent.ROIs["Background"]:
         parent.current_ROI_type = "Background"
         trigger_draw_ellipse(parent, view)
     else:
-        warning = QMessageBox()
-        warning.setIcon(QMessageBox.Warning)
-        warning.setText("Background Already Drawn")
-        warning.setWindowTitle("Background Warning")
-        warning.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
-        retval = warning.exec()
+        messages.background_roi_warning(parent, view)
 
 
 def Trigger_Soma_ROI(parent, view):
     """Function to trigger soma ROI drawing"""
+    if parent.filename is None:
+        messages.load_image_warning(parent)
     parent.current_ROI_type = "Soma"
     trigger_draw_ellipse(parent, view)
 
 
 def Trigger_Dendrite_ROI(parent, view):
     """Function to trigger dendrite ROI drawing"""
+    if parent.filename is None:
+        messages.load_image_warning(parent)
     parent.current_ROI_type = "Dendrite"
     # trigger_draw_line(parent,view)  ## Need to code this part into the rest of the GUI
 
 
 def Trigger_Spine_ROI(parent, view):
     """Function to trigger spine ROI drawing"""
+    if parent.filename is None:
+        messages.load_image_warning(parent)
     parent.current_ROI_type = "Spine"
     trigger_draw_ellipse(parent, view)
 
@@ -72,6 +77,14 @@ def trigger_draw_ellipse(parent, view):
 
 def trigger_draw_line(parent, view):
     """Function to trigger line drawing upon mouse clicking"""
+
+
+def redraw_background(parent, view):
+    """Function to redraw background"""
+    parent.display_image.removeItem(parent.ROIs["Background"][0].roi)
+    parent.display_image.removeItem(parent.ROIs["Background"][0].label)
+    del parent.ROIs["Background"][0]
+    Trigger_Background_ROI(parent, view)
 
 
 class ROI:
