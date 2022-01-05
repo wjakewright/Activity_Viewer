@@ -45,26 +45,32 @@ def ROI_Buttons(parent):
     parent.draw_background_btn.setMinimumHeight(25)
     parent.draw_background_btn.setFont(roi_btn_font)
     parent.draw_background_btn.clicked.connect(
-        lambda: ROIs.Trigger_Draw_ROI(parent, parent.display_image)
+        lambda: ROIs.Trigger_Background_ROI(parent, parent.display_image)
     )
     ### Draw Dendrite
     parent.draw_dendrite_btn = QPushButton("Dendrite")
     parent.draw_dendrite_btn.setStyleSheet(roi_btn_style)
     parent.draw_dendrite_btn.setMinimumHeight(25)
     parent.draw_dendrite_btn.setFont(roi_btn_font)
-    parent.draw_dendrite_btn.clicked.connect(lambda: print("Add Function"))
+    parent.draw_dendrite_btn.clicked.connect(
+        lambda: ROIs.Trigger_Dendrite_ROI(parent, parent.display_image)
+    )
     ### Draw Spine
     parent.draw_spine_btn = QPushButton("Spine")
     parent.draw_spine_btn.setStyleSheet(roi_btn_style)
     parent.draw_spine_btn.setMinimumHeight(25)
     parent.draw_spine_btn.setFont(roi_btn_font)
-    parent.draw_spine_btn.clicked.connect(lambda: print("Add Function"))
+    parent.draw_spine_btn.clicked.connect(
+        lambda: ROIs.Trigger_Spine_ROI(parent, parent.display_image)
+    )
     ### Draw Soma
     parent.draw_soma_btn = QPushButton("Soma")
     parent.draw_soma_btn.setStyleSheet(roi_btn_style)
     parent.draw_soma_btn.setMinimumHeight(25)
     parent.draw_soma_btn.setFont(roi_btn_font)
-    parent.draw_soma_btn.clicked.connect(lambda: print("Add function"))
+    parent.draw_soma_btn.clicked.connect(
+        lambda: ROIs.Trigger_Soma_ROI(parent, parent.display_image)
+    )
 
     # Add draw buttons to draw frame
     draw_btn_layout.addWidget(parent.draw_background_btn)
