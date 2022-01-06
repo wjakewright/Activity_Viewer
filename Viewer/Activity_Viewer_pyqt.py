@@ -47,6 +47,7 @@ class Activity_Viewer(QMainWindow):
         self.tif_images = []
         self.playBtnStatus = "Off"
         self.ROI_pen = pg.mkPen((255, 255, 255), width=4)
+        self.highlight_pen = pg.mkPen((255, 255, 0), width=4)
         self.ROI_label_color = "w"
         self.current_ROI_type = None
         self.ROIs = {"Background": [], "Somas": [], "Dendrites": [], "Spines": []}

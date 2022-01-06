@@ -3,7 +3,7 @@
 
 import pyqtgraph as pg
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QColor, QCursor, QTransform
+from PyQt5.QtGui import QCursor, QTransform
 from PyQt5.QtWidgets import QApplication, QColorDialog
 
 import messages
@@ -91,12 +91,24 @@ def set_ROI_pen_color(parent):
     """Function to change the outline color of ROIs"""
     color = QColorDialog.getColor()
     parent.ROI_pen = pg.mkPen(color, width=4)
-    for value in parent.ROIs.values():
+    for _, value in parent.ROIs.items():
         if not value:
             pass
         else:
             for v in value:
                 v.roi.setPen(color, width=4)
+
+
+def set_highlight_color(parent):
+    """Function to change the highlight color of ROI when mouse hovers"""
+    color = QColorDialog.getColor()
+    parent.highlight_pen = pg.mkPen(color, width=4)
+    for _, value in parent.ROIs.items():
+        if not value:
+            pass
+        else:
+            for v in value:
+                v.roi.hoverPen = parent.highlight_pen
 
 
 class ROI:
@@ -139,11 +151,13 @@ class ROI:
 
         # Make the ROI
         ROI_pen = parent.ROI_pen
+        hover_pen = parent.highlight_pen
         roi = pg.EllipseROI(
             pos=(sbr_rect[0], sbr_rect[1]),
             size=(sbr_rect[2], sbr_rect[3]),
             invertible=True,
             pen=ROI_pen,
+            hoverPen=hover_pen,
             parent=parent.current_image,
             movable=True,
             rotatable=True,

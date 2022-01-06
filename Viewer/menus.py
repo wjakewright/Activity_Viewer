@@ -117,8 +117,17 @@ def roiMenu(parent):
     # ---------ROI Settings Menu-----------
     parent.roi_menu = main_menu.addMenu("&ROIs")
 
-    # Set ROI pen color
+    # ROI colors
+    parent.roi_color_menu = parent.roi_menu.addMenu("&Color")
+    ## Set ROI pen color
     parent.roi_color_option = QAction("&ROI Color")
     parent.roi_color_option.triggered.connect(lambda: ROIs.set_ROI_pen_color(parent))
+    ## Set highlight color
+    parent.highlight_color_option = QAction("&Highlight Color")
+    parent.highlight_color_option.triggered.connect(
+        lambda: ROIs.set_highlight_color(parent)
+    )
+    # Set Selection color
 
-    parent.roi_menu.addAction(parent.roi_color_option)
+    parent.roi_color_menu.addAction(parent.roi_color_option)
+    parent.roi_color_menu.addAction(parent.highlight_color_option)
