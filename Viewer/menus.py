@@ -128,6 +128,9 @@ def roiMenu(parent):
         lambda: ROIs.set_highlight_color(parent)
     )
     # Set Selection color
+    parent.selection_color_option = QAction("&Selection Color")
+    parent.selection_color_option.triggered.connect(lambda: print("Add function"))
 
     parent.roi_color_menu.addAction(parent.roi_color_option)
     parent.roi_color_menu.addAction(parent.highlight_color_option)
+    parent.roi_color_menu.addAction(parent.selection_color_option)

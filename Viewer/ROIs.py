@@ -17,7 +17,7 @@ def Draw_ROI(parent):
         parent.current_ROI_type = None
 
     elif parent.current_ROI_type == "Soma":
-        new_soma_roi = ROI(parent, "Soma").roi
+        new_soma_roi = ROI(parent, "Soma")
         parent.ROIs["Somas"].append(new_soma_roi)
         parent.current_ROI_type = None
 
@@ -91,11 +91,12 @@ def set_ROI_pen_color(parent):
     """Function to change the outline color of ROIs"""
     color = QColorDialog.getColor()
     parent.ROI_pen = pg.mkPen(color, width=4)
-    for _, value in parent.ROIs.items():
+    for value in parent.ROIs.values():
         if not value:
             pass
         else:
             for v in value:
+                print(type(v))
                 v.roi.setPen(color, width=4)
 
 
@@ -103,7 +104,7 @@ def set_highlight_color(parent):
     """Function to change the highlight color of ROI when mouse hovers"""
     color = QColorDialog.getColor()
     parent.highlight_pen = pg.mkPen(color, width=4)
-    for _, value in parent.ROIs.items():
+    for value in parent.ROIs.values():
         if not value:
             pass
         else:
