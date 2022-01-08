@@ -112,6 +112,39 @@ def set_highlight_color(parent):
                 v.roi.hoverPen = parent.highlight_pen
 
 
+def toggle_ROI_labels(parent):
+    """Function to toggle the display of the ROI labels"""
+    if parent.display_ROI_labels is True:
+        for value in parent.ROIs.values():
+            if not value:
+                pass
+            else:
+                for v in value:
+                    v.label.hide()
+        parent.display_ROI_labels = False
+
+    elif parent.display_ROI_labels is False:
+        for value in parent.ROIs.values():
+            if not value:
+                pass
+            else:
+                for v in value:
+                    v.label.show()
+        parent.display_ROI_labels = True
+
+
+def set_label_color(parent):
+    """Function to set the ROI label color"""
+    color = QColorDialog.getColor()
+    parent.ROI_label_color = color
+    for value in parent.ROIs.values():
+        if not value:
+            pass
+        else:
+            for v in value:
+                v.label.setColor(parent.ROI_label_color)
+
+
 class ROI:
     """Class for the creation of individual ROI objects"""
 

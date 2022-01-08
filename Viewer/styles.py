@@ -103,8 +103,8 @@ def playBtnStyle():
 def roi_btn_font(bold=False):
     # Font style for the ROI buttons
     if bold is False:
-        roi_btn_font = QFont("Arial", 11)
+        roi_btn_font = QFont("Arial", 10)
     else:
-        roi_btn_font = QFont("Arial", 11, QFont.Bold)
+        roi_btn_font = QFont("Arial", 10.5, QFont.Bold)
 
     return roi_btn_font
