@@ -48,10 +48,18 @@ class Activity_Viewer(QMainWindow):
         self.playBtnStatus = "Off"
         self.ROI_pen = pg.mkPen((255, 255, 255), width=4)
         self.highlight_pen = pg.mkPen((255, 255, 0), width=4)
+        self.selection_pen = pg.mkPen((219, 3, 252), width=4)
         self.ROI_label_color = (255, 255, 255)
         self.current_ROI_type = None
         self.display_ROI_labels = True
-        self.ROIs = {"Background": [], "Somas": [], "Dendrites": [], "Spines": []}
+        self.ROIs = {"Background": [], "Soma": [], "Dendrite": [], "Spine": []}
+        self.select_ROIs = False
+        self.selected_ROIs = {
+            "Background": [],
+            "Soma": [],
+            "Dendrite": [],
+            "Spine": [],
+        }
 
         # Main menu bar
         menus.fileMenu(self)

@@ -18,17 +18,17 @@ def Draw_ROI(parent):
 
     elif parent.current_ROI_type == "Soma":
         new_soma_roi = ROI(parent, "Soma")
-        parent.ROIs["Somas"].append(new_soma_roi)
+        parent.ROIs["Soma"].append(new_soma_roi)
         parent.current_ROI_type = None
 
     elif parent.current_ROI_type == "Dendrite":
         new_dendrite_roi = ROI(parent, "Dendrite")
-        parent.ROIs["Dendrites"].append(new_dendrite_roi)
+        parent.ROIs["Dendrite"].append(new_dendrite_roi)
         parent.current_ROI_type = None
 
     elif parent.current_ROI_type == "Spine":
         new_spine_roi = ROI(parent, "Spine")
-        parent.ROIs["Spines"].append(new_spine_roi)
+        parent.ROIs["Spine"].append(new_spine_roi)
         parent.current_ROI_type = None
 
 
@@ -112,6 +112,18 @@ def set_highlight_color(parent):
                 v.roi.hoverPen = parent.highlight_pen
 
 
+def set_selection_color(parent):
+    """Function to change the ROI color when it is selected"""
+    color = QColorDialog.getColor()
+    parent.selection_pen = pg.mkPen(color, width=4)
+    for value in parent.selected_ROIs.values():
+        if not value:
+            pass
+        else:
+            for v in value:
+                v.roi.setPen = parent.selection_pen
+
+
 def toggle_ROI_labels(parent):
     """Function to toggle the display of the ROI labels"""
     if parent.display_ROI_labels is True:
@@ -145,6 +157,38 @@ def set_label_color(parent):
                 v.label.setColor(parent.ROI_label_color)
 
 
+def to_select_ROIs(parent):
+    """Function to allow ROIs to be selected"""
+    if parent.select_ROIs is False:
+        for value in parent.ROIs.values():
+            if not value:
+                pass
+            else:
+                for v in value:
+                    v.roi.setAcceptedMouseButtons(Qt.MouseButton.LeftButton)
+        parent.select_ROIs = True
+
+    elif parent.select_ROIs is True:
+        for value in parent.ROIs.values():
+            if not value:
+                pass
+            else:
+                for v in value:
+                    v.roi.setAcceptedMouseButtons(Qt.MouseButton.NoButton)
+        parent.select_ROIs = False
+
+
+def select_ROIs(parent, roi):
+    """Function to select ROIs"""
+    t = roi.type
+    if roi not in parent.selected_ROIs[t]:
+        roi.setPen(parent.selection_pen)
+        parent.selected_ROIs[t].append(roi)
+    elif roi in parent.selected_ROIs[t]:
+        roi.setPen(parent.ROI_pen)
+        parent.selected_ROIs[t].remove(roi)
+
+
 class ROI:
     """Class for the creation of individual ROI objects"""
 
@@ -161,12 +205,16 @@ class ROI:
         # Assess the type of ROI to draw
         if self.type == "Background":
             self.roi = self.create_ellipse_roi(self.parent, self.type)
+            self.roi.type = self.type
         elif self.type == "Soma":
             self.roi = self.create_ellipse_roi(self.parent, self.type)
+            self.roi.type = self.type
         elif self.type == "Dendrite":
             self.create_dendrite_roi()
+            self.roi.type = self.type
         elif self.type == "Spine":
             self.roi = self.create_ellipse_roi(self.parent, self.type)
+            self.roi.type = self.type
         else:
             pass
 
@@ -200,23 +248,24 @@ class ROI:
         )
         roi.addTranslateHandle(pos=(0.5, 0.5))
         roi.sigRegionChanged.connect(lambda: self.update_roi_label(parent, roi))
+        roi.sigClicked.connect(lambda: select_ROIs(parent, roi))
 
         # Create ROI label
         roi_rect = roi.mapRectToParent(roi.boundingRect())
         if roi_type == "Background":
             self.label = pg.TextItem(text="BG", color=parent.ROI_label_color)
         elif roi_type == "Soma":
-            length = len(parent.ROIs["Somas"])
+            length = len(parent.ROIs["Soma"])
             self.label = pg.TextItem(
                 text=f"So {length+1}", color=parent.ROI_label_color
             )
         elif roi_type == "Spine":
-            length = len(parent.ROIs["Spines"])
+            length = len(parent.ROIs["Spine"])
             self.label = pg.TextItem(
                 text=f"Sp {length+1}", color=parent.ROI_label_color
             )
         elif roi_type == "Dendrite":
-            length = len(parent.ROIs["Dendrites"])
+            length = len(parent.ROIs["Dendrite"])
             self.label = pg.TextItem(text=f"D {length+1}", color=parent.ROI_label_color)
 
         self.label.setPos(roi_rect.center())
