@@ -108,3 +108,14 @@ def roi_btn_font(bold=False):
         roi_btn_font = QFont("Arial", 10.5, QFont.Bold)
 
     return roi_btn_font
+
+
+def statusLabelStyle():
+    # Style for status bar
+    status_label_style = """QLabel {
+                                    color:white;
+                                    font-family:Arial;
+                                    font-style:italic;
+                                    font-size:10
+                                    }"""
+    return status_label_style

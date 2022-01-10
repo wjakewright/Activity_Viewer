@@ -11,6 +11,7 @@ import messages
 
 def Draw_ROI(parent):
     """General function to handle ROI drawing"""
+    parent.status_label.setText(" Ready...")
     if parent.current_ROI_type == "Background":
         new_background_roi = ROI(parent, "Background")
         parent.ROIs["Background"].append(new_background_roi)
@@ -37,6 +38,7 @@ def Trigger_Background_ROI(parent, view):
     if parent.filename is None:
         messages.load_image_warning(parent)
     if not parent.ROIs["Background"]:
+        parent.status_label.setText("Drawing Background")
         parent.current_ROI_type = "Background"
         trigger_draw_ellipse(parent, view)
     else:
@@ -47,6 +49,7 @@ def Trigger_Soma_ROI(parent, view):
     """Function to trigger soma ROI drawing"""
     if parent.filename is None:
         messages.load_image_warning(parent)
+    parent.status_label.setText("Drawing Soma")
     parent.current_ROI_type = "Soma"
     trigger_draw_ellipse(parent, view)
 
@@ -63,6 +66,7 @@ def Trigger_Spine_ROI(parent, view):
     """Function to trigger spine ROI drawing"""
     if parent.filename is None:
         messages.load_image_warning(parent)
+    parent.status_label.setText("Drawing Spine")
     parent.current_ROI_type = "Spine"
     trigger_draw_ellipse(parent, view)
 
@@ -160,6 +164,7 @@ def set_label_color(parent):
 def to_select_ROIs(parent):
     """Function to allow ROIs to be selected"""
     if parent.select_ROIs is False:
+        parent.status_label.setText("Selecting ROIs")
         for value in parent.ROIs.values():
             if not value:
                 pass
@@ -169,6 +174,7 @@ def to_select_ROIs(parent):
         parent.select_ROIs = True
 
     elif parent.select_ROIs is True:
+        parent.status_label.setText(" Ready...")
         for value in parent.ROIs.values():
             if not value:
                 pass

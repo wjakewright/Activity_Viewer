@@ -4,11 +4,20 @@ import sys
 
 import pyqtgraph as pg
 from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtWidgets import QApplication, QGridLayout, QMainWindow, QWidget
+from PyQt5.QtWidgets import (
+    QApplication,
+    QGraphicsItemGroup,
+    QGridLayout,
+    QLabel,
+    QMainWindow,
+    QStatusBar,
+    QWidget,
+)
 
 import buttons
 import display
 import menus
+import styles
 
 
 class Activity_Viewer(QMainWindow):
@@ -65,6 +74,14 @@ class Activity_Viewer(QMainWindow):
         menus.fileMenu(self)
         menus.imageMenu(self)
         menus.roiMenu(self)
+
+        # Status Bar
+        self.status_bar = QStatusBar(self)
+        self.status_label = QLabel(self)
+        self.status_label.setText(" Ready...")
+        self.status_bar.addWidget(self.status_label)
+        self.status_label.setStyleSheet(styles.statusLabelStyle())
+        self.setStatusBar(self.status_bar)
 
         # Setting central widget
         self.cwidget = QWidget(self)
