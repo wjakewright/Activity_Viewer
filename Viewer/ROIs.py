@@ -59,7 +59,7 @@ def Trigger_Dendrite_ROI(parent, view):
     if parent.filename is None:
         messages.load_image_warning(parent)
     parent.current_ROI_type = "Dendrite"
-    # trigger_draw_line(parent,view)  ## Need to code this part into the rest of the GUI
+    trigger_draw_line(parent,view) 
 
 
 def Trigger_Spine_ROI(parent, view):
@@ -81,6 +81,10 @@ def trigger_draw_ellipse(parent, view):
 
 def trigger_draw_line(parent, view):
     """Function to trigger line drawing upon mouse clicking"""
+    if parent.filename is not None:
+        QApplication.setOverrideCursor(QCursor(Qt.CrossCursor))
+        # set mouse mode of viewbox to allow drawing
+        view.setMouseMode(pg.ViewBox.RectMode)
 
 
 def redraw_background(parent, view):
