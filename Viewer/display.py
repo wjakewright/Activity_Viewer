@@ -6,9 +6,14 @@
 
 import numpy as np
 import pyqtgraph as pg
-from PyQt5.QtCore import QPointF, QRectF, Qt
+from PyQt5.QtCore import QPointF, QLineF, QRectF, Qt
 from PyQt5.QtGui import QTransform, QColor
-from PyQt5.QtWidgets import QApplication, QFileDialog, QGraphicsEllipseItem
+from PyQt5.QtWidgets import (
+    QApplication,
+    QFileDialog,
+    QGraphicsEllipseItem,
+    QGraphicsLineItem,
+)
 
 import images
 import ROIs
@@ -103,7 +108,7 @@ class ImageViewBox(pg.ViewBox):
 
         # Points and line to aid in ROI drawing
         self.ImagePoints = []
-        self.ImageLine = None
+        self.ImageLines = []
 
     def UpdateEllipse(self, p1, p2):
         rect = QRectF(p1, p2)
@@ -133,8 +138,18 @@ class ImageViewBox(pg.ViewBox):
         point.setZValue(1e9)
         # point.hide()
         self.addItem(point, ignoreBounds=True)
-        point.show()
+        point.hide()
         self.ImagePoints.append(point)
+
+    def MakeLine(self):
+        p1 = self.ImagePoints[-2]
+        p2 = self.ImagePoints[-1]
+        line = QLineF(p1, p2)
+        Line = QGraphicsLineItem(line)
+        Line.setPen(pg.mkPen((240, 134, 5), width=4))
+        self.addItem(Line, ignoreBounds=True)
+        Line.hide()
+        self.ImageLines.append(Line)
 
     def mouseDragEvent(self, ev, axis=None):
         # Custom mouseDragEvent method
@@ -190,11 +205,28 @@ class ImageViewBox(pg.ViewBox):
             self.state["mouseMode"] == pg.ViewBox.RectMode
             and self.parent.current_ROI_type == "Dendrite"
         ):
+            # left button to draw points and line
             if ev.button() == Qt.MouseButton.LeftButton:
                 ev.accept()
                 pos = ev.scenePos()
                 print(pos)
                 self.MakePoint(pos)
+                for point in self.ImagePoints:
+                    point.show()
+                if len(self.ImagePoints) > 1:
+                    self.MakeLine()
+                for line in self.ImageLines:
+                    line.show()
+
+            # right button click to finish drawing
+            elif ev.button() == Qt.MouseButton.RightButton:
+                ev.accept()
+                QApplication.restoreOverrideCursor()
+                self.setMouseMode(pg.ViewBox.PanMode)
+                # ROIs.Draw_ROI(self.parent)
+                for point in self.ImagePoints:
+                    point.hide()
+                self.ImagePoints = []
 
         else:
             super(ImageViewBox, self).mouseClickedEvent(ev)

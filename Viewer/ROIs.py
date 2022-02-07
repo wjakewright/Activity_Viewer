@@ -58,6 +58,7 @@ def Trigger_Dendrite_ROI(parent, view):
     """Function to trigger dendrite ROI drawing"""
     if parent.filename is None:
         messages.load_image_warning(parent)
+    parent.status_label.setText("Drawing Dendrit (right click to end)")
     parent.current_ROI_type = "Dendrite"
     trigger_draw_line(parent, view)
 
