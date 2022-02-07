@@ -144,6 +144,8 @@ class ImageViewBox(pg.ViewBox):
     def MakeLine(self):
         p1 = self.ImagePoints[-2]
         p2 = self.ImagePoints[-1]
+        p1 = p1.rect().center()
+        p2 = p2.rect().center()
         line = QLineF(p1, p2)
         Line = QGraphicsLineItem(line)
         Line.setPen(pg.mkPen((240, 134, 5), width=4))
@@ -225,8 +227,11 @@ class ImageViewBox(pg.ViewBox):
                 self.setMouseMode(pg.ViewBox.PanMode)
                 # ROIs.Draw_ROI(self.parent)
                 for point in self.ImagePoints:
-                    point.hide()
+                    self.removeItem(point)
+                for line in self.ImageLines:
+                    self.removeItem(line)
                 self.ImagePoints = []
+                self.ImageLines = []
 
         else:
             super(ImageViewBox, self).mouseClickedEvent(ev)
