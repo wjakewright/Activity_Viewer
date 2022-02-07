@@ -59,7 +59,7 @@ def Trigger_Dendrite_ROI(parent, view):
     if parent.filename is None:
         messages.load_image_warning(parent)
     parent.current_ROI_type = "Dendrite"
-    trigger_draw_line(parent,view) 
+    trigger_draw_line(parent, view)
 
 
 def Trigger_Spine_ROI(parent, view):

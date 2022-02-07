@@ -123,26 +123,25 @@ class ImageViewBox(pg.ViewBox):
         self.ImageEllipse.setTransform(trScale)
         self.ImageEllipse.update()
         self.ImageEllipse.show()
-    
+
     def MakePoint(self, pos):
         points = self.childGroup.mapFromScene(pos)
-        point = QGraphicsEllipseItem(points.x(),points.y(),1,1)
-        point.setPen(pg.mkPen((240,134,5),width=4))
-        point.setBrush(QColor(240,134,5))
+        point = QGraphicsEllipseItem(points.x(), points.y(), 1, 1)
+        point.setPen(pg.mkPen((240, 134, 5), width=4))
+        point.setBrush(QColor(240, 134, 5))
         point.setOpacity(1.0)
         point.setZValue(1e9)
-        #point.hide()
+        # point.hide()
         self.addItem(point, ignoreBounds=True)
         point.show()
         self.ImagePoints.append(point)
-    
-    
-
-    
 
     def mouseDragEvent(self, ev, axis=None):
         # Custom mouseDragEvent method
-        if self.state["mouseMode"] == pg.ViewBox.RectMode and self.parent.current_ROI_type != "Dendrite":
+        if (
+            self.state["mouseMode"] == pg.ViewBox.RectMode
+            and self.parent.current_ROI_type != "Dendrite"
+        ):
             # print('Drag being triggered')
             ev.accept()
             pos = ev.pos()
@@ -160,8 +159,11 @@ class ImageViewBox(pg.ViewBox):
                     self.UpdateEllipse(
                         ev.buttonDownScenePos(ev.button()), ev.scenePos()
                     )
-        
-        elif self.state["mouseMode"] == pg.ViewBox.RectMode and self.parent.current_ROI_type == "Dendrite":
+
+        elif (
+            self.state["mouseMode"] == pg.ViewBox.RectMode
+            and self.parent.current_ROI_type == "Dendrite"
+        ):
             ev.accept()
             pos = ev.pos()
             dif = (pos - ev.lastPos()) * -1
@@ -169,7 +171,7 @@ class ImageViewBox(pg.ViewBox):
             mask = mouseEnabled.copy()
             tr = self.childGroup.transform()
             tr = c_invertQTransform(tr)
-            tr = tr.map(dif*mask) - tr.map(QPointF(0,0))
+            tr = tr.map(dif * mask) - tr.map(QPointF(0, 0))
 
             x = tr.x() if mask[0] == 1 else None
             y = tr.y() if mask[1] == 1 else None
@@ -181,16 +183,19 @@ class ImageViewBox(pg.ViewBox):
 
         else:
             super(ImageViewBox, self).mouseDragEvent(ev)
-    
-    def mouseClickEvent(self,ev):
-        # Custom mouseClickedEvent method 
-        if self.state["mouseMode"] == pg.ViewBox.RectMode and self.parent.current_ROI_type == "Dendrite":
+
+    def mouseClickEvent(self, ev):
+        # Custom mouseClickedEvent method
+        if (
+            self.state["mouseMode"] == pg.ViewBox.RectMode
+            and self.parent.current_ROI_type == "Dendrite"
+        ):
             if ev.button() == Qt.MouseButton.LeftButton:
                 ev.accept()
-                pos = ev.pos()
+                pos = ev.scenePos()
                 print(pos)
                 self.MakePoint(pos)
-        
+
         else:
             super(ImageViewBox, self).mouseClickedEvent(ev)
 
@@ -208,20 +213,29 @@ def c_invertQTransform(tr):
     """
     try:
         det = tr.determinant()
-        detr = 1.0 / det ## Let singular matricies raise ZeroDivisionError
+        detr = 1.0 / det  ## Let singular matricies raise ZeroDivisionError
         inv = tr.adjoint()
         inv *= detr
         return inv
     except ZeroDivisionError:
         return c_pinv_fallback(tr)
 
+
 def c_pinv_fallback(tr):
-    arr = np.array([tr.m11(), tr.m12(), tr.m13(),
-                    tr.m21(), tr.m22(), tr.m23(),
-                    tr.m31(), tr.m32(), tr.m33()])
+    arr = np.array(
+        [
+            tr.m11(),
+            tr.m12(),
+            tr.m13(),
+            tr.m21(),
+            tr.m22(),
+            tr.m23(),
+            tr.m31(),
+            tr.m32(),
+            tr.m33(),
+        ]
+    )
     arr.shape = (3, 3)
     pinv = np.linalg.pinv(arr)
     return QTransform(*pinv.ravel().tolist())
-
-
 
