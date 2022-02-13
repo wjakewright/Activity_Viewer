@@ -213,7 +213,6 @@ class ImageViewBox(pg.ViewBox):
             if ev.button() == Qt.MouseButton.LeftButton:
                 ev.accept()
                 pos = ev.scenePos()
-                print(pos)
                 self.MakePoint(pos)
                 for point in self.ImagePoints:
                     point.show()

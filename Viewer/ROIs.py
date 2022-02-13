@@ -154,6 +154,26 @@ def toggle_ROI_labels(parent):
         parent.display_ROI_labels = True
 
 
+def to_relable_ROIs(parent):
+    """Function to relable ROIs"""
+    for key in parent.ROIs.keys():
+        if key == "Background":
+            continue
+        relable_ROIs(parent, key)
+
+
+def relable_ROIs(parent, key):
+    """Function that relables ROIs"""
+    for i, roi in enumerate(parent.ROIs[key]):
+        if key == "Soma":
+            k = "So"
+        elif key == "Spine":
+            k = "Sp"
+        elif key == "Dendrite":
+            k = "D"
+        roi.label.setText(f"{k} {i+1}")
+
+
 def set_label_color(parent):
     """Function to set the ROI label color"""
     color = QColorDialog.getColor()
@@ -206,6 +226,7 @@ def delete_ROIs(parent):
         for i in del_idx:
             del parent.ROIs[t][i]
         parent.selected_ROIs[t] = []
+    to_relable_ROIs(parent)
 
 
 def to_select_ROIs(parent):
@@ -330,7 +351,7 @@ class ROI:
         hover_pen = parent.highlight_pen
 
         # Create ROI
-        roi = pg.PolyLineROI(
+        roi = Dendrite_PolyLineROI(
             positions=parent.display_image.LinePoints,
             closed=False,
             invertible=True,
@@ -344,6 +365,8 @@ class ROI:
         )
         roi.sigRegionChanged.connect(lambda: self.update_roi_label(parent, roi))
         roi.sigClicked.connect(lambda: select_ROIs(parent, self))
+        for seg in roi.segments:
+            seg.sigClicked.connect(lambda: select_ROIs(parent, self))
 
         # Create ROI label
         length = len(parent.ROIs["Dendrite"])
@@ -360,3 +383,14 @@ class ROI:
         rect = roi.boundingRect()
         rect = roi.mapRectToParent(rect)
         self.label.setPos(rect.center())
+
+
+class Dendrite_PolyLineROI(pg.PolyLineROI):
+    """Custom PolyLine ROI that doesn't add segment
+        when clicked"""
+
+    def __init__(self, *args, **kwargs):
+        super(Dendrite_PolyLineROI, self).__init__(*args, **kwargs)
+
+    def segmentClicked(self, segment, ev=None, pos=None):
+        pass
