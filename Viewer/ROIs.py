@@ -180,6 +180,13 @@ def to_delete_ROIs(parent):
 
     elif parent.select_ROIs is True:
         messages.delete_roi_warning(parent)
+        for value in parent.ROIs.values():
+            if not value:
+                pass
+            else:
+                for v in value:
+                    v.roi.setAcceptedMouseButtons(Qt.MouseButton.NoButton)
+        parent.select_ROIs = False
 
 
 def delete_ROIs(parent):
