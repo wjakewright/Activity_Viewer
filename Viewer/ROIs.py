@@ -192,26 +192,20 @@ def to_delete_ROIs(parent):
 def delete_ROIs(parent):
     """Function to finalize ROI deletion"""
     ## objects in parent.selected_ROIs are ellipse not ROI
-    print(parent.ROIs)
     for t, rois in parent.selected_ROIs.items():
         if not rois:
             continue
-        print(f"{t}")
         del_idx = []
         for roi in rois:
             # Not deleting the rois
-            print(roi)
             for i, rs in enumerate(parent.ROIs[t]):
-                if roi is rs.roi:
-                    print(i)
+                if roi is rs:
                     del_idx.append(i)
-            # parent.display_image.removeItem(roi.label)
-            parent.display_image.removeItem(roi)
+            parent.display_image.removeItem(roi.label)
+            parent.display_image.removeItem(roi.roi)
         for i in del_idx:
-            print(parent.ROIs[t][i])
             del parent.ROIs[t][i]
         parent.selected_ROIs[t] = []
-    print(parent.ROIs)
 
 
 def to_select_ROIs(parent):
@@ -242,10 +236,10 @@ def select_ROIs(parent, roi):
     """Function to select ROIs"""
     t = roi.type
     if roi not in parent.selected_ROIs[t]:
-        roi.setPen(parent.selection_pen)
+        roi.roi.setPen(parent.selection_pen)
         parent.selected_ROIs[t].append(roi)
     elif roi in parent.selected_ROIs[t]:
-        roi.setPen(parent.ROI_pen)
+        roi.roi.setPen(parent.ROI_pen)
         parent.selected_ROIs[t].remove(roi)
 
 
@@ -308,7 +302,7 @@ class ROI:
         )
         roi.addTranslateHandle(pos=(0.5, 0.5))
         roi.sigRegionChanged.connect(lambda: self.update_roi_label(parent, roi))
-        roi.sigClicked.connect(lambda: select_ROIs(parent, roi))
+        roi.sigClicked.connect(lambda: select_ROIs(parent, self))
 
         # Create ROI label
         roi_rect = roi.mapRectToParent(roi.boundingRect())
@@ -349,7 +343,7 @@ class ROI:
             removable=True,
         )
         roi.sigRegionChanged.connect(lambda: self.update_roi_label(parent, roi))
-        roi.sigClicked.connect(lambda: select_ROIs(parent, roi))
+        roi.sigClicked.connect(lambda: select_ROIs(parent, self))
 
         # Create ROI label
         length = len(parent.ROIs["Dendrite"])
