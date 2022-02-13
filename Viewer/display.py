@@ -6,8 +6,8 @@
 
 import numpy as np
 import pyqtgraph as pg
-from PyQt5.QtCore import QPointF, QLineF, QRectF, Qt
-from PyQt5.QtGui import QTransform, QColor
+from PyQt5.QtCore import QLineF, QPointF, QRectF, Qt
+from PyQt5.QtGui import QColor, QTransform
 from PyQt5.QtWidgets import (
     QApplication,
     QFileDialog,
@@ -108,6 +108,7 @@ class ImageViewBox(pg.ViewBox):
 
         # Points and line to aid in ROI drawing
         self.ImagePoints = []
+        self.LinePoints = []
         self.ImageLines = []
 
     def UpdateEllipse(self, p1, p2):
@@ -131,6 +132,7 @@ class ImageViewBox(pg.ViewBox):
 
     def MakePoint(self, pos):
         points = self.childGroup.mapFromScene(pos)
+        self.LinePoints.append(points)
         point = QGraphicsEllipseItem(points.x(), points.y(), 1, 1)
         point.setPen(pg.mkPen((240, 134, 5), width=4))
         point.setBrush(QColor(240, 134, 5))
@@ -225,13 +227,14 @@ class ImageViewBox(pg.ViewBox):
                 ev.accept()
                 QApplication.restoreOverrideCursor()
                 self.setMouseMode(pg.ViewBox.PanMode)
-                # ROIs.Draw_ROI(self.parent)
+                ROIs.Draw_ROI(self.parent)
                 for point in self.ImagePoints:
                     self.removeItem(point)
                 for line in self.ImageLines:
                     self.removeItem(line)
                 self.ImagePoints = []
                 self.ImageLines = []
+                self.LinePoints = []
 
         else:
             super(ImageViewBox, self).mouseClickedEvent(ev)

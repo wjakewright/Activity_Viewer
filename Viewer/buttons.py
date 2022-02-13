@@ -115,7 +115,14 @@ def ROI_Buttons(parent):
     parent.delete_roi_btn.setStyleSheet(roi_btn_style)
     parent.delete_roi_btn.setFixedHeight(20)
     parent.delete_roi_btn.setFont(roi_btn_font)
-    parent.delete_roi_btn.clicked.connect(lambda: print("add function"))
+    parent.delete_roi_btn.clicked.connect(lambda: ROIs.to_delete_ROIs(parent))
+
+    ### Clear ROIs
+    parent.clear_roi_btn = QPushButton("Clear ROIs")
+    parent.clear_roi_btn.setStyleSheet(roi_btn_style)
+    parent.clear_roi_btn.setFixedHeight(20)
+    parent.clear_roi_btn.setFont(roi_btn_font)
+    parent.clear_roi_btn.clicked.connect(lambda: print("add function"))
 
     ### Save ROIs
     parent.save_roi_btn = QPushButton("Save ROIs")
@@ -150,6 +157,7 @@ def ROI_Buttons(parent):
     manage_btn_layout.addWidget(parent.shift_roi_btn)
     manage_btn_layout.addWidget(parent.label_roi_btn)
     manage_btn_layout.addWidget(parent.delete_roi_btn)
+    manage_btn_layout.addWidget(parent.clear_roi_btn)
     manage_btn_layout.addWidget(parent.save_roi_btn)
     manage_btn_layout.addWidget(parent.extract_roi_btn)
     manage_btn_layout.addWidget(parent.display_roi_btn)

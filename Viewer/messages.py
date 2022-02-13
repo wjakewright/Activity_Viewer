@@ -22,7 +22,7 @@ def load_image_warning(parent):
     retval = warning.exec()
 
 
-def background_roi_warning(parent,view):
+def background_roi_warning(parent, view):
     # Warning that Background ROI has already been drawn
     warning = QMessageBox()
     warning.setIcon(QMessageBox.Warning)
@@ -30,11 +30,23 @@ def background_roi_warning(parent,view):
     warning.setWindowTitle("Background Warning")
     # Button to redraw the background roi
     redraw_background_btn = QPushButton("Redraw Background ROI")
-    redraw_background_btn.clicked.connect(
-        lambda: ROIs.redraw_background(parent, view)
-    )
+    redraw_background_btn.clicked.connect(lambda: ROIs.redraw_background(parent, view))
     # Add Buttons to popup
     warning.addButton(redraw_background_btn, QMessageBox.ActionRole)
     warning.setStandardButtons(QMessageBox.Cancel)
     retval = warning.exec()
 
+
+def delete_roi_warning(parent):
+    # Warning messate to delete ROIs
+    warning = QMessageBox()
+    warning.setIcon(QMessageBox.Question)
+    warning.setText("Delete Selected ROIs?")
+    warning.setWindowTitle("Delete ROIs")
+    # Button to delete the selected ROIs
+    final_delete_roi_btn = QPushButton("Delete ROIs")
+    final_delete_roi_btn.clicked.connect(lambda: ROIs.delete_ROIs(parent))
+    # Add Buttons to popup
+    warning.addButton(final_delete_roi_btn, QMessageBox.ActionRole)
+    warning.setStandardButtons(QMessageBox.Cancel)
+    retval = warning.exec()

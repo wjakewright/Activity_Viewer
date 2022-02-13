@@ -58,7 +58,7 @@ def Trigger_Dendrite_ROI(parent, view):
     """Function to trigger dendrite ROI drawing"""
     if parent.filename is None:
         messages.load_image_warning(parent)
-    parent.status_label.setText("Drawing Dendrit (right click to end)")
+    parent.status_label.setText("Drawing Dendrite (right click to end)")
     parent.current_ROI_type = "Dendrite"
     trigger_draw_line(parent, view)
 
@@ -166,8 +166,30 @@ def set_label_color(parent):
                 v.label.setColor(parent.ROI_label_color)
 
 
+def to_delete_ROIs(parent):
+    """Function to select and delete ROIs"""
+    if parent.select_ROIs is False:
+        parent.status_label.setText("Deleting ROIs (reclick to end)")
+        for value in parent.ROIs.values():
+            if not value:
+                pass
+            else:
+                for v in value:
+                    v.roi.setAcceptedMouseButtons(Qt.MouseButton.LeftButton)
+        parent.select_ROIs = True
+
+    elif parent.select_ROIs is True:
+        messages.delete_roi_warning(parent)
+
+
+def delete_ROIs(parent):
+    """Function to finalize ROI deletion"""
+    print("ROI deleted !!!!")
+
+
 def to_select_ROIs(parent):
-    """Function to allow ROIs to be selected"""
+    """Function to allow ROIs to be selected
+        Not currently used"""
     if parent.select_ROIs is False:
         parent.status_label.setText("Selecting ROIs")
         for value in parent.ROIs.values():
@@ -221,7 +243,7 @@ class ROI:
             self.roi = self.create_ellipse_roi(self.parent, self.type)
             self.roi.type = self.type
         elif self.type == "Dendrite":
-            self.create_dendrite_roi()
+            self.roi = self.create_poly_line(self.parent, self.type)
             self.roi.type = self.type
         elif self.type == "Spine":
             self.roi = self.create_ellipse_roi(self.parent, self.type)
@@ -275,10 +297,38 @@ class ROI:
             self.label = pg.TextItem(
                 text=f"Sp {length+1}", color=parent.ROI_label_color
             )
-        elif roi_type == "Dendrite":
-            length = len(parent.ROIs["Dendrite"])
-            self.label = pg.TextItem(text=f"D {length+1}", color=parent.ROI_label_color)
 
+        self.label.setPos(roi_rect.center())
+        parent.display_image.addItem(self.label)
+
+        return roi
+
+    def create_poly_line(self, parent, roi_type):
+        """Method to create poly line ROI for dendrites"""
+        ROI_pen = parent.ROI_pen
+        hover_pen = parent.highlight_pen
+
+        # Create ROI
+        roi = pg.PolyLineROI(
+            positions=parent.display_image.LinePoints,
+            closed=False,
+            invertible=True,
+            pen=ROI_pen,
+            hoverPen=hover_pen,
+            parent=parent.current_image,
+            movable=True,
+            rotatable=True,
+            resizable=True,
+            removable=True,
+        )
+        roi.sigRegionChanged.connect(lambda: self.update_roi_label(parent, roi))
+        roi.sigClicked.connect(lambda: select_ROIs(parent, roi))
+
+        # Create ROI label
+        length = len(parent.ROIs["Dendrite"])
+        self.label = pg.TextItem(text=f"D {length+1}", color=parent.ROI_label_color)
+
+        roi_rect = roi.mapRectToParent(roi.boundingRect())
         self.label.setPos(roi_rect.center())
         parent.display_image.addItem(self.label)
 
