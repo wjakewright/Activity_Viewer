@@ -211,7 +211,6 @@ def to_delete_ROIs(parent):
 
 def delete_ROIs(parent):
     """Function to finalize ROI deletion"""
-    ## objects in parent.selected_ROIs are ellipse not ROI
     for t, rois in parent.selected_ROIs.items():
         if not rois:
             continue
@@ -227,6 +226,15 @@ def delete_ROIs(parent):
             del parent.ROIs[t][i]
         parent.selected_ROIs[t] = []
     to_relable_ROIs(parent)
+
+
+def clear_ROIs(parent):
+    """Function to clear and delete all ROIs"""
+    for key, rois in parent.ROIs.items():
+        for roi in rois:
+            parent.display_image.removeItem(roi.label)
+            parent.display_image.removeItem(roi.roi)
+        parent.ROIs[key] = []
 
 
 def to_select_ROIs(parent):

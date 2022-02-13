@@ -41,7 +41,7 @@ def delete_roi_warning(parent):
     # Warning messate to delete ROIs
     warning = QMessageBox()
     warning.setIcon(QMessageBox.Question)
-    warning.setText("Delete Selected ROIs?")
+    warning.setText("Delete Selected ROIs? Deletions is final.")
     warning.setWindowTitle("Delete ROIs")
     # Button to delete the selected ROIs
     final_delete_roi_btn = QPushButton("Delete ROIs")
