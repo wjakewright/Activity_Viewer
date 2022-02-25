@@ -122,7 +122,7 @@ def ROI_Buttons(parent):
     parent.clear_roi_btn.setStyleSheet(roi_btn_style)
     parent.clear_roi_btn.setFixedHeight(20)
     parent.clear_roi_btn.setFont(roi_btn_font)
-    parent.clear_roi_btn.clicked.connect(lambda: ROIs.clear_ROIs(parent))
+    parent.clear_roi_btn.clicked.connect(lambda: ROIs.to_clear_ROIs(parent))
 
     ### Save ROIs
     parent.save_roi_btn = QPushButton("Save ROIs")

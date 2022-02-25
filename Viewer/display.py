@@ -236,7 +236,7 @@ class ImageViewBox(pg.ViewBox):
                 self.LinePoints = []
 
         else:
-            super(ImageViewBox, self).mouseClickedEvent(ev)
+            super(ImageViewBox, self).mouseClickEvent(ev)
 
 
 ## Helper function for the custom image view box

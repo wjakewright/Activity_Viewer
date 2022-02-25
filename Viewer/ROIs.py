@@ -228,6 +228,11 @@ def delete_ROIs(parent):
     to_relable_ROIs(parent)
 
 
+def to_clear_ROIs(parent):
+    """Function to initiate clearing all ROIs"""
+    messages.clear_roi_warning(parent)
+
+
 def clear_ROIs(parent):
     """Function to clear and delete all ROIs"""
     for key, rois in parent.ROIs.items():

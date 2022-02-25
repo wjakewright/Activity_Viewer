@@ -41,12 +41,27 @@ def delete_roi_warning(parent):
     # Warning messate to delete ROIs
     warning = QMessageBox()
     warning.setIcon(QMessageBox.Question)
-    warning.setText("Delete Selected ROIs? Deletions is final.")
+    warning.setText("Delete Selected ROIs? Deletion is final.")
     warning.setWindowTitle("Delete ROIs")
     # Button to delete the selected ROIs
     final_delete_roi_btn = QPushButton("Delete ROIs")
     final_delete_roi_btn.clicked.connect(lambda: ROIs.delete_ROIs(parent))
     # Add Buttons to popup
     warning.addButton(final_delete_roi_btn, QMessageBox.ActionRole)
+    warning.setStandardButtons(QMessageBox.Cancel)
+    retval = warning.exec()
+
+
+def clear_roi_warning(parent):
+    # Warning message to clear ROIs
+    warning = QMessageBox()
+    warning.setIcon(QMessageBox.Question)
+    warning.setText("Clear All ROIs? Clearing is final.")
+    warning.setWindowTitle("Clear ROIs")
+    # Button to clear the ROIs
+    final_clear_roi_btn = QPushButton("Clear ROIs")
+    final_clear_roi_btn.clicked.connect(lambda: ROIs.clear_ROIs(parent))
+    # Add Buttons to popup
+    warning.addButton(final_clear_roi_btn, QMessageBox.ActionRole)
     warning.setStandardButtons(QMessageBox.Cancel)
     retval = warning.exec()
