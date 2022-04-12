@@ -105,7 +105,6 @@ def set_ROI_pen_color(parent):
             pass
         else:
             for v in value:
-                print(type(v))
                 v.roi.setPen(color, width=4)
 
 
@@ -277,6 +276,31 @@ def select_ROIs(parent, roi):
         parent.selected_ROIs[t].remove(roi)
 
 
+def to_shift_ROIs(parent):
+    """Function to allow for all ROIs to be moved together"""
+    if parent.shift_ROIs is False:
+        parent.shift_ROIs = True
+    else:
+        parent.shift_ROIs = False
+
+
+def shift_ROIs(parent, roi):
+    """Function to shift all ROIs when one is moved"""
+    roi_start_pos = roi.roi.preMoveState["pos"]
+    roi_curr_pos = roi.roi.pos()
+    pos_diff = roi_curr_pos - roi_start_pos
+    print(f"Start {roi_start_pos}")
+    print(f"Current {roi_curr_pos}")
+    print(f"Diff {pos_diff}")
+
+    for value in parent.ROIs.values():
+        for v in value:
+            if v != roi:
+                v.roi.translate(pos_diff)
+
+                v.update_roi_label(parent, v.roi)
+
+
 class ROI:
     """Class for the creation of individual ROI objects"""
 
@@ -336,6 +360,7 @@ class ROI:
         )
         roi.addTranslateHandle(pos=(0.5, 0.5))
         roi.sigRegionChanged.connect(lambda: self.update_roi_label(parent, roi))
+        roi.sigRegionChanged.connect(lambda: shift_ROIs(parent, self))
         roi.sigClicked.connect(lambda: select_ROIs(parent, self))
 
         # Create ROI label
@@ -377,6 +402,7 @@ class ROI:
             removable=True,
         )
         roi.sigRegionChanged.connect(lambda: self.update_roi_label(parent, roi))
+        roi.sigRegionChanged.connect(lambda: shift_ROIs(parent, self))
         roi.sigClicked.connect(lambda: select_ROIs(parent, self))
         for seg in roi.segments:
             seg.sigClicked.connect(lambda: select_ROIs(parent, self))

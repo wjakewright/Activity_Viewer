@@ -63,6 +63,7 @@ class Activity_Viewer(QMainWindow):
         self.display_ROI_labels = True
         self.ROIs = {"Background": [], "Soma": [], "Dendrite": [], "Spine": []}
         self.select_ROIs = False
+        self.shift_ROIs = False
         self.selected_ROIs = {
             "Background": [],
             "Soma": [],
