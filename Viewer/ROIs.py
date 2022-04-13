@@ -297,8 +297,7 @@ def to_shift_ROIs(parent):
 def shift_ROIs(parent, roi):
     """Function to shift all ROIs when one is moved"""
     if parent.shift_ROIs is True:
-        """ print(roi.start_pos)
-        start = roi.start_pos
+        start = roi.roi.preMoveState["pos"]
         curr = roi.roi.pos()
         diff = curr - start
         for value in parent.ROIs.values():
@@ -307,8 +306,8 @@ def shift_ROIs(parent, roi):
                     v.roi.blockSignals(True)
                     v.roi.translate(diff)
                     v.update_roi_label(parent, v.roi)
-                    v.roi.blockSignals(False) """
-        roi_transformation = roi.roi.getGlobalTransform(relativeTo=None)
+                    v.roi.blockSignals(False)
+        """ roi_transformation = roi.roi.getGlobalTransform(relativeTo=None)
 
         for value in parent.ROIs.values():
             for v in value:
@@ -317,7 +316,7 @@ def shift_ROIs(parent, roi):
                     v.roi.applyGlobalTransform(roi_transformation)
 
                     v.update_roi_label(parent, v.roi)
-                    v.roi.blockSignals(False)
+                    v.roi.blockSignals(False) """
 
     else:
         pass
