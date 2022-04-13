@@ -297,15 +297,28 @@ def to_shift_ROIs(parent):
 def shift_ROIs(parent, roi):
     """Function to shift all ROIs when one is moved"""
     if parent.shift_ROIs is True:
-        print(roi.start_pos)
-        roi_transformation = roi.roi.getGlobalTransform(relativeTo=roi.start_pos)
+        """ print(roi.start_pos)
+        start = roi.start_pos
+        curr = roi.roi.pos()
+        diff = curr - start
+        for value in parent.ROIs.values():
+            for v in value:
+                if v != roi:
+                    v.roi.blockSignals(True)
+                    v.roi.translate(diff)
+                    v.update_roi_label(parent, v.roi)
+                    v.roi.blockSignals(False) """
+        roi_transformation = roi.roi.getGlobalTransform(relativeTo=None)
 
         for value in parent.ROIs.values():
             for v in value:
                 if v != roi:
+                    v.roi.blockSignals(True)
                     v.roi.applyGlobalTransform(roi_transformation)
 
                     v.update_roi_label(parent, v.roi)
+                    v.roi.blockSignals(False)
+
     else:
         pass
 
@@ -369,7 +382,6 @@ class ROI:
             removable=True,
         )
         roi.addTranslateHandle(pos=(0.5, 0.5))
-        roi.sigRegionChangeStarted.connect(lambda: self.set_start_pos(roi))
         roi.sigRegionChanged.connect(lambda: self.update_roi_label(parent, roi))
         roi.sigRegionChangeFinished.connect(lambda: shift_ROIs(parent, self))
         roi.sigClicked.connect(lambda: select_ROIs(parent, self))
@@ -394,9 +406,6 @@ class ROI:
 
         return roi
 
-    def set_start_pos(self, roi):
-        self.start_pos = roi.getState()
-
     def create_poly_line(self, parent, roi_type):
         """Method to create poly line ROI for dendrites"""
         ROI_pen = parent.ROI_pen
@@ -416,7 +425,7 @@ class ROI:
             removable=True,
         )
         roi.sigRegionChanged.connect(lambda: self.update_roi_label(parent, roi))
-        roi.sigRegionChanged.connect(lambda: shift_ROIs(parent, self))
+        roi.sigRegionChangeFinished.connect(lambda: shift_ROIs(parent, self))
         roi.sigClicked.connect(lambda: select_ROIs(parent, self))
         for seg in roi.segments:
             seg.sigClicked.connect(lambda: select_ROIs(parent, self))
