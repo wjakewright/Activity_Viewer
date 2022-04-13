@@ -279,26 +279,35 @@ def select_ROIs(parent, roi):
 def to_shift_ROIs(parent):
     """Function to allow for all ROIs to be moved together"""
     if parent.shift_ROIs is False:
+        for value in parent.ROIs.values():
+            for v in value:
+                v.roi.rotatable = False
+                v.roi.resizable = False
+        parent.status_label.setText(" Shifting ROIs")
         parent.shift_ROIs = True
     else:
+        for value in parent.ROIs.values():
+            for v in value:
+                v.roi.rotatable = True
+                v.roi.resizable = True
+        parent.status_label.setText(" Ready...")
         parent.shift_ROIs = False
 
 
 def shift_ROIs(parent, roi):
     """Function to shift all ROIs when one is moved"""
-    roi_start_pos = roi.roi.preMoveState["pos"]
-    roi_curr_pos = roi.roi.pos()
-    pos_diff = roi_curr_pos - roi_start_pos
-    print(f"Start {roi_start_pos}")
-    print(f"Current {roi_curr_pos}")
-    print(f"Diff {pos_diff}")
+    if parent.shift_ROIs is True:
+        print(roi.start_pos)
+        roi_transformation = roi.roi.getGlobalTransform(relativeTo=roi.start_pos)
 
-    for value in parent.ROIs.values():
-        for v in value:
-            if v != roi:
-                v.roi.translate(pos_diff)
+        for value in parent.ROIs.values():
+            for v in value:
+                if v != roi:
+                    v.roi.applyGlobalTransform(roi_transformation)
 
-                v.update_roi_label(parent, v.roi)
+                    v.update_roi_label(parent, v.roi)
+    else:
+        pass
 
 
 class ROI:
@@ -309,6 +318,7 @@ class ROI:
         self.type = roi_type
         self.roi = None
         self.label = None
+        self.start_pos = None
 
         self.create_roi()
 
@@ -359,8 +369,9 @@ class ROI:
             removable=True,
         )
         roi.addTranslateHandle(pos=(0.5, 0.5))
+        roi.sigRegionChangeStarted.connect(lambda: self.set_start_pos(roi))
         roi.sigRegionChanged.connect(lambda: self.update_roi_label(parent, roi))
-        roi.sigRegionChanged.connect(lambda: shift_ROIs(parent, self))
+        roi.sigRegionChangeFinished.connect(lambda: shift_ROIs(parent, self))
         roi.sigClicked.connect(lambda: select_ROIs(parent, self))
 
         # Create ROI label
@@ -382,6 +393,9 @@ class ROI:
         parent.display_image.addItem(self.label)
 
         return roi
+
+    def set_start_pos(self, roi):
+        self.start_pos = roi.getState()
 
     def create_poly_line(self, parent, roi_type):
         """Method to create poly line ROI for dendrites"""

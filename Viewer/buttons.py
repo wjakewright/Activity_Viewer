@@ -101,7 +101,7 @@ def ROI_Buttons(parent):
     parent.shift_roi_btn.setStyleSheet(roi_btn_style)
     parent.shift_roi_btn.setFixedHeight(20)
     parent.shift_roi_btn.setFont(roi_btn_font)
-    parent.shift_roi_btn.clicked.connect(lambda: print("Add function"))
+    parent.shift_roi_btn.clicked.connect(lambda: ROIs.to_shift_ROIs(parent))
 
     ### Label ROIs
     parent.label_roi_btn = QPushButton("Label ROIs")
