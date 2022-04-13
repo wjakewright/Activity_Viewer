@@ -48,7 +48,6 @@ class Activity_Viewer(QMainWindow):
         self.color_map = "Inferno"  # Default heatmap set to inferno
         self.img_threshold = 0  # Default low threshold
         self.gamma = 1
-        self.image_size = (500, 500)  # Need to make this adjustable to windowsize
         self.image_status = "video"
         self.idx = 0
         self.filename = None

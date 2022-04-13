@@ -57,9 +57,6 @@ def process_images(parent, image):
     # Adjust brightness
     img = gamma_correction(parent.gamma, img)
 
-    # Adjust image size
-    img = cv2.resize(img, parent.image_size)
-
     # Ensure dtype is uint8
     img = (img).astype(np.uint8)
 
