@@ -4,15 +4,8 @@ import sys
 
 import pyqtgraph as pg
 from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtWidgets import (
-    QApplication,
-    QGraphicsItemGroup,
-    QGridLayout,
-    QLabel,
-    QMainWindow,
-    QStatusBar,
-    QWidget,
-)
+from PyQt5.QtWidgets import (QApplication, QGraphicsItemGroup, QGridLayout,
+                             QLabel, QMainWindow, QStatusBar, QWidget)
 
 import buttons
 import display
@@ -54,9 +47,9 @@ class Activity_Viewer(QMainWindow):
         self.tif_stack = None
         self.tif_images = []
         self.playBtnStatus = "Off"
-        self.ROI_pen = pg.mkPen((255, 255, 255), width=4)
-        self.highlight_pen = pg.mkPen((255, 255, 0), width=4)
-        self.selection_pen = pg.mkPen((219, 3, 252), width=4)
+        self.ROI_pen = pg.mkPen((255, 255, 255), width=2)
+        self.highlight_pen = pg.mkPen((255, 255, 0), width=2)
+        self.selection_pen = pg.mkPen((219, 3, 252), width=2)
         self.ROI_label_color = (255, 255, 255)
         self.current_ROI_type = None
         self.display_ROI_labels = True

@@ -2,9 +2,9 @@
     ROIs"""
 
 import pyqtgraph as pg
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, Signal
 from PyQt5.QtGui import QCursor, QTransform
-from PyQt5.QtWidgets import QApplication, QColorDialog
+from PyQt5.QtWidgets import QApplication, QColorDialog, QGraphicsObject
 
 import messages
 
@@ -411,7 +411,7 @@ class ROI:
         hover_pen = parent.highlight_pen
 
         # Create ROI
-        roi = Dendrite_PolyLineROI(
+        roi = pg.MultiRectROI(
             positions=parent.display_image.LinePoints,
             closed=False,
             invertible=True,
@@ -455,3 +455,22 @@ class Dendrite_PolyLineROI(pg.PolyLineROI):
 
     def segmentClicked(self, segment, ev=None, pos=None):
         pass
+
+
+class Dendrite_ROI(QGraphicsObject):
+    """Custom Dendrite ROI. Container to hold multiple ellipse rois along
+        the length of the drawn dendrite"""
+
+    sigRegionChangeFinished = Signal(object)
+    sigRegionChangeStarted = Signal(object)
+    sigRegionChanged = Signal(object)
+
+    def __init__(self, points, parent):
+        super(QGraphicsObject, self).__init__(parent=parent)
+        self.points = points
+        self.parent = parent
+        self.poly_rois = []
+
+    def create_rois(self):
+        """Creates individual ellipse rois along the length of the dendrite line"""
+
