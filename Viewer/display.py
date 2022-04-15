@@ -27,6 +27,9 @@ def create_display(parent):
     parent.display_image.setAspectLocked(True)
     parent.lut = pg.HistogramLUTItem()
     parent.LUT = parent.win.addItem(parent.lut)
+    parent.display_image.scene().sigMouseMoved.connect(
+        lambda pos: get_mouse_position(pos, parent)
+    )
 
 
 def Load_File(parent):
@@ -89,6 +92,14 @@ def Play_Update(parent):
     parent.image_slider.setValue(parent.idx)
     parent.current_image.setImage(parent.tif_images[parent.idx])
     parent.lut.setLevels(parent.level[0], parent.level[1])
+
+
+def get_mouse_position(pos, parent):
+    # Gets mouse position to display on screen
+    mouse_pos = parent.display_image.mapSceneToView(pos)
+    x = round(mouse_pos.x(), 1)
+    y = round(mouse_pos.y(), 1)
+    parent.mouse_position_label.setText(f"X: {x} Y: {y}")
 
 
 class ImageViewBox(pg.ViewBox):

@@ -4,8 +4,15 @@ import sys
 
 import pyqtgraph as pg
 from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtWidgets import (QApplication, QGraphicsItemGroup, QGridLayout,
-                             QLabel, QMainWindow, QStatusBar, QWidget)
+from PyQt5.QtWidgets import (
+    QApplication,
+    QGraphicsItemGroup,
+    QGridLayout,
+    QLabel,
+    QMainWindow,
+    QStatusBar,
+    QWidget,
+)
 
 import buttons
 import display
@@ -99,9 +106,14 @@ class Activity_Viewer(QMainWindow):
         ## creates self.slider_widget
         buttons.image_slider(self)
 
+        # Mouse position
+        self.mouse_position_label = QLabel()
+        self.mouse_position_label.setStyleSheet(styles.parameterLabelStyle())
+
         # Add widgets to MainWindow
         self.grid_layout.addWidget(self.roi_btn_widget, 0, 0)
         self.grid_layout.addWidget(self.win, 0, 1)
+        self.grid_layout.addWidget(self.mouse_position_label, 1, 0)
         self.grid_layout.addWidget(self.slider_widget, 1, 1)
 
 

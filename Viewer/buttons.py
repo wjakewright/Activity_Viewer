@@ -7,6 +7,8 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QGroupBox,
     QHBoxLayout,
+    QLabel,
+    QLineEdit,
     QPushButton,
     QScrollBar,
     QVBoxLayout,
@@ -23,12 +25,14 @@ def ROI_Buttons(parent):
     parent.roi_btn_widget = QWidget(parent)
     roi_btn_layout = QVBoxLayout()
     parent.roi_btn_widget.setLayout(roi_btn_layout)
+    parent.roi_btn_widget.setFixedWidth(120)
 
     # Make buttons stylesheet
     roi_frame_style = styles.roiFrameStyle()
     roi_frame_font = styles.roi_btn_font(bold=True)
     roi_btn_style = styles.roiBtnStyle()
     roi_btn_font = styles.roi_btn_font()
+    parameter_label_style = styles.parameterLabelStyle()
 
     # --------------DRAW BUTTONS--------------
     # Frame for the draw buttons
@@ -37,7 +41,7 @@ def ROI_Buttons(parent):
     parent.draw_btn_box.setStyleSheet(roi_frame_style)
     parent.draw_btn_box.setFont(roi_frame_font)
     parent.draw_btn_box.setLayout(draw_btn_layout)
-    parent.draw_btn_box.setMinimumWidth(100)
+    parent.draw_btn_box.setFixedWidth(100)
 
     ### Draw Background
     parent.draw_background_btn = QPushButton("Background")
@@ -87,7 +91,7 @@ def ROI_Buttons(parent):
     parent.manage_btn_box.setStyleSheet(roi_frame_style)
     parent.manage_btn_box.setFont(roi_frame_font)
     parent.manage_btn_box.setLayout(manage_btn_layout)
-    parent.manage_btn_box.setMinimumWidth(100)
+    parent.manage_btn_box.setFixedWidth(100)
 
     ### Select ROIs
     parent.select_roi_btn = QPushButton("Select ROIs")
@@ -150,7 +154,7 @@ def ROI_Buttons(parent):
     parent.save_trace_btn.setStyleSheet(roi_btn_style)
     parent.save_trace_btn.setFixedHeight(20)
     parent.save_trace_btn.setFont(roi_btn_font)
-    parent.save_trace_btn.clicked.connect(lambda: print("Add function"))
+    parent.save_trace_btn.clicked.connect(lambda: print("add function"))
 
     # Add manage buttons to manage frame
     manage_btn_layout.addWidget(parent.select_roi_btn)
@@ -165,9 +169,40 @@ def ROI_Buttons(parent):
     manage_btn_layout.addStretch(1)
     manage_btn_layout.setSpacing(7)
 
+    # -------------PARAMETER INPUTS--------------
+    parameters_layout = QVBoxLayout()
+    parent.parameters_box = QGroupBox(parent, title="Parameters")
+    parent.parameters_box.setStyleSheet(roi_frame_style)
+    parent.parameters_box.setFont(roi_frame_font)
+    parent.parameters_box.setLayout(parameters_layout)
+    parent.parameters_box.setFixedWidth(100)
+
+    ### Zoom Magnitude
+    parent.zoom_input = QLineEdit()
+    parent.zoom_input.setPlaceholderText("Enter Zoom")
+    parent.zoom_input.setFont(roi_btn_font)
+    parent.zoom_input_label = QLabel("Zoom Value")
+    parent.zoom_input_label.setStyleSheet(parameter_label_style)
+    parent.zoom_input_label.setFont(styles.parameterLabelFont())
+
+    ### Imaging Rate
+    parent.image_rate_input = QLineEdit()
+    parent.image_rate_input.setPlaceholderText("Enter Rate")
+    parent.image_rate_input.setFont(roi_btn_font)
+    parent.image_rate_input_label = QLabel("Imaging Rate")
+    parent.image_rate_input_label.setStyleSheet(parameter_label_style)
+    parent.image_rate_input_label.setFont(styles.parameterLabelFont())
+
+    # Add inputs to the parameter frame
+    parameters_layout.addWidget(parent.zoom_input_label)
+    parameters_layout.addWidget(parent.zoom_input)
+    parameters_layout.addWidget(parent.image_rate_input_label)
+    parameters_layout.addWidget(parent.image_rate_input)
+
     # Add frames to main layout
     roi_btn_layout.addWidget(parent.draw_btn_box)
     roi_btn_layout.addWidget(parent.manage_btn_box)
+    roi_btn_layout.addWidget(parent.parameters_box)
     roi_btn_layout.addStretch(1)
 
 

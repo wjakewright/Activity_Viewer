@@ -119,3 +119,21 @@ def statusLabelStyle():
                                     font-size:10
                                     }"""
     return status_label_style
+
+
+def parameterLabelStyle():
+    # Style for parameter field labels
+    parameter_label_style = """QLabel {
+                                        color:white;
+                                        font-family:Arial;
+                                        font-size:8;
+                                        }"""
+    return parameter_label_style
+
+
+def parameterLabelFont():
+    # Style for parameter fields label fonts
+    parameter_label_font = QFont("Arial", 10)
+    parameter_label_font.setItalic(True)
+
+    return parameter_label_font

@@ -2,7 +2,7 @@
     ROIs"""
 
 import pyqtgraph as pg
-from PyQt5.QtCore import Qt, Signal
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QCursor, QTransform
 from PyQt5.QtWidgets import QApplication, QColorDialog, QGraphicsObject
 
@@ -461,9 +461,9 @@ class Dendrite_ROI(QGraphicsObject):
     """Custom Dendrite ROI. Container to hold multiple ellipse rois along
         the length of the drawn dendrite"""
 
-    sigRegionChangeFinished = Signal(object)
-    sigRegionChangeStarted = Signal(object)
-    sigRegionChanged = Signal(object)
+    sigRegionChangeFinished = pyqtSignal(object)
+    sigRegionChangeStarted = pyqtSignal(object)
+    sigRegionChanged = pyqtSignal(object)
 
     def __init__(self, points, parent):
         super(QGraphicsObject, self).__init__(parent=parent)
