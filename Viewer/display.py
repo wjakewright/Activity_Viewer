@@ -102,6 +102,10 @@ def get_mouse_position(pos, parent):
     parent.mouse_position_label.setText(f"X: {x} Y: {y}")
 
 
+def convert_pixels_to_um(parent):
+    zoom_value = parent.zoom_input.text()
+
+
 class ImageViewBox(pg.ViewBox):
     """Custom ViewBox class to display image in.
         Allows mouse click and drag events to be toggled"""
@@ -143,6 +147,7 @@ class ImageViewBox(pg.ViewBox):
 
     def MakePoint(self, pos):
         points = self.childGroup.mapFromScene(pos)
+        print(type(points))
         self.LinePoints.append(points)
         point = QGraphicsEllipseItem(points.x(), points.y(), 1, 1)
         point.setPen(pg.mkPen((240, 134, 5), width=4))
