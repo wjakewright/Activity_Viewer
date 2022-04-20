@@ -5,6 +5,8 @@ import pyqtgraph as pg
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QCursor, QTransform
 from PyQt5.QtWidgets import QApplication, QColorDialog, QGraphicsObject
+from shapely.geometry import LineString as ShLS
+from shapely.geometry import Point as ShP
 
 import messages
 
@@ -37,6 +39,11 @@ def Trigger_Background_ROI(parent, view):
     """Function to trigger background ROI drawing"""
     if parent.filename is None:
         messages.load_image_warning(parent)
+    try:
+        float(parent.zoom_input.text())
+    except ValueError:
+        messages.zoom_warning(parent)
+        return
     if not parent.ROIs["Background"]:
         parent.status_label.setText("Drawing Background")
         parent.current_ROI_type = "Background"
@@ -49,6 +56,11 @@ def Trigger_Soma_ROI(parent, view):
     """Function to trigger soma ROI drawing"""
     if parent.filename is None:
         messages.load_image_warning(parent)
+    try:
+        float(parent.zoom_input.text())
+    except ValueError:
+        messages.zoom_warning(parent)
+        return
     parent.status_label.setText("Drawing Soma")
     parent.current_ROI_type = "Soma"
     trigger_draw_ellipse(parent, view)
@@ -58,6 +70,11 @@ def Trigger_Dendrite_ROI(parent, view):
     """Function to trigger dendrite ROI drawing"""
     if parent.filename is None:
         messages.load_image_warning(parent)
+    try:
+        float(parent.zoom_input.text())
+    except ValueError:
+        messages.zoom_warning(parent)
+        return
     parent.status_label.setText("Drawing Dendrite (right click to end)")
     parent.current_ROI_type = "Dendrite"
     trigger_draw_line(parent, view)
@@ -67,6 +84,11 @@ def Trigger_Spine_ROI(parent, view):
     """Function to trigger spine ROI drawing"""
     if parent.filename is None:
         messages.load_image_warning(parent)
+    try:
+        float(parent.zoom_input.text())
+    except ValueError:
+        messages.zoom_warning(parent)
+        return
     parent.status_label.setText("Drawing Spine")
     parent.current_ROI_type = "Spine"
     trigger_draw_ellipse(parent, view)
@@ -307,16 +329,6 @@ def shift_ROIs(parent, roi):
                     v.roi.translate(diff)
                     v.update_roi_label(parent, v.roi)
                     v.roi.blockSignals(False)
-        """ roi_transformation = roi.roi.getGlobalTransform(relativeTo=None)
-
-        for value in parent.ROIs.values():
-            for v in value:
-                if v != roi:
-                    v.roi.blockSignals(True)
-                    v.roi.applyGlobalTransform(roi_transformation)
-
-                    v.update_roi_label(parent, v.roi)
-                    v.roi.blockSignals(False) """
 
     else:
         pass
@@ -466,10 +478,24 @@ class Dendrite_ROI(QGraphicsObject):
     sigRegionChanged = pyqtSignal(object)
 
     def __init__(self, points, parent):
+        """Takes a list of QPointFs in order to generate a shapely line
+            for the dendrite. This line is then stored and used to generate
+            the individual ellipse ROIs along the dendrite"""
         super(QGraphicsObject, self).__init__(parent=parent)
         self.points = points
         self.parent = parent
         self.poly_rois = []
+        self.line = None
+
+        self.create_line()
+
+    def create_line(self):
+        """Creates shapely line from QPointFs"""
+        shapely_points = []
+        for point in self.points:
+            s_point = ShP(point.x(), point.y())
+            shapely_points.append(s_point)
+        self.line = ShLS(shapely_points)
 
     def create_rois(self):
         """Creates individual ellipse rois along the length of the dendrite line"""
