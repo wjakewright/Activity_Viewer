@@ -4,16 +4,8 @@
         William (Jake) Wright - 12/24/2021"""
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import (
-    QGroupBox,
-    QHBoxLayout,
-    QLabel,
-    QLineEdit,
-    QPushButton,
-    QScrollBar,
-    QVBoxLayout,
-    QWidget,
-)
+from PyQt5.QtWidgets import (QGroupBox, QHBoxLayout, QLabel, QLineEdit,
+                             QPushButton, QScrollBar, QVBoxLayout, QWidget)
 
 import display
 import ROIs
@@ -32,6 +24,7 @@ def ROI_Buttons(parent):
     roi_frame_font = styles.roi_btn_font(bold=True)
     roi_btn_style = styles.roiBtnStyle()
     roi_btn_font = styles.roi_btn_font()
+    parameter_field_style = styles.parameterInputStyle()
     parameter_label_style = styles.parameterLabelStyle()
 
     # --------------DRAW BUTTONS--------------
@@ -41,7 +34,7 @@ def ROI_Buttons(parent):
     parent.draw_btn_box.setStyleSheet(roi_frame_style)
     parent.draw_btn_box.setFont(roi_frame_font)
     parent.draw_btn_box.setLayout(draw_btn_layout)
-    parent.draw_btn_box.setFixedWidth(100)
+    parent.draw_btn_box.setFixedWidth(110)
 
     ### Draw Background
     parent.draw_background_btn = QPushButton("Background")
@@ -91,7 +84,7 @@ def ROI_Buttons(parent):
     parent.manage_btn_box.setStyleSheet(roi_frame_style)
     parent.manage_btn_box.setFont(roi_frame_font)
     parent.manage_btn_box.setLayout(manage_btn_layout)
-    parent.manage_btn_box.setFixedWidth(100)
+    parent.manage_btn_box.setFixedWidth(110)
 
     ### Select ROIs
     parent.select_roi_btn = QPushButton("Select ROIs")
@@ -175,11 +168,12 @@ def ROI_Buttons(parent):
     parent.parameters_box.setStyleSheet(roi_frame_style)
     parent.parameters_box.setFont(roi_frame_font)
     parent.parameters_box.setLayout(parameters_layout)
-    parent.parameters_box.setFixedWidth(100)
+    parent.parameters_box.setFixedWidth(110)
 
     ### Zoom Magnitude
     parent.zoom_input = QLineEdit()
     parent.zoom_input.setPlaceholderText("Enter Zoom")
+    parent.zoom_input.setStyleSheet(parameter_field_style)
     parent.zoom_input.setFont(roi_btn_font)
     parent.zoom_input_label = QLabel("Zoom Value")
     parent.zoom_input_label.setStyleSheet(parameter_label_style)
@@ -188,6 +182,7 @@ def ROI_Buttons(parent):
     ### Imaging Rate
     parent.image_rate_input = QLineEdit()
     parent.image_rate_input.setPlaceholderText("Enter Rate")
+    parent.image_rate_input.setStyleSheet(parameter_field_style)
     parent.image_rate_input.setFont(roi_btn_font)
     parent.image_rate_input_label = QLabel("Imaging Rate")
     parent.image_rate_input_label.setStyleSheet(parameter_label_style)

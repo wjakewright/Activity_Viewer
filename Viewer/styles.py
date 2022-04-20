@@ -121,6 +121,16 @@ def statusLabelStyle():
     return status_label_style
 
 
+def parameterInputStyle():
+    # Style for parameter fields
+    parameter_input_style = """QLineEdit {
+                                          background-color:white;
+                                          font-family:Arial;
+                                          font-size:8;
+                                          }"""
+    return parameter_input_style
+
+
 def parameterLabelStyle():
     # Style for parameter field labels
     parameter_label_style = """QLabel {
