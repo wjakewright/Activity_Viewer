@@ -65,3 +65,14 @@ def clear_roi_warning(parent):
     warning.addButton(final_clear_roi_btn, QMessageBox.ActionRole)
     warning.setStandardButtons(QMessageBox.Cancel)
     retval = warning.exec()
+
+
+def zoom_warning(parent):
+    # Warning that zoom needs to be input
+    warning = QMessageBox()
+    warning.setIcon(QMessageBox.Warning)
+    warning.setText("Must Input Image Zoom")
+    warning.setWindowTitle("Image Zoom Input")
+    # Button to clear warning
+    warning.setStandardButtons(QMessageBox.Close)
+    retval = warning.exec()
