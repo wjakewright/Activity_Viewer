@@ -4,8 +4,16 @@
         William (Jake) Wright - 12/24/2021"""
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import (QGroupBox, QHBoxLayout, QLabel, QLineEdit,
-                             QPushButton, QScrollBar, QVBoxLayout, QWidget)
+from PyQt5.QtWidgets import (
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPushButton,
+    QScrollBar,
+    QVBoxLayout,
+    QWidget,
+)
 
 import display
 import ROIs
@@ -147,7 +155,9 @@ def ROI_Buttons(parent):
     parent.save_trace_btn.setStyleSheet(roi_btn_style)
     parent.save_trace_btn.setFixedHeight(20)
     parent.save_trace_btn.setFont(roi_btn_font)
-    parent.save_trace_btn.clicked.connect(lambda: print("add function"))
+    parent.save_trace_btn.clicked.connect(
+        lambda: print(type(parent.ROIs["Dendrite"][0].roi))
+    )
 
     # Add manage buttons to manage frame
     manage_btn_layout.addWidget(parent.select_roi_btn)
