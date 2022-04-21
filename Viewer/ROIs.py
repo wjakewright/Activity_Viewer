@@ -1,13 +1,24 @@
 """ Module for the creation and handeling of 
     ROIs"""
 
+from turtle import width
+
+import numpy as np
 import pyqtgraph as pg
-from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QCursor, QTransform
-from PyQt5.QtWidgets import QApplication, QColorDialog, QGraphicsObject
+from PyQt5.QtCore import QLineF, QRectF, Qt, pyqtSignal
+from PyQt5.QtGui import QColor, QCursor, QPen, QTransform
+from PyQt5.QtWidgets import (
+    QApplication,
+    QColorDialog,
+    QGraphicsItem,
+    QGraphicsItemGroup,
+    QGraphicsLineItem,
+    QGraphicsObject,
+)
 from shapely.geometry import LineString as ShLS
 from shapely.geometry import Point as ShP
 
+import display
 import messages
 
 
@@ -423,31 +434,30 @@ class ROI:
         hover_pen = parent.highlight_pen
 
         # Create ROI
-        roi = pg.MultiRectROI(
-            positions=parent.display_image.LinePoints,
-            closed=False,
-            invertible=True,
-            pen=ROI_pen,
-            hoverPen=hover_pen,
+        roi = Dendrite_ROI(
+            points=parent.display_image.LinePoints,
+            GUI=parent,
             parent=parent.current_image,
-            movable=True,
-            rotatable=True,
-            resizable=True,
-            removable=True,
+            pen=ROI_pen,
+            hovepen=hover_pen,
         )
-        roi.sigRegionChanged.connect(lambda: self.update_roi_label(parent, roi))
-        roi.sigRegionChangeFinished.connect(lambda: shift_ROIs(parent, self))
-        roi.sigClicked.connect(lambda: select_ROIs(parent, self))
-        for seg in roi.segments:
-            seg.sigClicked.connect(lambda: select_ROIs(parent, self))
+        roi.setFlag(QGraphicsItem.ItemIsMovable, True)
+        roi.setFlag(QGraphicsItem.ItemIsSelectable, True)
+        roi.setFlag(QGraphicsItem.ItemStacksBehindParent, False)
+
+        # roi.sigRegionChanged.connect(lambda: self.update_roi_label(parent, roi))
+        # roi.sigRegionChangeFinished.connect(lambda: shift_ROIs(parent, self))
+        # roi.sigClicked.connect(lambda: select_ROIs(parent, self))
+        # for seg in roi.segments:
+        #    seg.sigClicked.connect(lambda: select_ROIs(parent, self))
 
         # Create ROI label
-        length = len(parent.ROIs["Dendrite"])
-        self.label = pg.TextItem(text=f"D {length+1}", color=parent.ROI_label_color)
+        # length = len(parent.ROIs["Dendrite"])
+        # self.label = pg.TextItem(text=f"D {length+1}", color=parent.ROI_label_color)
 
-        roi_rect = roi.mapRectToParent(roi.boundingRect())
-        self.label.setPos(roi_rect.center())
-        parent.display_image.addItem(self.label)
+        # roi_rect = roi.mapRectToParent(roi.boundingRect())
+        # self.label.setPos(roi_rect.center())
+        # parent.display_image.addItem(self.label)
 
         return roi
 
@@ -469,7 +479,7 @@ class Dendrite_PolyLineROI(pg.PolyLineROI):
         pass
 
 
-class Dendrite_ROI(QGraphicsObject):
+class Dendrite_ROI(QGraphicsItemGroup):
     """Custom Dendrite ROI. Container to hold multiple ellipse rois along
         the length of the drawn dendrite"""
 
@@ -477,17 +487,49 @@ class Dendrite_ROI(QGraphicsObject):
     sigRegionChangeStarted = pyqtSignal(object)
     sigRegionChanged = pyqtSignal(object)
 
-    def __init__(self, points, parent):
+    def __init__(self, points, GUI, parent, pen, hovepen):
         """Takes a list of QPointFs in order to generate a shapely line
             for the dendrite. This line is then stored and used to generate
             the individual ellipse ROIs along the dendrite"""
-        super(QGraphicsObject, self).__init__(parent=parent)
+        super(QGraphicsItemGroup, self).__init__(parent=parent)
         self.points = points
+        self.GUI = GUI
         self.parent = parent
+        self.pen = pen
+        self.hovepen = hovepen
         self.poly_rois = []
         self.line = None
+        self.line_len_um = None
 
         self.create_line()
+        self.draw_line()
+        self.create_rois()
+
+    def paint(self, painter, *args, **kwargs):
+        # Needed to override the QGraphicsObject method
+        # draw_line = []
+        # for i, p in enumerate(self.points[:-1]):
+        #     draw_line.append(QLineF(p, self.points[i + 1]))
+        # pen = QPen()
+        # pen.setColor(QColor(255, 255, 0))
+        # pen.setWidth(2)
+        # painter.setPen(pen)
+        # painter.drawLines(draw_line)
+        pass
+
+    def draw_line(self):
+        """Function to draw line"""
+        draw_line = []
+        for i, p in enumerate(self.points[:-1]):
+            draw_line.append(QLineF(p, self.points[i + 1]))
+        for line in draw_line:
+            Line = QGraphicsLineItem(line, parent=self)
+            Line.setPen(self.pen)
+            # self.addItem(Line, ignoreBounds=True)
+
+    def boundingRect(self):
+        # Needed to override the QGraphicsObject method
+        return QRectF()
 
     def create_line(self):
         """Creates shapely line from QPointFs"""
@@ -499,4 +541,35 @@ class Dendrite_ROI(QGraphicsObject):
 
     def create_rois(self):
         """Creates individual ellipse rois along the length of the dendrite line"""
+        # Constants for ROI size and spacing inbetween
+        ROI_SIZE = 0.2  # um
+        ROI_SPACE = 0.4  # um
+        # Get conversion factors between pixels and um
+        um_per_pix, pix_per_um = display.convert_pixels_to_um(self.GUI)
+        # Get size and spacing of ROIs in pixels
+        roi_size = ROI_SIZE * pix_per_um
+        roi_spacing = ROI_SPACE * pix_per_um
+        # Get the positions of rois to make along the line
+        roi_pos = np.linspace(0, self.line.length, int(self.line.length // roi_spacing))
+        # Make the ROIs
+        for p in roi_pos:
+            pos = self.line.interpolate(p)
+            x = pos.x - (roi_size / 2)
+            y = pos.y - (roi_size / 2)
+            new_roi = pg.EllipseROI(
+                pos=(x, y),
+                size=(roi_size, roi_size),
+                pen=self.pen,
+                parent=self,
+                hoverPen=self.hovepen,
+                rotatable=False,
+            )
+            # new_roi.sigRegionChanged.connect(lambda:self.translate_rois())
+            new_roi.translatable = False
+            new_roi.removeHandle(0)
+            new_roi.removeHandle(0)
+            self.poly_rois.append(new_roi)
+
+    def translate_rois(self):
+        """When one ROI is moved, all the others will move as well"""
 
