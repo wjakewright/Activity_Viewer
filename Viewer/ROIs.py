@@ -1,7 +1,6 @@
 """ Module for the creation and handeling of 
     ROIs"""
 
-from turtle import width
 
 import numpy as np
 import pyqtgraph as pg
@@ -14,6 +13,7 @@ from PyQt5.QtWidgets import (
     QGraphicsItemGroup,
     QGraphicsLineItem,
     QGraphicsObject,
+    QGraphicsTextItem,
 )
 from shapely.geometry import LineString as ShLS
 from shapely.geometry import Point as ShP
@@ -446,18 +446,19 @@ class ROI:
         roi.setFlag(QGraphicsItem.ItemStacksBehindParent, False)
 
         # roi.sigRegionChanged.connect(lambda: self.update_roi_label(parent, roi))
-        # roi.sigRegionChangeFinished.connect(lambda: shift_ROIs(parent, self))
-        # roi.sigClicked.connect(lambda: select_ROIs(parent, self))
-        # for seg in roi.segments:
-        #    seg.sigClicked.connect(lambda: select_ROIs(parent, self))
+
+        for r in roi.poly_rois:
+            r.sigRegionChanged.connect(lambda: self.update_roi_label(parent, roi))
+            r.sigRegionChangeFinished.connect(lambda: shift_ROIs(parent, self))
+            r.sigClicked.connect(lambda: select_ROIs(parent, self))
 
         # Create ROI label
-        # length = len(parent.ROIs["Dendrite"])
+        length = len(parent.ROIs["Dendrite"])
         # self.label = pg.TextItem(text=f"D {length+1}", color=parent.ROI_label_color)
-
-        # roi_rect = roi.mapRectToParent(roi.boundingRect())
-        # self.label.setPos(roi_rect.center())
-        # parent.display_image.addItem(self.label)
+        self.label = QGraphicsTextItem(f"D {length+1}")
+        self.label.setDefaultTextColor(QColor(*parent.ROI_label_color))
+        roi.addToGroup(self.label)
+        self.label.setPos(roi.drawnLine.boundingRect().center())
 
         return roi
 
@@ -466,17 +467,6 @@ class ROI:
         rect = roi.boundingRect()
         rect = roi.mapRectToParent(rect)
         self.label.setPos(rect.center())
-
-
-class Dendrite_PolyLineROI(pg.PolyLineROI):
-    """Custom PolyLine ROI that doesn't add segment
-        when clicked"""
-
-    def __init__(self, *args, **kwargs):
-        super(Dendrite_PolyLineROI, self).__init__(*args, **kwargs)
-
-    def segmentClicked(self, segment, ev=None, pos=None):
-        pass
 
 
 class Dendrite_ROI(QGraphicsItemGroup):
@@ -499,37 +489,18 @@ class Dendrite_ROI(QGraphicsItemGroup):
         self.hovepen = hovepen
         self.poly_rois = []
         self.line = None
-        self.line_len_um = None
+        self.drawnLine = None
 
         self.create_line()
         self.draw_line()
         self.create_rois()
 
     def paint(self, painter, *args, **kwargs):
-        # Needed to override the QGraphicsObject method
-        # draw_line = []
-        # for i, p in enumerate(self.points[:-1]):
-        #     draw_line.append(QLineF(p, self.points[i + 1]))
-        # pen = QPen()
-        # pen.setColor(QColor(255, 255, 0))
-        # pen.setWidth(2)
-        # painter.setPen(pen)
-        # painter.drawLines(draw_line)
         pass
 
-    def draw_line(self):
-        """Function to draw line"""
-        draw_line = []
-        for i, p in enumerate(self.points[:-1]):
-            draw_line.append(QLineF(p, self.points[i + 1]))
-        for line in draw_line:
-            Line = QGraphicsLineItem(line, parent=self)
-            Line.setPen(self.pen)
-            # self.addItem(Line, ignoreBounds=True)
-
-    def boundingRect(self):
-        # Needed to override the QGraphicsObject method
-        return QRectF()
+    # def boundingRect(self):
+    # Needed to override the QGraphicsObject method
+    # return QRectF()
 
     def create_line(self):
         """Creates shapely line from QPointFs"""
@@ -539,13 +510,22 @@ class Dendrite_ROI(QGraphicsItemGroup):
             shapely_points.append(s_point)
         self.line = ShLS(shapely_points)
 
+    def draw_line(self):
+        """Function to draw line"""
+        draw_line = []
+        for i, p in enumerate(self.points[:-1]):
+            draw_line.append(QLineF(p, self.points[i + 1]))
+        for line in draw_line:
+            self.drawnLine = QGraphicsLineItem(line, parent=self)
+            self.drawnLine.setPen(self.pen)
+
     def create_rois(self):
         """Creates individual ellipse rois along the length of the dendrite line"""
         # Constants for ROI size and spacing inbetween
         ROI_SIZE = 0.2  # um
         ROI_SPACE = 0.4  # um
         # Get conversion factors between pixels and um
-        um_per_pix, pix_per_um = display.convert_pixels_to_um(self.GUI)
+        _, pix_per_um = display.convert_pixels_to_um(self.GUI)
         # Get size and spacing of ROIs in pixels
         roi_size = ROI_SIZE * pix_per_um
         roi_spacing = ROI_SPACE * pix_per_um
@@ -569,7 +549,4 @@ class Dendrite_ROI(QGraphicsItemGroup):
             new_roi.removeHandle(0)
             new_roi.removeHandle(0)
             self.poly_rois.append(new_roi)
-
-    def translate_rois(self):
-        """When one ROI is moved, all the others will move as well"""
 
