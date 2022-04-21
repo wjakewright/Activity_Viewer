@@ -445,12 +445,7 @@ class ROI:
         roi.setFlag(QGraphicsItem.ItemIsSelectable, True)
         roi.setFlag(QGraphicsItem.ItemStacksBehindParent, False)
 
-        # roi.sigRegionChanged.connect(lambda: self.update_roi_label(parent, roi))
-
-        for r in roi.poly_rois:
-            r.sigRegionChanged.connect(lambda: self.update_roi_label(parent, roi))
-            r.sigRegionChangeFinished.connect(lambda: shift_ROIs(parent, self))
-            r.sigClicked.connect(lambda: select_ROIs(parent, self))
+        # roi.doubleClicked.connect(lambda: print("Dendrite Clicked"))
 
         # Create ROI label
         length = len(parent.ROIs["Dendrite"])
@@ -458,7 +453,8 @@ class ROI:
         self.label = QGraphicsTextItem(f"D {length+1}")
         self.label.setDefaultTextColor(QColor(*parent.ROI_label_color))
         roi.addToGroup(self.label)
-        self.label.setPos(roi.drawnLine.boundingRect().center())
+        pos_index = int(len(roi.drawn_lines) // 2)
+        self.label.setPos(roi.drawn_lines[pos_index].p1())
 
         return roi
 
@@ -489,6 +485,7 @@ class Dendrite_ROI(QGraphicsItemGroup):
         self.hovepen = hovepen
         self.poly_rois = []
         self.line = None
+        self.drawn_lines = []
         self.drawnLine = None
 
         self.create_line()
@@ -496,11 +493,8 @@ class Dendrite_ROI(QGraphicsItemGroup):
         self.create_rois()
 
     def paint(self, painter, *args, **kwargs):
+        # Need to override the original abstract method
         pass
-
-    # def boundingRect(self):
-    # Needed to override the QGraphicsObject method
-    # return QRectF()
 
     def create_line(self):
         """Creates shapely line from QPointFs"""
@@ -512,10 +506,9 @@ class Dendrite_ROI(QGraphicsItemGroup):
 
     def draw_line(self):
         """Function to draw line"""
-        draw_line = []
         for i, p in enumerate(self.points[:-1]):
-            draw_line.append(QLineF(p, self.points[i + 1]))
-        for line in draw_line:
+            self.drawn_lines.append(QLineF(p, self.points[i + 1]))
+        for line in self.drawn_lines:
             self.drawnLine = QGraphicsLineItem(line, parent=self)
             self.drawnLine.setPen(self.pen)
 
