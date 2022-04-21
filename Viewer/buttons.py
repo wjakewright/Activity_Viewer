@@ -156,7 +156,11 @@ def ROI_Buttons(parent):
     parent.save_trace_btn.setFixedHeight(20)
     parent.save_trace_btn.setFont(roi_btn_font)
     parent.save_trace_btn.clicked.connect(
-        lambda: print(type(parent.ROIs["Dendrite"][0].roi))
+        lambda: print(
+            parent.ROIs["Dendrite"][0].roi.mapRectToParent(
+                parent.ROIs["Dendrite"][0].roi.boundingRect()
+            )
+        )
     )
 
     # Add manage buttons to manage frame
