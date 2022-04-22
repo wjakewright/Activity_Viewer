@@ -295,10 +295,10 @@ def to_select_ROIs(parent):
         Not currently used"""
     if parent.select_ROIs is False:
         parent.status_label.setText("Selecting ROIs")
-        for value in parent.ROIs.values():
+        for key, value in parent.ROIs.items():
             if not value:
-                pass
-            else:
+                continue
+            if key != "Dendrite":
                 for v in value:
                     v.roi.setAcceptedMouseButtons(Qt.MouseButton.LeftButton)
         parent.select_ROIs = True
@@ -307,8 +307,8 @@ def to_select_ROIs(parent):
         parent.status_label.setText(" Ready...")
         for value in parent.ROIs.values():
             if not value:
-                pass
-            else:
+                continue
+            if key != "Dendrite":
                 for v in value:
                     v.roi.setAcceptedMouseButtons(Qt.MouseButton.NoButton)
         parent.select_ROIs = False
@@ -318,10 +318,25 @@ def select_ROIs(parent, roi):
     """Function to select ROIs"""
     t = roi.type
     if roi not in parent.selected_ROIs[t]:
-        roi.roi.setPen(parent.selection_pen)
+        if roi.type != "Dendrite":
+            roi.roi.setPen(parent.selection_pen)
+        else:
+            roi.roi.pen = parent.selection_pen
+            for line in roi.roi.drawnLine:
+                line.setPen(parent.selection_pen)
+            for r in roi.roi.poly_rois:
+                r.setPen(parent.selection_pen)
         parent.selected_ROIs[t].append(roi)
+
     elif roi in parent.selected_ROIs[t]:
-        roi.roi.setPen(parent.ROI_pen)
+        if roi.type != "Dendrite":
+            roi.roi.setPen(parent.ROI_pen)
+        else:
+            roi.roi.pen = parent.ROI_pen
+            for line in roi.roi.drawnLine:
+                line.setPen(parent.ROI_pen)
+            for r in roi.roi.poly_rois:
+                r.setPen(parent.ROI_pen)
         parent.selected_ROIs[t].remove(roi)
 
 
@@ -453,6 +468,7 @@ class ROI:
         roi = Dendrite_ROI(
             points=parent.display_image.LinePoints,
             GUI=parent,
+            parent_ROI=self,
             parent=parent.current_image,
             pen=ROI_pen,
             hovepen=hover_pen,
@@ -488,7 +504,7 @@ class Dendrite_ROI(QGraphicsItemGroup):
     sigRegionChangeStarted = pyqtSignal(object)
     sigRegionChanged = pyqtSignal(object)
 
-    def __init__(self, points, GUI, parent, pen, hovepen):
+    def __init__(self, points, GUI, parent_ROI, parent, pen, hovepen):
         """Takes a list of QPointFs in order to generate a shapely line
             for the dendrite. This line is then stored and used to generate
             the individual ellipse ROIs along the dendrite"""
@@ -500,6 +516,7 @@ class Dendrite_ROI(QGraphicsItemGroup):
 
         self.points = points
         self.GUI = GUI
+        self.parent_ROI = parent_ROI
         self.parent = parent
         self.pen = pen
         self.hoverPen = hovepen
@@ -522,6 +539,14 @@ class Dendrite_ROI(QGraphicsItemGroup):
         QGraphicsItemGroup.mouseReleaseEvent(self, event)
         # Additional functionality
         shift_ROIs(self.GUI, self)
+
+    def mousePressEvent(self, event):
+        """Reimplementing the mouse press event for additional function"""
+        if self.GUI.select_ROIs is False:
+            QGraphicsItemGroup.mousePressEvent(self, event)
+        else:
+            select_ROIs(self.GUI, self.parent_ROI)
+            QGraphicsItemGroup.mousePressEvent(self, event)
 
     def hoverEnterEvent(self, event):
         self.paint_hover_color()
