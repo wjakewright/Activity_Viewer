@@ -162,13 +162,20 @@ def set_highlight_color(parent):
 def set_selection_color(parent):
     """Function to change the ROI color when it is selected"""
     color = QColorDialog.getColor()
-    parent.selection_pen = pg.mkPen(color, width=4)
-    for value in parent.selected_ROIs.values():
+    parent.selection_pen = pg.mkPen(color, width=2)
+    for key, value in parent.selected_ROIs.items():
         if not value:
-            pass
-        else:
+            continue
+        if key != "Dendrite":
             for v in value:
                 v.roi.setPen = parent.selection_pen
+        else:
+            for v in value:
+                v.roi.pen = parent.selection_pen
+                for line in v.roi.drawnLine:
+                    line.setPen(parent.selection_pen)
+                for r in v.roi.poly_rois:
+                    r.setPen(parent.selection_pen)
 
 
 def toggle_ROI_labels(parent):
@@ -216,12 +223,15 @@ def set_label_color(parent):
     """Function to set the ROI label color"""
     color = QColorDialog.getColor()
     parent.ROI_label_color = color
-    for value in parent.ROIs.values():
+    for key, value in parent.ROIs.items():
         if not value:
-            pass
-        else:
+            continue
+        if key != "Dendrite":
             for v in value:
                 v.label.setColor(parent.ROI_label_color)
+        else:
+            for v in value:
+                v.label.setDefaultTextColor(parent.ROI_label_color)
 
 
 def to_delete_ROIs(parent):
