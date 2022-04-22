@@ -4,7 +4,7 @@
 
 import numpy as np
 import pyqtgraph as pg
-from PyQt5.QtCore import QLineF, QRectF, Qt, pyqtSignal
+from PyQt5.QtCore import QLineF, QObject, QRectF, Qt, pyqtSignal
 from PyQt5.QtGui import QColor, QCursor, QPen, QTransform
 from PyQt5.QtWidgets import (
     QApplication,
@@ -132,25 +132,31 @@ def redraw_background(parent, view):
 def set_ROI_pen_color(parent):
     """Function to change the outline color of ROIs"""
     color = QColorDialog.getColor()
-    parent.ROI_pen = pg.mkPen(color, width=4)
-    for value in parent.ROIs.values():
+    parent.ROI_pen = pg.mkPen(color, width=2)
+    for key, value in parent.ROIs.items():
         if not value:
-            pass
+            continue
+        if key != "Dendrite":
+            for v in value:
+                v.roi.setPen(parent.ROI_pen)
         else:
             for v in value:
-                v.roi.setPen(color, width=4)
+                v.roi.pen = parent.ROI_pen
+                for line in v.roi.drawnLine:
+                    line.setPen(parent.ROI_pen)
+                for r in v.roi.poly_rois:
+                    r.setPen(parent.ROI_pen)
 
 
 def set_highlight_color(parent):
     """Function to change the highlight color of ROI when mouse hovers"""
     color = QColorDialog.getColor()
-    parent.highlight_pen = pg.mkPen(color, width=4)
+    parent.highlight_pen = pg.mkPen(color, width=2)
     for value in parent.ROIs.values():
         if not value:
-            pass
-        else:
-            for v in value:
-                v.roi.hoverPen = parent.highlight_pen
+            continue
+        for v in value:
+            v.roi.hoverPen = parent.highlight_pen
 
 
 def set_selection_color(parent):
@@ -441,15 +447,14 @@ class ROI:
             pen=ROI_pen,
             hovepen=hover_pen,
         )
-        roi.setFlag(QGraphicsItem.ItemIsMovable, True)
-        roi.setFlag(QGraphicsItem.ItemIsSelectable, True)
-        roi.setFlag(QGraphicsItem.ItemStacksBehindParent, False)
 
+        roi.setAcceptHoverEvents(True)
         # roi.doubleClicked.connect(lambda: print("Dendrite Clicked"))
+        for r in roi.poly_rois:
+            r.sigRegionChanged.connect(lambda: print("detected movement"))
 
         # Create ROI label
         length = len(parent.ROIs["Dendrite"])
-        # self.label = pg.TextItem(text=f"D {length+1}", color=parent.ROI_label_color)
         self.label = QGraphicsTextItem(f"D {length+1}")
         self.label.setDefaultTextColor(QColor(*parent.ROI_label_color))
         roi.addToGroup(self.label)
@@ -477,16 +482,21 @@ class Dendrite_ROI(QGraphicsItemGroup):
         """Takes a list of QPointFs in order to generate a shapely line
             for the dendrite. This line is then stored and used to generate
             the individual ellipse ROIs along the dendrite"""
-        super(QGraphicsItemGroup, self).__init__(parent=parent)
+        super(Dendrite_ROI, self).__init__(parent=parent)
+        self.setFlag(QGraphicsItem.ItemIsMovable, True)
+        self.setFlag(QGraphicsItem.ItemIsSelectable, True)
+        self.setFlag(QGraphicsItem.ItemIsFocusable, True)
+        self.setFlag(QGraphicsItem.ItemStacksBehindParent, False)
+
         self.points = points
         self.GUI = GUI
         self.parent = parent
         self.pen = pen
-        self.hovepen = hovepen
+        self.hoverPen = hovepen
         self.poly_rois = []
         self.line = None
         self.drawn_lines = []
-        self.drawnLine = None
+        self.drawnLine = []
 
         self.create_line()
         self.draw_line()
@@ -495,6 +505,21 @@ class Dendrite_ROI(QGraphicsItemGroup):
     def paint(self, painter, *args, **kwargs):
         # Need to override the original abstract method
         pass
+
+    def mouseReleaseEvent(self, event):
+        """Reimplementation of mouse move event"""
+        # Call the original function
+        QGraphicsItemGroup.mouseReleaseEvent(self, event)
+        # Additional functionality
+        shift_ROIs(self.GUI, self)
+
+    def hoverEnterEvent(self, event):
+        self.paint_hover_color()
+        self.update()
+
+    def hoverLeaveEvent(self, event):
+        self.wash_hover_color()
+        self.update()
 
     def create_line(self):
         """Creates shapely line from QPointFs"""
@@ -509,8 +534,10 @@ class Dendrite_ROI(QGraphicsItemGroup):
         for i, p in enumerate(self.points[:-1]):
             self.drawn_lines.append(QLineF(p, self.points[i + 1]))
         for line in self.drawn_lines:
-            self.drawnLine = QGraphicsLineItem(line, parent=self)
-            self.drawnLine.setPen(self.pen)
+            drawnLine = QGraphicsLineItem(line, parent=self)
+            drawnLine.setAcceptHoverEvents(True)
+            drawnLine.setPen(self.pen)
+            self.drawnLine.append(drawnLine)
 
     def create_rois(self):
         """Creates individual ellipse rois along the length of the dendrite line"""
@@ -534,7 +561,7 @@ class Dendrite_ROI(QGraphicsItemGroup):
                 size=(roi_size, roi_size),
                 pen=self.pen,
                 parent=self,
-                hoverPen=self.hovepen,
+                hoverPen=self.hoverPen,
                 rotatable=False,
             )
             # new_roi.sigRegionChanged.connect(lambda:self.translate_rois())
@@ -542,4 +569,18 @@ class Dendrite_ROI(QGraphicsItemGroup):
             new_roi.removeHandle(0)
             new_roi.removeHandle(0)
             self.poly_rois.append(new_roi)
+
+    def paint_hover_color(self):
+        """Function allow for over color change over the ROI"""
+        for line in self.drawnLine:
+            line.setPen(self.hoverPen)
+        for roi in self.poly_rois:
+            roi.setPen(self.hoverPen)
+
+    def wash_hover_color(self):
+        """Function to revert pen color after hovering done"""
+        for line in self.drawnLine:
+            line.setPen(self.pen)
+        for roi in self.poly_rois:
+            roi.setPen(self.pen)
 
