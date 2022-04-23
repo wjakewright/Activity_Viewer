@@ -212,11 +212,13 @@ def relable_ROIs(parent, key):
     for i, roi in enumerate(parent.ROIs[key]):
         if key == "Soma":
             k = "So"
+            roi.label.setText(f"{k} {i+1}")
         elif key == "Spine":
             k = "Sp"
+            roi.label.setText(f"{k} {i+1}")
         elif key == "Dendrite":
             k = "D"
-        roi.label.setText(f"{k} {i+1}")
+            roi.label.setPlainText(f"{k} {i+1}")
 
 
 def set_label_color(parent):
@@ -238,20 +240,20 @@ def to_delete_ROIs(parent):
     """Function to select and delete ROIs"""
     if parent.select_ROIs is False:
         parent.status_label.setText("Deleting ROIs (reclick to end)")
-        for value in parent.ROIs.values():
+        for key, value in parent.ROIs.items():
             if not value:
-                pass
-            else:
+                continue
+            if key != "Dendrite":
                 for v in value:
                     v.roi.setAcceptedMouseButtons(Qt.MouseButton.LeftButton)
         parent.select_ROIs = True
 
     elif parent.select_ROIs is True:
         messages.delete_roi_warning(parent)
-        for value in parent.ROIs.values():
+        for key, value in parent.ROIs.items():
             if not value:
-                pass
-            else:
+                continue
+            if key != "Dendrite":
                 for v in value:
                     v.roi.setAcceptedMouseButtons(Qt.MouseButton.NoButton)
         parent.select_ROIs = False
@@ -264,7 +266,6 @@ def delete_ROIs(parent):
             continue
         del_idx = []
         for roi in rois:
-            # Not deleting the rois
             for i, rs in enumerate(parent.ROIs[t]):
                 if roi is rs:
                     del_idx.append(i)
@@ -343,17 +344,19 @@ def select_ROIs(parent, roi):
 def to_shift_ROIs(parent):
     """Function to allow for all ROIs to be moved together"""
     if parent.shift_ROIs is False:
-        for value in parent.ROIs.values():
-            for v in value:
-                v.roi.rotatable = False
-                v.roi.resizable = False
+        for key, value in parent.ROIs.items():
+            if key != "Dendrite":
+                for v in value:
+                    v.roi.rotatable = False
+                    v.roi.resizable = False
         parent.status_label.setText(" Shifting ROIs")
         parent.shift_ROIs = True
     else:
-        for value in parent.ROIs.values():
-            for v in value:
-                v.roi.rotatable = True
-                v.roi.resizable = True
+        for key, value in parent.ROIs.items():
+            if key != "Dendrite":
+                for v in value:
+                    v.roi.rotatable = True
+                    v.roi.resizable = True
         parent.status_label.setText(" Ready...")
         parent.shift_ROIs = False
 
