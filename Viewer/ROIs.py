@@ -364,16 +364,26 @@ def to_shift_ROIs(parent):
 def shift_ROIs(parent, roi):
     """Function to shift all ROIs when one is moved"""
     if parent.shift_ROIs is True:
-        start = roi.roi.preMoveState["pos"]
-        curr = roi.roi.pos()
-        diff = curr - start
-        for value in parent.ROIs.values():
-            for v in value:
-                if v != roi:
-                    v.roi.blockSignals(True)
-                    v.roi.translate(diff)
-                    v.update_roi_label(parent, v.roi)
-                    v.roi.blockSignals(False)
+        if type(roi) != Dendrite_ROI:
+            start = roi.preMoveState["pos"]
+            curr = roi.pos()
+            diff = curr - start
+        else:
+            start = roi.previous_position
+            curr = roi.pos()
+            diff = curr - start
+        for key, value in parent.ROIs.items():
+            if key != "Dendrite":
+                for v in value:
+                    if v.roi != roi:
+                        v.roi.blockSignals(True)
+                        v.roi.translate(diff)
+                        v.update_roi_label(parent, v.roi)
+                        v.roi.blockSignals(False)
+            else:
+                for v in value:
+                    if v.roi != roi:
+                        v.roi.moveBy(diff.x(), diff.y())
 
     else:
         pass
@@ -439,7 +449,7 @@ class ROI:
         )
         roi.addTranslateHandle(pos=(0.5, 0.5))
         roi.sigRegionChanged.connect(lambda: self.update_roi_label(parent, roi))
-        roi.sigRegionChangeFinished.connect(lambda: shift_ROIs(parent, self))
+        roi.sigRegionChangeFinished.connect(lambda: shift_ROIs(parent, roi))
         roi.sigClicked.connect(lambda: select_ROIs(parent, self))
 
         # Create ROI label
@@ -527,6 +537,7 @@ class Dendrite_ROI(QGraphicsItemGroup):
         self.line = None
         self.drawn_lines = []
         self.drawnLine = []
+        self.previous_position = None
 
         self.create_line()
         self.draw_line()
@@ -545,6 +556,7 @@ class Dendrite_ROI(QGraphicsItemGroup):
 
     def mousePressEvent(self, event):
         """Reimplementing the mouse press event for additional function"""
+        self.previous_position = self.pos()
         if self.GUI.select_ROIs is False:
             QGraphicsItemGroup.mousePressEvent(self, event)
         else:
