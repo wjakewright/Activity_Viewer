@@ -431,9 +431,6 @@ def load_ROIs(parent):
                 roi = ROI(parent, roi_type, v)
                 parent.ROIs[roi_type].append(roi)
 
-    for key, value in parent.ROIs.items():
-        print(f"{key}: {value}")
-
 
 class ROI:
     """Class for the creation of individual ROI objects"""
