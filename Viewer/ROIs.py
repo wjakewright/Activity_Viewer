@@ -401,7 +401,11 @@ def save_ROIs(parent):
         if key != "Dendrite":
             for v in value:
                 state = v.roi.saveState()
-                rois[key].append({"state": state})
+                rois[key].append(state)
+        else:
+            for v in value:
+                points = v.roi.points
+                rois[key].append(points)
     with open(pickle_name, "wb") as f:
         pickle.dump(rois, f)
 
@@ -420,7 +424,11 @@ def load_ROIs(parent):
         if key != "Dendrite":
             for v in value:
                 roi = ROI(parent, roi_type)
-                roi.roi.setState(v["state"])
+                roi.roi.setState(v)
+                parent.ROIs[roi_type].append(roi)
+        else:
+            for v in value:
+                roi = ROI(parent, roi_type, v)
                 parent.ROIs[roi_type].append(roi)
 
     for key, value in parent.ROIs.items():
@@ -430,9 +438,10 @@ def load_ROIs(parent):
 class ROI:
     """Class for the creation of individual ROI objects"""
 
-    def __init__(self, parent, roi_type):
+    def __init__(self, parent, roi_type, loading=False):
         self.parent = parent
         self.type = roi_type
+        self.loading = loading
         self.roi = None
         self.label = None
         self.start_pos = None
@@ -516,14 +525,24 @@ class ROI:
         hover_pen = parent.highlight_pen
 
         # Create ROI
-        roi = Dendrite_ROI(
-            points=parent.display_image.LinePoints,
-            GUI=parent,
-            parent_ROI=self,
-            parent=parent.current_image,
-            pen=ROI_pen,
-            hovepen=hover_pen,
-        )
+        if self.loading is False:
+            roi = Dendrite_ROI(
+                points=parent.display_image.LinePoints,
+                GUI=parent,
+                parent_ROI=self,
+                parent=parent.current_image,
+                pen=ROI_pen,
+                hovepen=hover_pen,
+            )
+        else:
+            roi = Dendrite_ROI(
+                points=self.loading,
+                GUI=parent,
+                parent_ROI=self,
+                parent=parent.current_image,
+                pen=ROI_pen,
+                hovepen=hover_pen,
+            )
 
         roi.setAcceptHoverEvents(True)
         # roi.doubleClicked.connect(lambda: print("Dendrite Clicked"))
@@ -555,7 +574,7 @@ class Dendrite_ROI(QGraphicsItemGroup):
     sigRegionChangeStarted = pyqtSignal(object)
     sigRegionChanged = pyqtSignal(object)
 
-    def __init__(self, points, GUI, parent_ROI, parent, pen, hovepen):
+    def __init__(self, points, GUI, parent_ROI, parent, pen, hovepen, loading=False):
         """Takes a list of QPointFs in order to generate a shapely line
             for the dendrite. This line is then stored and used to generate
             the individual ellipse ROIs along the dendrite"""
