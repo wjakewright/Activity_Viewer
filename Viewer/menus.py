@@ -28,12 +28,12 @@ def fileMenu(parent):
     # Load ROIs
     parent.load_ROIs = QAction("&Load ROIs", parent)
     parent.load_ROIs.setShortcut("Ctrl+L")
-    parent.load_ROIs.triggered.connect(lambda: print("add functionality"))
+    parent.load_ROIs.triggered.connect(lambda: ROIs.load_ROIs(parent))
 
     # Save ROIs
     parent.save_ROIs = QAction("&Save ROIs", parent)
     parent.save_ROIs.setShortcut("Ctrl+S")
-    parent.save_ROIs.triggered.connect(lambda: print("add functionality"))
+    parent.save_ROIs.triggered.connect(lambda: ROIs.save_ROIs(parent))
 
     # Start new session
     parent.new_session = QAction("&New Session", parent)

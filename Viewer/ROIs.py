@@ -1,6 +1,8 @@
 """ Module for the creation and handeling of 
     ROIs"""
 
+import os
+import pickle
 
 import numpy as np
 import pyqtgraph as pg
@@ -9,6 +11,7 @@ from PyQt5.QtGui import QColor, QCursor, QPen, QTransform
 from PyQt5.QtWidgets import (
     QApplication,
     QColorDialog,
+    QFileDialog,
     QGraphicsItem,
     QGraphicsItemGroup,
     QGraphicsLineItem,
@@ -306,7 +309,7 @@ def to_select_ROIs(parent):
 
     elif parent.select_ROIs is True:
         parent.status_label.setText(" Ready...")
-        for value in parent.ROIs.values():
+        for key, value in parent.ROIs.items():
             if not value:
                 continue
             if key != "Dendrite":
@@ -387,6 +390,41 @@ def shift_ROIs(parent, roi):
 
     else:
         pass
+
+
+def save_ROIs(parent):
+    # Function to save all ROIs
+    save_name = QFileDialog.getSaveFileName(parent, "Save ROIs")[0]
+    pickle_name = save_name + ".rois"
+    rois = {"Background": [], "Soma": [], "Dendrite": [], "Spine": []}
+    for key, value in parent.ROIs.items():
+        if key != "Dendrite":
+            for v in value:
+                state = v.roi.saveState()
+                rois[key].append({"state": state})
+    with open(pickle_name, "wb") as f:
+        pickle.dump(rois, f)
+
+
+def load_ROIs(parent):
+    # Function to load ROIs
+    if parent.tif_stack is None:
+        messages.load_image_warning(parent)
+
+    load_name = QFileDialog.getOpenFileName(parent, "Load ROIs")[0]
+    with open(load_name, "rb") as f:
+        load_rois = pickle.load(f)
+
+    for key, value in load_rois.items():
+        roi_type = key
+        if key != "Dendrite":
+            for v in value:
+                roi = ROI(parent, roi_type)
+                roi.roi.setState(v["state"])
+                parent.ROIs[roi_type].append(roi)
+
+    for key, value in parent.ROIs.items():
+        print(f"{key}: {value}")
 
 
 class ROI:
