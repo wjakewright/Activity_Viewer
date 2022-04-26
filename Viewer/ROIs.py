@@ -542,9 +542,6 @@ class ROI:
             )
 
         roi.setAcceptHoverEvents(True)
-        # roi.doubleClicked.connect(lambda: print("Dendrite Clicked"))
-        for r in roi.poly_rois:
-            r.sigRegionChanged.connect(lambda: print("detected movement"))
 
         # Create ROI label
         length = len(parent.ROIs["Dendrite"])
