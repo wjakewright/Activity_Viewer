@@ -18,6 +18,7 @@ from PyQt5.QtWidgets import (
 
 import display
 import ROIs
+import signal_extraction
 import styles
 
 
@@ -143,7 +144,9 @@ def ROI_Buttons(parent):
     parent.extract_roi_btn.setStyleSheet(roi_btn_style)
     parent.extract_roi_btn.setFixedHeight(20)
     parent.extract_roi_btn.setFont(roi_btn_font)
-    parent.extract_roi_btn.clicked.connect(lambda: print("add function"))
+    parent.extract_roi_btn.clicked.connect(
+        lambda: signal_extraction.extract_raw_fluorescence(parent)
+    )
 
     ### Save Traces
     parent.save_trace_btn = QPushButton("Save Traces")
