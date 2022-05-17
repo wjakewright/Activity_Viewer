@@ -1,13 +1,12 @@
 """ Module for the creation and handeling of 
     ROIs"""
 
-import os
 import pickle
 
 import numpy as np
 import pyqtgraph as pg
-from PyQt5.QtCore import QLineF, QObject, QRectF, Qt, pyqtSignal
-from PyQt5.QtGui import QColor, QCursor, QPen, QTransform
+from PyQt5.QtCore import QLineF, Qt, pyqtSignal
+from PyQt5.QtGui import QColor, QCursor, QTransform
 from PyQt5.QtWidgets import (
     QApplication,
     QColorDialog,
@@ -15,7 +14,6 @@ from PyQt5.QtWidgets import (
     QGraphicsItem,
     QGraphicsItemGroup,
     QGraphicsLineItem,
-    QGraphicsObject,
     QGraphicsTextItem,
 )
 from shapely.geometry import LineString as ShLS
