@@ -5,6 +5,7 @@
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
+    QComboBox,
     QGroupBox,
     QHBoxLayout,
     QLabel,
@@ -25,7 +26,7 @@ def ROI_Buttons(parent):
     parent.roi_btn_widget = QWidget(parent)
     roi_btn_layout = QVBoxLayout()
     parent.roi_btn_widget.setLayout(roi_btn_layout)
-    parent.roi_btn_widget.setFixedWidth(120)
+    parent.roi_btn_widget.setFixedWidth(140)
 
     # Make buttons stylesheet
     roi_frame_style = styles.roiFrameStyle()
@@ -34,6 +35,7 @@ def ROI_Buttons(parent):
     roi_btn_font = styles.roi_btn_font()
     parameter_field_style = styles.parameterInputStyle()
     parameter_label_style = styles.parameterLabelStyle()
+    sensor_input_style = styles.sensorInputStyle()
 
     # --------------DRAW BUTTONS--------------
     # Frame for the draw buttons
@@ -42,7 +44,7 @@ def ROI_Buttons(parent):
     parent.draw_btn_box.setStyleSheet(roi_frame_style)
     parent.draw_btn_box.setFont(roi_frame_font)
     parent.draw_btn_box.setLayout(draw_btn_layout)
-    parent.draw_btn_box.setFixedWidth(110)
+    parent.draw_btn_box.setFixedWidth(130)
 
     ### Draw Background
     parent.draw_background_btn = QPushButton("Background")
@@ -92,7 +94,7 @@ def ROI_Buttons(parent):
     parent.manage_btn_box.setStyleSheet(roi_frame_style)
     parent.manage_btn_box.setFont(roi_frame_font)
     parent.manage_btn_box.setLayout(manage_btn_layout)
-    parent.manage_btn_box.setFixedWidth(110)
+    parent.manage_btn_box.setFixedWidth(130)
 
     ### Select ROIs
     parent.select_roi_btn = QPushButton("Select ROIs")
@@ -143,13 +145,6 @@ def ROI_Buttons(parent):
     parent.extract_roi_btn.setFont(roi_btn_font)
     parent.extract_roi_btn.clicked.connect(lambda: print("add function"))
 
-    ### Display Traces
-    parent.display_roi_btn = QPushButton("Display Traces")
-    parent.display_roi_btn.setStyleSheet(roi_btn_style)
-    parent.display_roi_btn.setFixedHeight(20)
-    parent.display_roi_btn.setFont(roi_btn_font)
-    parent.display_roi_btn.clicked.connect(lambda: print("add function"))
-
     ### Save Traces
     parent.save_trace_btn = QPushButton("Save Traces")
     parent.save_trace_btn.setStyleSheet(roi_btn_style)
@@ -171,7 +166,6 @@ def ROI_Buttons(parent):
     manage_btn_layout.addWidget(parent.clear_roi_btn)
     manage_btn_layout.addWidget(parent.save_roi_btn)
     manage_btn_layout.addWidget(parent.extract_roi_btn)
-    manage_btn_layout.addWidget(parent.display_roi_btn)
     manage_btn_layout.addWidget(parent.save_trace_btn)
     manage_btn_layout.addStretch(1)
     manage_btn_layout.setSpacing(7)
@@ -182,7 +176,16 @@ def ROI_Buttons(parent):
     parent.parameters_box.setStyleSheet(roi_frame_style)
     parent.parameters_box.setFont(roi_frame_font)
     parent.parameters_box.setLayout(parameters_layout)
-    parent.parameters_box.setFixedWidth(110)
+    parent.parameters_box.setFixedWidth(130)
+
+    ### Sensor Info
+    parent.sensor_input = QComboBox()
+    parent.sensor_input.addItems(parent.sensor_list)
+    parent.sensor_input.setStyleSheet(sensor_input_style)
+    parent.sensor_input.currentIndexChanged.connect(lambda: sensor_selection(parent))
+    parent.sensor_input_label = QLabel("Imaging Sensor")
+    parent.sensor_input_label.setStyleSheet(parameter_label_style)
+    parent.sensor_input_label.setFont(styles.parameterLabelFont())
 
     ### Zoom Magnitude
     parent.zoom_input = QLineEdit()
@@ -203,6 +206,8 @@ def ROI_Buttons(parent):
     parent.image_rate_input_label.setFont(styles.parameterLabelFont())
 
     # Add inputs to the parameter frame
+    parameters_layout.addWidget(parent.sensor_input_label)
+    parameters_layout.addWidget(parent.sensor_input)
     parameters_layout.addWidget(parent.zoom_input_label)
     parameters_layout.addWidget(parent.zoom_input)
     parameters_layout.addWidget(parent.image_rate_input_label)
@@ -230,4 +235,9 @@ def image_slider(parent):
     parent.slider_layout.addWidget(parent.image_slider)
     parent.image_slider.setEnabled(False)
     parent.play_btn.setEnabled(False)
+
+
+def sensor_selection(parent):
+    sensor_idx = parent.sensor_input.currentIndex()
+    parent.imaging_sensor = parent.sensor_list[sensor_idx]
 

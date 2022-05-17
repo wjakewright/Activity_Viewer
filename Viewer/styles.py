@@ -147,3 +147,15 @@ def parameterLabelFont():
     parameter_label_font.setItalic(True)
 
     return parameter_label_font
+
+
+def sensorInputStyle():
+    # Style for the imaging sensor combobox
+    sensor_input_style = """QComboBox {
+                                        background:white;
+                                        }
+                            QComboBox QAbstractItemView {
+                                                background:white;
+                                                        }"""
+
+    return sensor_input_style
