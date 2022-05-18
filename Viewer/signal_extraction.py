@@ -4,7 +4,7 @@ import os
 
 import numpy as np
 import pyqtgraph as pg
-from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtWidgets import QFileDialog, QProgressDialog
 from skimage import io as sio
 
 import messages
@@ -33,42 +33,57 @@ def extract_raw_fluorescence(parent):
     image_files = [
         img for img in os.listdir(parent.image_directory) if img.endswith(".tif")
     ]
+    approximate_frames = len(image_files[:3]) * 800
 
     # Set up outputs to store the fluorescence data
-    background_fluo = np.zeros(len(parent.ROIs["Background"])).reshape(1, -1)
-    soma_fluo = np.zeros(len(parent.ROIs["Soma"])).reshape(1, -1)
-    spine_fluo = np.zeros(len(parent.ROIs["Spine"])).reshape(1, -1)
-    dendrite_fluo = np.zeros(len(parent.ROIs["Dendrite"])).reshape(1, -1)
-    dendrite_poly_fluo = [
-        np.zeros(len(roi.roi.poly_rois)).reshape(1, -1)
-        for roi in parent.ROIs["Dendrite"]
-    ]
+    fluorescence_data = {}
+    for key, value in parent.ROIs.items():
+        if value:
+            fluorescence_data[key] = np.zeros(len(value)).reshape(1, -1)
+            if key == "Dendrite":
+                fluorescence_data["Dendrite Poly"] = [
+                    np.zeros(len(roi.roi.poly_rois)).reshape(1, -1) for roi in value
+                ]
 
     # Keep track of frames processed for progress bar
     frame_tracker = 0
-    for image_file in image_files[:2]:
+    progress = QProgressDialog(
+        labelText="Extracting Fluorescnece...",
+        cancelButtonText="Abort",
+        minimum=0,
+        maximum=len(image_files[:3]),
+    )
+    progress.setValue(frame_tracker)
+    # Extract fluorescence for each image file
+    for image_file in image_files[:3]:
         image = sio.imread(
             os.path.join(parent.image_directory, image_file), plugin="tifffile"
         )
-
         tif = image
 
+        # Extract fluorescence for each ROI
         for key, value in parent.ROIs.items():
             if key == "Background":
                 if not value:
                     continue
                 fluo = get_roi_fluorescence(parent, key, value, tif)
-                background_fluo = np.append(background_fluo, fluo, axis=0)
+                fluorescence_data["Background"] = np.append(
+                    fluorescence_data["Background"], fluo, axis=0
+                )
             elif key == "Soma":
                 if not value:
                     continue
                 fluo = get_roi_fluorescence(parent, key, value, tif)
-                soma_fluo = np.append(soma_fluo, fluo, axis=0)
+                fluorescence_data["Soma"] = np.append(
+                    fluorescence_data["Soma"], fluo, axis=0
+                )
             elif key == "Spine":
                 if not value:
                     continue
                 fluo = get_roi_fluorescence(parent, key, value, tif)
-                spine_fluo = np.append(spine_fluo, fluo, axis=0)
+                fluorescence_data["Spine"] = np.append(
+                    fluorescence_data["Spine"], fluo, axis=0
+                )
             elif key == "Dendrite":
                 if not value:
                     continue
@@ -76,17 +91,25 @@ def extract_raw_fluorescence(parent):
                 poly_mean = []
                 for i, dend in enumerate(fluo):
                     poly_mean.append(dend.mean(axis=1).reshape(-1, 1))
-                    dendrite_poly_fluo[i] = np.append(
-                        dendrite_poly_fluo[i], dend, axis=0
+                    fluorescence_data["Dendrite Poly"][i] = np.append(
+                        fluorescence_data["Dendrite Poly"][i], dend, axis=0
                     )
-                dendrite_fluo = np.append(dendrite_fluo, np.hstack(poly_mean), axis=0)
+                fluorescence_data["Dendrite"] = np.append(
+                    fluorescence_data["Dendrite"], np.hstack(poly_mean), axis=0
+                )
 
-    print(np.shape(background_fluo))
-    print(soma_fluo)
-    print(np.shape(spine_fluo))
-    print(np.shape(dendrite_fluo))
-    print(len(dendrite_poly_fluo))
-    print(np.shape(dendrite_poly_fluo[0]))
+        frame_tracker = frame_tracker + np.shape(image)[0]
+        progress.setValue(frame_tracker)
+
+    # Remove the zeros generated during initialization
+    for key, value in fluorescence_data.items():
+        if key != "Dendrite Poly":
+            fluorescence_data[key] = value[1:, :]
+        else:
+            new_value = []
+            for v in value:
+                new_value = v[1:, :]
+            fluorescence_data["Dendrite Poly"] = new_value
 
 
 def get_roi_fluorescence(parent, roi_type, rois, arr):
@@ -117,9 +140,7 @@ def get_roi_fluorescence(parent, roi_type, rois, arr):
                 poly_region = poly_roi.getArrayRegion(
                     arr=arr, img=parent.current_image, axes=(2, 1)
                 )
-                print(np.shape(poly_region))
                 poly_regions.append(poly_region.mean(axis=(1, 2)).reshape(-1, 1))
-            print(np.shape(poly_regions[0]))
             roi_regions.append(np.hstack(poly_regions))
         return roi_regions
 
