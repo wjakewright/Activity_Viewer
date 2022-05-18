@@ -50,7 +50,9 @@ class Activity_Viewer(QMainWindow):
         self.gamma = 1
         self.image_status = "video"
         self.idx = 0
+        self.default_directory = None
         self.filename = None
+        self.image_directory = None
         self.tif_stack = None
         self.tif_images = []
         self.playBtnStatus = "Off"
