@@ -76,3 +76,40 @@ def zoom_warning(parent):
     # Button to clear warning
     warning.setStandardButtons(QMessageBox.Close)
     retval = warning.exec()
+
+
+def parent_dendrite_warning(parent):
+    # Warning that there is no dendrites for spines
+    warning = QMessageBox()
+    warning.setIcon(QMessageBox.Warning)
+    warning.setText("No Dendrites Drawn")
+    warning.setInformativeText(
+        "Spines must have a parent dendrite \nPlease draw a dendrite"
+    )
+    warning.setWindowTitle("No Dendrites")
+    # Button to clear warning
+    warning.setStandardButtons(QMessageBox.Ok)
+    retval = warning.exec()
+
+
+def imaging_rate_warning(parent):
+    # Warning that imaging rate has not been specified
+    warning = QMessageBox()
+    warning.setIcon(QMessageBox.Warning)
+    warning.setText("Must Specify Imaging Acquisition Rate")
+    warning.setWindowTitle("Imaging Rate")
+    # Button to clear warning
+    warning.setStandardButtons(QMessageBox.Ok)
+    retval = warning.exec()
+
+
+def no_background_warning(parent):
+    # Warning that there is no background roi
+    warning = QMessageBox()
+    warning.setIcon(QMessageBox.Warning)
+    warning.setText("No Background Drawn")
+    warning.setInformativeText("Please draw background ROI")
+    warning.setWindowTitle("No Background")
+    # Button to clear warning
+    warning.setStandardButtons(QMessageBox.Ok)
+    retval = warning.exec()
