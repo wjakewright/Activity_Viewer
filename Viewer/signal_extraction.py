@@ -39,7 +39,10 @@ def extract_raw_fluorescence(parent):
     soma_fluo = np.zeros(len(parent.ROIs["Soma"])).reshape(1, -1)
     spine_fluo = np.zeros(len(parent.ROIs["Spine"])).reshape(1, -1)
     dendrite_fluo = np.zeros(len(parent.ROIs["Dendrite"])).reshape(1, -1)
-    dendrite_poly_fluo = []
+    dendrite_poly_fluo = [
+        np.zeros(len(roi.roi.poly_rois)).reshape(1, -1)
+        for roi in parent.ROIs["Dendrite"]
+    ]
 
     # Keep track of frames processed for progress bar
     frame_tracker = 0
@@ -52,16 +55,38 @@ def extract_raw_fluorescence(parent):
 
         for key, value in parent.ROIs.items():
             if key == "Background":
+                if not value:
+                    continue
                 fluo = get_roi_fluorescence(parent, key, value, tif)
                 background_fluo = np.append(background_fluo, fluo, axis=0)
             elif key == "Soma":
-                #fluo = get_roi_fluorescence(parent, key, value, tif)
-                pass
+                if not value:
+                    continue
+                fluo = get_roi_fluorescence(parent, key, value, tif)
+                soma_fluo = np.append(soma_fluo, fluo, axis=0)
             elif key == "Spine":
-                pass
+                if not value:
+                    continue
+                fluo = get_roi_fluorescence(parent, key, value, tif)
+                spine_fluo = np.append(spine_fluo, fluo, axis=0)
             elif key == "Dendrite":
-                pass
+                if not value:
+                    continue
+                fluo = get_roi_fluorescence(parent, key, value, tif)
+                poly_mean = []
+                for i, dend in enumerate(fluo):
+                    poly_mean.append(dend.mean(axis=1).reshape(-1, 1))
+                    dendrite_poly_fluo[i] = np.append(
+                        dendrite_poly_fluo[i], dend, axis=0
+                    )
+                dendrite_fluo = np.append(dendrite_fluo, np.hstack(poly_mean), axis=0)
+
     print(np.shape(background_fluo))
+    print(soma_fluo)
+    print(np.shape(spine_fluo))
+    print(np.shape(dendrite_fluo))
+    print(len(dendrite_poly_fluo))
+    print(np.shape(dendrite_poly_fluo[0]))
 
 
 def get_roi_fluorescence(parent, roi_type, rois, arr):
@@ -83,4 +108,18 @@ def get_roi_fluorescence(parent, roi_type, rois, arr):
         )
         roi_regions = array_region.mean(axis=(2, 1))
         return roi_regions.reshape(-1, 1)
+
+    elif roi_type == "Dendrite":
+        roi_regions = []
+        for roi in rois:
+            poly_regions = []
+            for poly_roi in roi.roi.poly_rois:
+                poly_region = poly_roi.getArrayRegion(
+                    arr=arr, img=parent.current_image, axes=(2, 1)
+                )
+                print(np.shape(poly_region))
+                poly_regions.append(poly_region.mean(axis=(1, 2)).reshape(-1, 1))
+            print(np.shape(poly_regions[0]))
+            roi_regions.append(np.hstack(poly_regions))
+        return roi_regions
 
