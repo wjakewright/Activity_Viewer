@@ -4,17 +4,9 @@
         William (Jake) Wright - 12/24/2021"""
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import (
-    QComboBox,
-    QGroupBox,
-    QHBoxLayout,
-    QLabel,
-    QLineEdit,
-    QPushButton,
-    QScrollBar,
-    QVBoxLayout,
-    QWidget,
-)
+from PyQt5.QtWidgets import (QComboBox, QGroupBox, QHBoxLayout, QLabel,
+                             QLineEdit, QPushButton, QScrollBar, QVBoxLayout,
+                             QWidget)
 
 import display
 import ROIs
@@ -55,6 +47,7 @@ def ROI_Buttons(parent):
     parent.draw_background_btn.clicked.connect(
         lambda: ROIs.Trigger_Background_ROI(parent, parent.display_image)
     )
+    parent.draw_background_btn.setToolTip("Draw Background ROI")
     ### Draw Dendrite
     parent.draw_dendrite_btn = QPushButton("Dendrite")
     parent.draw_dendrite_btn.setStyleSheet(roi_btn_style)
@@ -63,6 +56,7 @@ def ROI_Buttons(parent):
     parent.draw_dendrite_btn.clicked.connect(
         lambda: ROIs.Trigger_Dendrite_ROI(parent, parent.display_image)
     )
+    parent.draw_dendrite_btn.setToolTip("Draw Dendrite ROI")
     ### Draw Spine
     parent.draw_spine_btn = QPushButton("Spine")
     parent.draw_spine_btn.setStyleSheet(roi_btn_style)
@@ -71,6 +65,7 @@ def ROI_Buttons(parent):
     parent.draw_spine_btn.clicked.connect(
         lambda: ROIs.Trigger_Spine_ROI(parent, parent.display_image)
     )
+    parent.draw_spine_btn.setToolTip("Draw Spine ROI")
     ### Draw Soma
     parent.draw_soma_btn = QPushButton("Soma")
     parent.draw_soma_btn.setStyleSheet(roi_btn_style)
@@ -79,6 +74,7 @@ def ROI_Buttons(parent):
     parent.draw_soma_btn.clicked.connect(
         lambda: ROIs.Trigger_Soma_ROI(parent, parent.display_image)
     )
+    parent.draw_soma_btn.setToolTip("Draw Soma ROI")
 
     # Add draw buttons to draw frame
     draw_btn_layout.addWidget(parent.draw_background_btn)
@@ -103,6 +99,7 @@ def ROI_Buttons(parent):
     parent.select_roi_btn.setFixedHeight(20)
     parent.select_roi_btn.setFont(roi_btn_font)
     parent.select_roi_btn.clicked.connect(lambda: ROIs.to_select_ROIs(parent))
+    parent.select_roi_btn.setToolTip("Select ROIs")
 
     ### Shift ROIs
     parent.shift_roi_btn = QPushButton("Shift ROIs")
@@ -110,6 +107,7 @@ def ROI_Buttons(parent):
     parent.shift_roi_btn.setFixedHeight(20)
     parent.shift_roi_btn.setFont(roi_btn_font)
     parent.shift_roi_btn.clicked.connect(lambda: ROIs.to_shift_ROIs(parent))
+    parent.shift_roi_btn.setToolTip("Shift all ROIs together")
 
     ### Label ROIs
     parent.label_roi_btn = QPushButton("Label ROIs")
@@ -117,6 +115,15 @@ def ROI_Buttons(parent):
     parent.label_roi_btn.setFixedHeight(20)
     parent.label_roi_btn.setFont(roi_btn_font)
     parent.label_roi_btn.clicked.connect(lambda: ROIs.toggle_ROI_labels(parent))
+    parent.label_roi_btn.setToolTip("Toggle ROI label display")
+
+    ### Flag ROIs
+    parent.flag_roi_btn = QPushButton("Flag ROIs")
+    parent.flag_roi_btn.setStyleSheet(roi_btn_style)
+    parent.flag_roi_btn.setFixedHeight(20)
+    parent.flag_roi_btn.setFont(roi_btn_font)
+    parent.flag_roi_btn.clicked.connect(lambda: ROIs.to_flag_ROIs(parent))
+    parent.flag_roi_btn.setToolTip("Add descriptive flag to ROI")
 
     ### Delete ROIs
     parent.delete_roi_btn = QPushButton("Delete ROIs")
@@ -124,6 +131,7 @@ def ROI_Buttons(parent):
     parent.delete_roi_btn.setFixedHeight(20)
     parent.delete_roi_btn.setFont(roi_btn_font)
     parent.delete_roi_btn.clicked.connect(lambda: ROIs.to_delete_ROIs(parent))
+    parent.delete_roi_btn.setToolTip("Select and Delete ROIs")
 
     ### Clear ROIs
     parent.clear_roi_btn = QPushButton("Clear ROIs")
@@ -131,13 +139,15 @@ def ROI_Buttons(parent):
     parent.clear_roi_btn.setFixedHeight(20)
     parent.clear_roi_btn.setFont(roi_btn_font)
     parent.clear_roi_btn.clicked.connect(lambda: ROIs.to_clear_ROIs(parent))
+    parent.clear_roi_btn.setToolTip("Clears all ROIs")
 
     ### Save ROIs
     parent.save_roi_btn = QPushButton("Save ROIs")
     parent.save_roi_btn.setStyleSheet(roi_btn_style)
     parent.save_roi_btn.setFixedHeight(20)
     parent.save_roi_btn.setFont(roi_btn_font)
-    parent.save_roi_btn.clicked.connect(lambda: print("Add Function"))
+    parent.save_roi_btn.clicked.connect(lambda: ROIs.save_ROIs(parent))
+    parent.save_roi_btn.setToolTip("Save ROIs masks")
 
     ### Extract Traces
     parent.extract_roi_btn = QPushButton("Extract Traces")
@@ -147,6 +157,7 @@ def ROI_Buttons(parent):
     parent.extract_roi_btn.clicked.connect(
         lambda: signal_extraction.extract_raw_fluorescence(parent)
     )
+    parent.extract_roi_btn.setToolTip("Extract ROI fluorescence")
 
     ### Save Traces
     parent.save_trace_btn = QPushButton("Save Traces")
@@ -160,11 +171,13 @@ def ROI_Buttons(parent):
             )
         )
     )
+    parent.save_trace_btn.setToolTip("Save and Resave activity traces")
 
     # Add manage buttons to manage frame
     manage_btn_layout.addWidget(parent.select_roi_btn)
     manage_btn_layout.addWidget(parent.shift_roi_btn)
     manage_btn_layout.addWidget(parent.label_roi_btn)
+    manage_btn_layout.addWidget(parent.flag_roi_btn)
     manage_btn_layout.addWidget(parent.delete_roi_btn)
     manage_btn_layout.addWidget(parent.clear_roi_btn)
     manage_btn_layout.addWidget(parent.save_roi_btn)
