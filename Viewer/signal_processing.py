@@ -7,6 +7,8 @@ from PyQt5.QtWidgets import (
     QDialog,
     QGridLayout,
     QGroupBox,
+    QLabel,
+    QLineEdit,
     QVBoxLayout,
 )
 
@@ -71,13 +73,48 @@ def parameters_window(parent, win):
     win.deconvolve_check_bx.setStyleSheet(styles.parameterCheckBoxStyle())
     win.deconvolve_check_bx.setFont(styles.roi_btn_font())
 
+    # Calculate Volume
+    win.volume_check_bx = QCheckBox("Calculate Volume", parent=win)
+    win.volume_check_bx.setStyleSheet(styles.parameterCheckBoxStyle())
+    win.volume_check_bx.setFont(styles.roi_btn_font())
+
     # Correct bout separations
     win.bout_sep_check_bx = QCheckBox("Correct Bout Separations", parent=win)
     win.bout_sep_check_bx.setStyleSheet(styles.parameterCheckBoxStyle())
     win.bout_sep_check_bx.setFont(styles.roi_btn_font())
 
+    # Smooth Window
+    win.smooth_label = QLabel("Smooth Window")
+    win.smooth_label.setStyleSheet(styles.parameterLabelStyle())
+    win.smooth_label.setFont(styles.parameterLabelFont())
+    win.smooth_win_input = QLineEdit()
+    win.smooth_win_input.setStyleSheet(styles.parameterInputStyle())
+    win.smooth_win_input.setFont(styles.roi_btn_font())
+    if parent.imaging_sensor == "iGluSnFr3" or parent.imaging_sensor == "RCaMP2":
+        default_smooth = "0.5"
+    else:
+        default_smooth = "0.0"
+    win.smooth_win_input.setText(default_smooth)
+
+    # Artifact Frames
+    win.artifact_label = QLabel("Artifact Frames")
+    win.artifact_label.setStyleSheet(styles.parameterLabelStyle())
+    win.artifact_label.setFont(styles.parameterLabelFont())
+    win.artifact_input = QLineEdit()
+    win.artifact_input.setStyleSheet(styles.parameterInputStyle())
+    win.artifact_input.setFont(styles.roi_btn_font())
+    win.artifact_sublabel = QLabel("e.g., 10-40;80-100")
+    win.artifact_sublabel.setStyleSheet(styles.parameterSubLabelStyle())
+    win.artifact_sublabel.setFont(styles.parameterSubLabelFont())
+
     # Add inputs to layout
     param_layout.addWidget(win.dFoF_check_bx)
     param_layout.addWidget(win.deconvolve_check_bx)
+    param_layout.addWidget(win.volume_check_bx)
     param_layout.addWidget(win.bout_sep_check_bx)
+    param_layout.addWidget(win.smooth_label)
+    param_layout.addWidget(win.smooth_win_input)
+    param_layout.addWidget(win.artifact_label)
+    param_layout.addWidget(win.artifact_input)
+    param_layout.addWidget(win.artifact_sublabel)
     param_layout.addStretch(1)
