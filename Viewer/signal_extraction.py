@@ -1,8 +1,8 @@
 """Module to handle the signal extraction of ROIs"""
 
 import os
+import re
 
-import matplotlib.pyplot as plt
 import numpy as np
 import pyqtgraph as pg
 from PyQt5.QtCore import Qt
@@ -56,6 +56,9 @@ def extract_raw_fluorescence(parent):
     progress.setWindowModality(Qt.WindowModal)
     progress.show()
 
+    # Keep track of how many frames are in each tif images
+    frame_counts = []
+
     # Extract fluorescence for each image file
     for image_file in image_files:
         progress.setValue(frame_tracker)
@@ -63,7 +66,7 @@ def extract_raw_fluorescence(parent):
             os.path.join(parent.image_directory, image_file), plugin="tifffile"
         )
         tif = image
-
+        frame_counts.append(np.shape(tif)[0])
         # Extract fluorescence for each ROI
         for key, value in parent.ROIs.items():
             if key == "Background":
@@ -114,9 +117,8 @@ def extract_raw_fluorescence(parent):
                 new_value = v[1:, :]
             fluorescence_data["Dendrite Poly"] = new_value
 
-    plt.figure()
-    plt.plot(fluorescence_data["Dendrite"][:, 0])
-    plt.savefig("test.pdf")
+    parent.ROI_fluorescence = fluorescence_data
+    parent.bout_separations = find_bout_separations(image_files, frame_counts)
 
 
 def get_roi_fluorescence(parent, roi_type, rois, arr):
@@ -128,7 +130,7 @@ def get_roi_fluorescence(parent, roi_type, rois, arr):
             array_region = roi.roi.getArrayRegion(
                 arr=arr, img=parent.current_image, axes=(1, 2)
             )
-            roi_regions.append(array_region.mean(axis=(1, 2)))
+            roi_regions.append(array_region.sum(axis=(1, 2)))
         roi_regions = np.vstack(roi_regions).T
         return roi_regions
 
@@ -136,7 +138,7 @@ def get_roi_fluorescence(parent, roi_type, rois, arr):
         array_region = rois[0].roi.getArrayRegion(
             arr=arr, img=parent.current_image, axes=(1, 2)
         )
-        roi_regions = array_region.mean(axis=(1, 2))
+        roi_regions = array_region.sum(axis=(1, 2))
         return roi_regions.reshape(-1, 1)
 
     elif roi_type == "Dendrite":
@@ -147,7 +149,30 @@ def get_roi_fluorescence(parent, roi_type, rois, arr):
                 poly_region = poly_roi.getArrayRegion(
                     arr=arr, img=parent.current_image, axes=(1, 2)
                 )
-                poly_regions.append(poly_region.mean(axis=(1, 2)).reshape(-1, 1))
+                poly_regions.append(poly_region.sum(axis=(1, 2)).reshape(-1, 1))
             roi_regions.append(np.hstack(poly_regions))
         return roi_regions
 
+
+def find_bout_separations(images, frame_counts):
+    """Function to find the frames seperating seperate imaging bouts within
+        the same imaging session
+        
+        Returns a list of containing the index of the first frame at the 
+        start of a new bout"""
+
+    previous_frames = 0
+    bout_ids = []
+    bout_separations = []
+    for i, (image, count) in enumerate(zip(images, frame_counts)):
+        bout = image.split("_")[-3]
+        bout_ids.append(bout)
+        start_frame = previous_frames
+        if i > 0:
+            if bout != bout_ids[i - 1]:
+                bout_separations.append(start_frame)
+        else:
+            bout_separations.append(start_frame)
+        previous_frames = previous_frames + count
+
+    return bout_separations
