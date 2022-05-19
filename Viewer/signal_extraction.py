@@ -1,7 +1,6 @@
 """Module to handle the signal extraction of ROIs"""
 
 import os
-import re
 
 import numpy as np
 import pyqtgraph as pg
@@ -10,6 +9,7 @@ from PyQt5.QtWidgets import QFileDialog, QProgressDialog
 from skimage import io as sio
 
 import messages
+import signal_processing
 
 
 def extract_raw_fluorescence(parent):
@@ -119,6 +119,7 @@ def extract_raw_fluorescence(parent):
 
     parent.ROI_fluorescence = fluorescence_data
     parent.bout_separations = find_bout_separations(image_files, frame_counts)
+    signal_processing.start_processing(parent)
 
 
 def get_roi_fluorescence(parent, roi_type, rois, arr):
