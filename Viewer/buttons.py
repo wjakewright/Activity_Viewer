@@ -4,9 +4,17 @@
         William (Jake) Wright - 12/24/2021"""
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import (QComboBox, QGroupBox, QHBoxLayout, QLabel,
-                             QLineEdit, QPushButton, QScrollBar, QVBoxLayout,
-                             QWidget)
+from PyQt5.QtWidgets import (
+    QComboBox,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPushButton,
+    QScrollBar,
+    QVBoxLayout,
+    QWidget,
+)
 
 import display
 import ROIs
