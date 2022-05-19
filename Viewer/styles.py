@@ -195,3 +195,25 @@ def parameterCheckBoxStyle():
                                         }"""
     return param_check_style
 
+
+def roiListStyle():
+    # Style for roi list frame
+    roi_list_style = """QListWidget {
+                                    background:black;
+                                    border:0px;
+                                    }
+                        QListWidget::Item:unselected {
+                                    background:black;
+                                    color:white;
+                                    }
+                        QListWidget::Item:selected {
+                                    background: #02449B;
+                                    color:white;
+                                    }
+                        QListWidget::Item:hover {
+                                    background: #132743;
+                                    color:white;
+                                    }
+                                    """
+    return roi_list_style
+
