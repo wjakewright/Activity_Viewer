@@ -73,6 +73,8 @@ class Activity_Viewer(QMainWindow):
         }
         self.sensor_list = ["GCaMP6f", "GCaMP6s", "GCaMP7b", "iGluSnFr3", "RCaMP2"]
         self.imaging_sensor = "GCaMP6f"
+        self.ROI_fluorescence = None
+        self.bout_separation_frames = None
 
         # Main menu bar
         menus.fileMenu(self)
