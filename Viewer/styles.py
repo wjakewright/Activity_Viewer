@@ -159,3 +159,11 @@ def sensorInputStyle():
                                                         }"""
 
     return sensor_input_style
+
+def flagInputStyle():
+    # Style for the ROI flag input dialog window
+    flag_input_style = """QInputDialog {
+                                        background:white;
+                                        }"""
+    
+    return flag_input_style
