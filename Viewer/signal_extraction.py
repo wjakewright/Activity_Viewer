@@ -2,10 +2,11 @@
 
 import os
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pyqtgraph as pg
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QFileDialog, QProgressBar, QProgressDialog
+from PyQt5.QtWidgets import QFileDialog, QProgressDialog
 from skimage import io as sio
 
 import messages
@@ -34,7 +35,7 @@ def extract_raw_fluorescence(parent):
     image_files = [
         img for img in os.listdir(parent.image_directory) if img.endswith(".tif")
     ]
-    approximate_frames = len(image_files[:8]) * 800
+    approximate_frames = len(image_files) * 800
 
     # Set up outputs to store the fluorescence data
     fluorescence_data = {}
@@ -56,7 +57,7 @@ def extract_raw_fluorescence(parent):
     progress.show()
 
     # Extract fluorescence for each image file
-    for image_file in image_files[:8]:
+    for image_file in image_files:
         progress.setValue(frame_tracker)
         image = sio.imread(
             os.path.join(parent.image_directory, image_file), plugin="tifffile"
@@ -113,6 +114,10 @@ def extract_raw_fluorescence(parent):
                 new_value = v[1:, :]
             fluorescence_data["Dendrite Poly"] = new_value
 
+    plt.figure()
+    plt.plot(fluorescence_data["Dendrite"][:, 0])
+    plt.savefig("test.pdf")
+
 
 def get_roi_fluorescence(parent, roi_type, rois, arr):
     """Helper function to extract the fluorscence of ROIs from a single
@@ -121,7 +126,7 @@ def get_roi_fluorescence(parent, roi_type, rois, arr):
         roi_regions = []
         for roi in rois:
             array_region = roi.roi.getArrayRegion(
-                arr=arr, img=parent.current_image, axes=(2, 1)
+                arr=arr, img=parent.current_image, axes=(1, 2)
             )
             roi_regions.append(array_region.mean(axis=(1, 2)))
         roi_regions = np.vstack(roi_regions).T
@@ -129,9 +134,9 @@ def get_roi_fluorescence(parent, roi_type, rois, arr):
 
     elif roi_type == "Background":
         array_region = rois[0].roi.getArrayRegion(
-            arr=arr, img=parent.current_image, axes=(2, 1)
+            arr=arr, img=parent.current_image, axes=(1, 2)
         )
-        roi_regions = array_region.mean(axis=(2, 1))
+        roi_regions = array_region.mean(axis=(1, 2))
         return roi_regions.reshape(-1, 1)
 
     elif roi_type == "Dendrite":
@@ -140,7 +145,7 @@ def get_roi_fluorescence(parent, roi_type, rois, arr):
             poly_regions = []
             for poly_roi in roi.roi.poly_rois:
                 poly_region = poly_roi.getArrayRegion(
-                    arr=arr, img=parent.current_image, axes=(2, 1)
+                    arr=arr, img=parent.current_image, axes=(1, 2)
                 )
                 poly_regions.append(poly_region.mean(axis=(1, 2)).reshape(-1, 1))
             roi_regions.append(np.hstack(poly_regions))
