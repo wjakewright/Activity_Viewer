@@ -1,7 +1,9 @@
 """Module to handle the signal processing of the activity traces"""
 
 import pyqtgraph as pg
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
+    QAbstractItemView,
     QCheckBox,
     QDesktopWidget,
     QDialog,
@@ -9,7 +11,10 @@ from PyQt5.QtWidgets import (
     QGroupBox,
     QLabel,
     QLineEdit,
+    QListWidget,
+    QListWidgetItem,
     QVBoxLayout,
+    QWidget,
 )
 
 import styles
@@ -48,9 +53,22 @@ class Processing_Window(QDialog):
         """Putting everything into the window"""
         self.grid_layout = QGridLayout()
         self.setLayout(self.grid_layout)
+
+        # Make parameters window
         parameters_window(self.parent, self)
 
-        self.grid_layout.addWidget(self.param_widget, 0, 0)
+        # Make ROI list view
+        roi_list_window(self.parent, self)
+
+        self.side_box = QWidget()
+        side_box_layout = QVBoxLayout()
+        self.side_box.setLayout(side_box_layout)
+        self.side_box.setFixedWidth(210)
+        side_box_layout.addWidget(self.param_widget)
+        side_box_layout.addWidget(self.roi_list_frame)
+        side_box_layout.addStretch(1)
+
+        self.grid_layout.addWidget(self.side_box, 0, 0)
 
 
 def parameters_window(parent, win):
@@ -118,3 +136,32 @@ def parameters_window(parent, win):
     param_layout.addWidget(win.artifact_input)
     param_layout.addWidget(win.artifact_sublabel)
     param_layout.addStretch(1)
+
+
+def roi_list_window(parent, win):
+    """Layout to display list of all rois that can be selected
+        to display in the plot"""
+    roi_list_layout = QVBoxLayout()
+    win.roi_list_frame = QGroupBox(win, title="ROIs")
+    win.roi_list_frame.setStyleSheet(styles.roiFrameStyle())
+    win.roi_list_frame.setFont(styles.roi_btn_font())
+    win.roi_list_frame.setLayout(roi_list_layout)
+    win.roi_list_frame.setFixedWidth(200)
+
+    win.ROI_list_window = QListWidget()
+    win.ROI_list_window.setSelectionMode(QAbstractItemView.ExtendedSelection)
+    win.ROI_list_window.setStyleSheet(styles.roiListStyle())
+
+    # Get the ROI labels to display
+    roi_labels = []
+    for key, value in parent.ROIs.items():
+        if not value:
+            continue
+        for i, _ in enumerate(value):
+            label = f"{key} {i+1}"
+            roi_labels.append(label)
+            item = QListWidgetItem(label)
+            win.ROI_list_window.addItem(item)
+
+    roi_list_layout.addWidget(win.ROI_list_window)
+    roi_list_layout.addStretch(1)
