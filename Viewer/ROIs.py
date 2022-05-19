@@ -15,12 +15,14 @@ from PyQt5.QtWidgets import (
     QGraphicsItemGroup,
     QGraphicsLineItem,
     QGraphicsTextItem,
+    QInputDialog,
 )
 from shapely.geometry import LineString as ShLS
 from shapely.geometry import Point as ShP
 
 import display
 import messages
+import styles
 
 
 def Draw_ROI(parent):
@@ -276,10 +278,37 @@ def delete_ROIs(parent):
             del parent.ROIs[t][i]
         parent.selected_ROIs[t] = []
     to_relable_ROIs(parent)
+    parent.status_label.setText("Ready...")
+
+
+def to_flag_ROIs(parent):
+    """Function to select ROIs to add flag too"""
+    parent.status_label.setText("Selecting ROIs to flag")
+    parent.flag_ROIs = True
+    for key, value in parent.ROIs.items():
+        if not value:
+            continue
+        if key != "Dendrite":
+            for v in value:
+                v.roi.setAcceptedMouseButtons(Qt.MouseButton.LeftButton)
+    parent.select_ROIs = True
+
+
+def flag_ROIs(parent, roi):
+    """Function to add flags to ROIs"""
+    flags = ["New Spine", "Eliminated Spine", "Shaft Spine"]
+    flag_dialog = QInputDialog()
+    flag_dialog.setStyleSheet(styles.flagInputStyle())
+    flag, done1 = flag_dialog.getItem(None, "ROI Flag", "Add ROI Flag: ", flags)
+    roi.flag.append(flag)
+    parent.flag_ROIs = False
+    parent.select_ROIs = False
+    parent.status_label.setText("Ready...")
 
 
 def to_clear_ROIs(parent):
     """Function to initiate clearing all ROIs"""
+    parent.status_label.setText("Clearing ROIs")
     messages.clear_roi_warning(parent)
 
 
@@ -290,6 +319,7 @@ def clear_ROIs(parent):
             parent.display_image.removeItem(roi.label)
             parent.display_image.removeItem(roi.roi)
         parent.ROIs[key] = []
+    parent.status_label.setText("Ready...")
 
 
 def to_select_ROIs(parent):
@@ -318,6 +348,9 @@ def to_select_ROIs(parent):
 
 def select_ROIs(parent, roi):
     """Function to select ROIs"""
+    if parent.flag_ROIs is True:
+        flag_ROIs(parent, roi)
+        return
     t = roi.type
     if roi not in parent.selected_ROIs[t]:
         if roi.type != "Dendrite":
@@ -440,6 +473,7 @@ class ROI:
         self.roi = None
         self.label = None
         self.start_pos = None
+        self.flag = []
 
         self.create_roi()
 
