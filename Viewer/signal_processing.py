@@ -1,5 +1,6 @@
 """Module to handle the signal processing of the activity traces"""
 
+import numpy as np
 import pyqtgraph as pg
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
@@ -57,6 +58,9 @@ class Processing_Window(QDialog):
         # Make parameters window
         parameters_window(self.parent, self)
 
+        # Make window for grouping spines
+        grouping_window(self.parent, self)
+
         # Make ROI list view
         roi_list_window(self.parent, self)
 
@@ -65,6 +69,10 @@ class Processing_Window(QDialog):
         self.side_box.setLayout(side_box_layout)
         self.side_box.setFixedWidth(210)
         side_box_layout.addWidget(self.param_widget)
+        try:
+            side_box_layout.addWidget(self.grouping_frame)
+        except AttributeError:
+            pass
         side_box_layout.addWidget(self.roi_list_frame)
         side_box_layout.addStretch(1)
 
@@ -136,6 +144,43 @@ def parameters_window(parent, win):
     param_layout.addWidget(win.artifact_input)
     param_layout.addWidget(win.artifact_sublabel)
     param_layout.addStretch(1)
+
+
+def grouping_window(parent, win):
+    """Layout to display inputs for spine groupings"""
+    dend_num = np.shape(parent.ROI_fluorescence["Dendrite"])[1]
+
+    if dend_num < 2 or "Spine" not in parent.ROI_fluorescence:
+        return
+
+    grouping_layout = QVBoxLayout()
+    win.grouping_frame = QGroupBox(win, title="Spine Groupings")
+    win.grouping_frame.setStyleSheet(styles.roiFrameStyle())
+    win.grouping_frame.setFont(styles.roi_btn_font())
+    win.grouping_frame.setLayout(grouping_layout)
+    win.grouping_frame.setFixedWidth(200)
+
+    win.grouping_label_list = []
+    win.grouping_input_list = []
+    for i in range(dend_num):
+        label = QLabel(f"Dendrite {i+1}")
+        label.setStyleSheet(styles.parameterLabelStyle())
+        label.setFont(styles.parameterLabelFont())
+        win.grouping_label_list.append(label)
+        input = QLineEdit()
+        input.setPlaceholderText("Enter spines on this dendrite")
+        input.setStyleSheet(styles.parameterInputStyle())
+        input.setFont(styles.roi_btn_font())
+        win.grouping_input_list.append(input)
+        grouping_layout.addWidget(win.grouping_label_list[i])
+        grouping_layout.addWidget(win.grouping_input_list[i])
+
+    grouping_sub_label = QLabel("e.g., 1-15")
+    grouping_sub_label.setStyleSheet(styles.parameterSubLabelStyle())
+    grouping_sub_label.setFont(styles.parameterSubLabelFont())
+
+    grouping_layout.addWidget(grouping_sub_label)
+    grouping_layout.addStretch(1)
 
 
 def roi_list_window(parent, win):
