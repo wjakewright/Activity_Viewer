@@ -149,6 +149,24 @@ def parameterLabelFont():
     return parameter_label_font
 
 
+def parameterSubLabelStyle():
+    # Style for text below parameter input fields
+    parameter_sub_label_style = """QLabel {
+                                           color:grey;
+                                           font-family:Arial;
+                                           font-size:8;
+                                           }"""
+    return parameter_sub_label_style
+
+
+def parameterSubLabelFont():
+    # Style for parameter sub labels
+    parameter_sub_label_font = QFont("Arial", 8)
+    parameter_sub_label_font.setItalic(True)
+
+    return parameter_sub_label_font
+
+
 def sensorInputStyle():
     # Style for the imaging sensor combobox
     sensor_input_style = """QComboBox {
@@ -176,3 +194,4 @@ def parameterCheckBoxStyle():
                                         color:white;
                                         }"""
     return param_check_style
+
