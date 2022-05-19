@@ -4,7 +4,8 @@ import os
 
 import numpy as np
 import pyqtgraph as pg
-from PyQt5.QtWidgets import QFileDialog, QProgressDialog
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QFileDialog, QProgressBar, QProgressDialog
 from skimage import io as sio
 
 import messages
@@ -33,7 +34,7 @@ def extract_raw_fluorescence(parent):
     image_files = [
         img for img in os.listdir(parent.image_directory) if img.endswith(".tif")
     ]
-    approximate_frames = len(image_files[:3]) * 800
+    approximate_frames = len(image_files[:8]) * 800
 
     # Set up outputs to store the fluorescence data
     fluorescence_data = {}
@@ -48,14 +49,15 @@ def extract_raw_fluorescence(parent):
     # Keep track of frames processed for progress bar
     frame_tracker = 0
     progress = QProgressDialog(
-        labelText="Extracting Fluorescnece...",
-        cancelButtonText="Abort",
-        minimum=0,
-        maximum=len(image_files[:3]),
+        "Extracting Fluorescence...", "Cancel", 0, approximate_frames,
     )
-    progress.setValue(frame_tracker)
+    progress.setMinimumDuration(0)
+    progress.setWindowModality(Qt.WindowModal)
+    progress.show()
+
     # Extract fluorescence for each image file
-    for image_file in image_files[:3]:
+    for image_file in image_files[:8]:
+        progress.setValue(frame_tracker)
         image = sio.imread(
             os.path.join(parent.image_directory, image_file), plugin="tifffile"
         )
