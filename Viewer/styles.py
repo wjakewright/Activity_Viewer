@@ -216,4 +216,3 @@ def roiListStyle():
                                     }
                                     """
     return roi_list_style
-
