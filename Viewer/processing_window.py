@@ -86,6 +86,10 @@ class Processing_Window(QDialog):
         self.grid_layout.addWidget(self.side_panel, 0, 0)
         self.grid_layout.addWidget(self.plot_win, 0, 1)
 
+    def close_window(self):
+        """Function to close window"""
+        self.close()
+
 
 def parameters_window(parent, win):
     """Make the processing parameters panel widget"""
@@ -252,12 +256,16 @@ def processing_buttons(parent, win):
     win.process_btn = QPushButton("Process")
     win.process_btn.setStyleSheet(styles.roiBtnStyle())
     win.process_btn.setFont(styles.roi_btn_font())
+    win.process_btn.clicked.connect(
+        lambda: signal_processing.process_traces(parent, win)
+    )
     win.process_btn.setToolTip("Process Traces")
 
     # Cancel Button
     win.cancel_btn = QPushButton("Cancel")
     win.cancel_btn.setStyleSheet(styles.roiBtnStyle())
     win.cancel_btn.setFont(styles.roi_btn_font())
+    win.cancel_btn.clicked.connect(lambda: win.close_window())
     win.cancel_btn.setToolTip("Cancel Processing")
 
     btn_layout.addWidget(win.process_btn)
