@@ -4,8 +4,15 @@ import sys
 
 import pyqtgraph as pg
 from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtWidgets import (QApplication, QGraphicsItemGroup, QGridLayout,
-                             QLabel, QMainWindow, QStatusBar, QWidget)
+from PyQt5.QtWidgets import (
+    QApplication,
+    QGraphicsItemGroup,
+    QGridLayout,
+    QLabel,
+    QMainWindow,
+    QStatusBar,
+    QWidget,
+)
 
 import buttons
 import display
@@ -68,11 +75,12 @@ class Activity_Viewer(QMainWindow):
         self.sensor_list = ["GCaMP6f", "GCaMP6s", "GCaMP7b", "iGluSnFr3", "RCaMP2"]
         self.imaging_sensor = "GCaMP6f"
         self.ROI_fluorescence = None
-        self.ROI_fluorescence_sub = None
         self.bout_separation_frames = None
+        self.fluorescence_subtracted = None
+        self.fluorescence_processed = None
+        self.drifting_baseline = None
         self.dFoF = None
         self.processed_dFoF = None
-        self.drifting_baseline = None
 
         # Main menu bar
         menus.fileMenu(self)
