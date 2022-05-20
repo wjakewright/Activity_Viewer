@@ -119,7 +119,7 @@ def extract_raw_fluorescence(parent):
 
     parent.ROI_fluorescence = fluorescence_data
     parent.bout_separations = find_bout_separations(image_files, frame_counts)
-    signal_processing.start_processing(parent)
+    signal_processing.trigger_processing(parent)
 
 
 def get_roi_fluorescence(parent, roi_type, rois, arr):
