@@ -3,6 +3,7 @@
 import numpy as np
 
 import messages
+from deltaF_F import calulate_dFoF
 from processing_window import Processing_Window
 
 
@@ -35,6 +36,8 @@ def process_traces(parent, win):
     for key, value in parent.ROI_fluorescence.items():
         if key != "Background":
             ROI_fluorescence_sub[key] = value - parent.ROI_fluorescence["Background"]
+
+
 
 
 def get_processing_params(parent, win):
