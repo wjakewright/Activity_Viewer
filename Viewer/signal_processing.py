@@ -31,17 +31,11 @@ def process_traces(parent, win):
     parameters = get_processing_params(parent, win)
 
     # subtract the time varying background from all the traces
-    ROI_fluorescence_sub = {}
-    print(np.shape(parent.ROI_fluorescence["Background"]))
-    for key, value in parent.ROI_fluorescence.items():
-        if key != "Background":
-            ROI_fluorescence_sub[key] = value - parent.ROI_fluorescence["Background"]
+    background_subtraction(parent)
 
-    dFoF = {}
-    processed_dFoF = {}
-    drifting_baseline = {}
-    for key, value in ROI_fluorescence_sub.items():
-        pass
+    # Calculate deltaF/F is specified
+    if parameters["Calculate dFoF"] is True:
+        get_dFoF(parent, parent.ROI_fluorescence_sub, parameters)
 
 
 def get_processing_params(parent, win):
@@ -89,3 +83,50 @@ def get_processing_params(parent, win):
     }
 
     return parameters
+
+
+def background_subtraction(parent):
+    """Function to subtract time varying background from fluorescence"""
+    ROI_fluorescence_sub = {}
+    print(np.shape(parent.ROI_fluorescence["Background"]))
+    for key, value in parent.ROI_fluorescence.items():
+        if key != "Background":
+            ROI_fluorescence_sub[key] = value - parent.ROI_fluorescence["Background"]
+    parent.ROI_fluorescence_sub = ROI_fluorescence_sub
+
+
+def get_dFoF(parent, fluorescence, parameters):
+    """Function to handle calculating the deltaF/F """
+    # get bout separations if correcting
+    if parameters["Correct Bout Separation"] is True:
+        seps = parent.bout_separation_frames
+    else:
+        seps = None
+
+    # calulate deltaF/F
+    dFoF = {}
+    processed_dFoF = {}
+    drifting_baseline = {}
+    for key, value in fluorescence.items():
+        temp_dFoF = np.zeros(np.shape(value))
+        temp_pdFoF = np.zeros(np.shape(value))
+        temp_db = np.zeros(np.shape(value))
+        for i in range(np.shape(value)[1]):
+            df, pdf, db = calculate_dFoF.calulate_dFoF(
+                data=value[:i],
+                sampling_rate=parameters["Sampling Rate"],
+                smooth_window=parameters["Smooth Window"],
+                bout_separations=seps,
+                artifact_frames=parameters["Artifact Frames"],
+            )
+            temp_dFoF[:, i] = df.reshape(-1, 1)
+            temp_pdFoF[:, i] = pdf.reshape(-1, 1)
+            temp_db[:, i] = db.reshape(-1, 1)
+
+        dFoF[key] = temp_dFoF
+        processed_dFoF[key] = temp_pdFoF
+        drifting_baseline[key] = temp_db
+
+    parent.dFoF = dFoF
+    parent.processed_dFoF = processed_dFoF
+    parent.drifting_baseline = drifting_baseline
