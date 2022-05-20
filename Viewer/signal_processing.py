@@ -2,6 +2,7 @@
 
 import numpy as np
 
+import messages
 from processing_window import Processing_Window
 
 
@@ -18,8 +19,60 @@ def trigger_processing(parent):
 def process_traces(parent, win):
     """Function to process the traces based on the parameters
         specified in the processing window"""
-    parameters = get_processing_params(win)
+    # Check to make sure required inputs are there
+    if hasattr(win, "grouping_frame"):
+        for dend in win.grouping_input_list:
+            if dend.text() == "":
+                messages.dendrite_grouping_warning(parent)
+                return
+
+    parameters = get_processing_params(parent, win)
+    for key, value in parameters.items():
+        print(f"{key}: {value}")
 
 
-def get_processing_params(win):
+def get_processing_params(parent, win):
     """Function to pull the parameters from the processing window"""
+
+    # get all the parameter variables
+    sensor = parent.imaging_sensor
+    zoom = float(parent.zoom_input.text())
+    sampling_rate = float(parent.image_rate_input.text())
+    dFoF = win.dFoF_check_bx.isChecked()
+    deconvolve = win.deconvolve_check_bx.isChecked()
+    volume = win.volume_check_bx.isChecked()
+    bout_sep = win.bout_sep_check_bx.isChecked()
+    smooth = float(win.smooth_win_input.text())
+
+    # Get artifact frames only if specified
+    artifact_frames = []
+    if win.artifact_input.text() != "":
+        artifact_strs = win.artifact_input.text().split(";")
+        for artifact in artifact_strs:
+            start, stop = artifact.split("-")
+            artifact_frames.append((int(start), int(stop)))
+
+    # Get dend groupings is relevant
+    dend_groupings = []
+    if hasattr(win, "grouping_frame"):
+        for dend in win.grouping_input_list:
+            txt = dend.text()
+            first, last = txt.split("-")
+            spines = list(range(int(first) - 1, int(last)))
+            dend_groupings.append(spines)
+
+    # Package parameters into dictionary
+    parameters = {
+        "Imaging Sensor": sensor,
+        "Zoom": zoom,
+        "Sampling Rate": sampling_rate,
+        "Calculate dFoF": dFoF,
+        "Deconvolve": deconvolve,
+        "Calculate Volume": volume,
+        "Correct Bout Separation": bout_sep,
+        "Smooth Window": smooth,
+        "Artifact Frames": artifact_frames,
+        "Spine Groupings": dend_groupings,
+    }
+
+    return parameters
