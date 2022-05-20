@@ -92,6 +92,20 @@ def parent_dendrite_warning(parent):
     retval = warning.exec()
 
 
+def dendrite_grouping_warning(parent):
+    # Warning that you must specify dendrite groupings if more than one dendrite
+    warning = QMessageBox()
+    warning.setIcon(QMessageBox.Warning)
+    warning.setText("No Spine Groupings")
+    warning.setInformativeText(
+        "Must specify which spines belong to which dendrite before peceeding"
+    )
+    warning.setWindowTitle("Spine Groupings")
+    # Button to clear warning
+    warning.setStandardButtons(QMessageBox.Ok)
+    retval = warning.exec()
+
+
 def imaging_rate_warning(parent):
     # Warning that imaging rate has not been specified
     warning = QMessageBox()
