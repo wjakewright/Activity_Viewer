@@ -2,8 +2,8 @@
 
 import numpy as np
 
+import calculate_dFoF
 import messages
-from deltaF_F import calulate_dFoF
 from processing_window import Processing_Window
 
 
@@ -37,7 +37,11 @@ def process_traces(parent, win):
         if key != "Background":
             ROI_fluorescence_sub[key] = value - parent.ROI_fluorescence["Background"]
 
-
+    dFoF = {}
+    processed_dFoF = {}
+    drifting_baseline = {}
+    for key, value in ROI_fluorescence_sub.items():
+        pass
 
 
 def get_processing_params(parent, win):
