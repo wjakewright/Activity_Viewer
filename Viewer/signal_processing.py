@@ -52,6 +52,11 @@ class Processing_Window(QDialog):
 
     def initWindow(self):
         """Putting everything into the window"""
+
+        # Some attributes
+        self.rois_to_plot = []
+
+        # Set up the grid layout
         self.grid_layout = QGridLayout()
         self.setLayout(self.grid_layout)
 
@@ -64,6 +69,7 @@ class Processing_Window(QDialog):
         # Make ROI list view
         roi_list_window(self.parent, self)
 
+        # Make the side box
         self.side_box = QWidget()
         side_box_layout = QVBoxLayout()
         self.side_box.setLayout(side_box_layout)
@@ -76,7 +82,15 @@ class Processing_Window(QDialog):
         side_box_layout.addWidget(self.roi_list_frame)
         side_box_layout.addStretch(1)
 
+        # Make the Plot Window
+        self.roi_plots = {}
+        generate_roi_plots(self.parent, self)
+        self.plot = pg.PlotItem()
+        self.plot.setTitle("Raw Fluorescence")
+        self.plot_win = pg.PlotWidget(self, plotItem=self.plot)
+
         self.grid_layout.addWidget(self.side_box, 0, 0)
+        self.grid_layout.addWidget(self.plot_win, 0, 1)
 
 
 def parameters_window(parent, win):
@@ -148,7 +162,10 @@ def parameters_window(parent, win):
 
 def grouping_window(parent, win):
     """Layout to display inputs for spine groupings"""
-    dend_num = np.shape(parent.ROI_fluorescence["Dendrite"])[1]
+    try:
+        dend_num = np.shape(parent.ROI_fluorescence["Dendrite"])[1]
+    except:
+        return
 
     if dend_num < 2 or "Spine" not in parent.ROI_fluorescence:
         return
@@ -194,7 +211,7 @@ def roi_list_window(parent, win):
     win.roi_list_frame.setFixedWidth(200)
 
     win.ROI_list_window = QListWidget()
-    win.ROI_list_window.setSelectionMode(QAbstractItemView.ExtendedSelection)
+    win.ROI_list_window.setSelectionMode(QAbstractItemView.MultiSelection)
     win.ROI_list_window.setStyleSheet(styles.roiListStyle())
 
     # Get the ROI labels to display
@@ -207,6 +224,41 @@ def roi_list_window(parent, win):
             roi_labels.append(label)
             item = QListWidgetItem(label)
             win.ROI_list_window.addItem(item)
+    win.ROI_list_window.itemClicked.connect(lambda x: plot_roi(parent, win, x))
 
     roi_list_layout.addWidget(win.ROI_list_window)
     roi_list_layout.addStretch(1)
+
+
+def generate_roi_plots(parent, win):
+    """Functon to make all the plot data items for each roi"""
+    for key, value in parent.ROI_fluorescence.items():
+        if key != "Dendrite Poly":
+            win.roi_plots[key] = []
+            for i in range(np.shape(value)[1]):
+                p = pg.PlotDataItem(value[:, i])
+                win.roi_plots[key].append(p)
+
+
+def plot_roi(parent, win, roi):
+    # Function to add roi plots to plot window when they are selected
+    roi = roi.text()
+    if roi not in win.rois_to_plot:
+        win.rois_to_plot.append(roi)
+    else:
+        win.rois_to_plot.remove(roi)
+
+    update_plot(parent, win, roi)
+
+
+def update_plot(parent, win, roi):
+    """Function to update the plot window"""
+    key, idx = roi.split(" ")
+    idx = int(idx)
+
+    roi_plot = win.roi_plots[key][idx - 1]
+
+    if roi in win.rois_to_plot:
+        win.plot.addItem(roi_plot)
+    else:
+        win.plot.removeItem(roi_plot)
