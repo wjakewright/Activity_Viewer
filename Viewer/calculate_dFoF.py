@@ -41,7 +41,7 @@ def calulate_dFoF(
     SMOOTH_PAD_LENGTH = 500
     SMOOTH_WINDOW = int(smooth_window * np.round(sampling_rate))
 
-    if artifact_frames is not None:
+    if artifact_frames:
         jump_correction = True
     else:
         jump_correction = False
@@ -228,5 +228,4 @@ def downsample_mean(x, ds_ratio):
     ds = np.nanmean(x[:end].reshape(-1, ds_ratio), 1)
 
     return ds
-
 
