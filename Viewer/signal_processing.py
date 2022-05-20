@@ -26,9 +26,15 @@ def process_traces(parent, win):
                 messages.dendrite_grouping_warning(parent)
                 return
 
+    # get processing parameters
     parameters = get_processing_params(parent, win)
-    for key, value in parameters.items():
-        print(f"{key}: {value}")
+
+    # subtract the time varying background from all the traces
+    ROI_fluorescence_sub = {}
+    print(np.shape(parent.ROI_fluorescence["Background"]))
+    for key, value in parent.ROI_fluorescence.items():
+        if key != "Background":
+            ROI_fluorescence_sub[key] = value - parent.ROI_fluorescence["Background"]
 
 
 def get_processing_params(parent, win):
