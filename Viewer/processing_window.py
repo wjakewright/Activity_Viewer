@@ -9,14 +9,17 @@ from PyQt5.QtWidgets import (
     QDialog,
     QGridLayout,
     QGroupBox,
+    QHBoxLayout,
     QLabel,
     QLineEdit,
     QListWidget,
     QListWidgetItem,
+    QPushButton,
     QVBoxLayout,
     QWidget,
 )
 
+import signal_processing
 import styles
 
 
@@ -54,6 +57,9 @@ class Processing_Window(QDialog):
         # Make ROI list view
         roi_list_window(self.parent, self)
 
+        # Make buttons
+        processing_buttons(self.parent, self)
+
         # Make the side panel display
         self.side_panel = QWidget()
         side_panel_layout = QVBoxLayout()
@@ -65,6 +71,7 @@ class Processing_Window(QDialog):
         except AttributeError:
             pass
         side_panel_layout.addWidget(self.roi_list_frame)
+        side_panel_layout.addWidget(self.btn_box)
 
         # Make the plot Window
         self.rois_to_plot = []
@@ -73,7 +80,6 @@ class Processing_Window(QDialog):
         self.plot = pg.PlotItem()
         self.plot.setTitle("Raw Fluorescence")
         self.plot.setMouseEnabled(y=False)
-        self.plot.addLegend()
         self.plot_win = pg.PlotWidget(self, plotItem=self.plot)
 
         # Add items to grid layout
@@ -95,21 +101,27 @@ def parameters_window(parent, win):
     win.dFoF_check_bx = QCheckBox("Calulate dFoF", parent=win)
     win.dFoF_check_bx.setStyleSheet(styles.parameterCheckBoxStyle())
     win.dFoF_check_bx.setFont(styles.roi_btn_font())
+    win.dFoF_check_bx.setToolTip("Check to calculate dFoF")
 
     # Deconvolve
     win.deconvolve_check_bx = QCheckBox("Deconvolve Trace", parent=win)
     win.deconvolve_check_bx.setStyleSheet(styles.parameterCheckBoxStyle())
     win.deconvolve_check_bx.setFont(styles.roi_btn_font())
+    win.deconvolve_check_bx.setToolTip("Check to deconvolve traces")
 
     # Calculate Volume
     win.volume_check_bx = QCheckBox("Calculate Volume", parent=win)
     win.volume_check_bx.setStyleSheet(styles.parameterCheckBoxStyle())
     win.volume_check_bx.setFont(styles.roi_btn_font())
+    win.volume_check_bx.setToolTip("Check to calculate spine volume")
 
     # Correct bout separations
     win.bout_sep_check_bx = QCheckBox("Correct Bout Separations", parent=win)
     win.bout_sep_check_bx.setStyleSheet(styles.parameterCheckBoxStyle())
     win.bout_sep_check_bx.setFont(styles.roi_btn_font())
+    win.bout_sep_check_bx.setToolTip(
+        "Check to correct separations between imaging bouts"
+    )
 
     # Smooth Window
     win.smooth_label = QLabel("Smooth Window")
@@ -123,6 +135,7 @@ def parameters_window(parent, win):
     else:
         default_smooth = "0.0"
     win.smooth_win_input.setText(default_smooth)
+    win.smooth_win_input.setToolTip("Window to smooth trace over in processing")
 
     # Artifact Frames
     win.artifact_label = QLabel("Artifact Frames")
@@ -134,6 +147,7 @@ def parameters_window(parent, win):
     win.artifact_sublabel = QLabel("e.g., 10-40;80-100")
     win.artifact_sublabel.setStyleSheet(styles.parameterSubLabelStyle())
     win.artifact_sublabel.setFont(styles.parameterSubLabelFont())
+    win.artifact_input.setToolTip("Frames to correct for large artifacts")
 
     # Add inputs to layout
     param_layout.addWidget(win.dFoF_check_bx)
@@ -179,6 +193,7 @@ def grouping_panel(parent, win):
         input.setPlaceholderText("Enter spines on this dendrite")
         input.setStyleSheet(styles.parameterInputStyle())
         input.setFont(styles.roi_btn_font())
+        input.setToolTip("Specify which spines belong to this dendrite")
         win.grouping_input_list.append(input)
         grouping_layout.addWidget(win.grouping_label_list[i])
         grouping_layout.addWidget(win.grouping_input_list[i])
@@ -221,6 +236,32 @@ def roi_list_window(parent, win):
 
     roi_list_layout.addWidget(win.ROI_list_window)
     roi_list_layout.addStretch(1)
+
+
+def processing_buttons(parent, win):
+    """Make processing buttons"""
+
+    # Make button layout
+    btn_layout = QHBoxLayout()
+    win.btn_box = QGroupBox(win)
+    # win.btn_box.setStyleSheet(styles.roiFrameStyle())
+    win.btn_box.setLayout(btn_layout)
+    win.btn_box.setFixedWidth(200)
+
+    # Processing Button
+    win.process_btn = QPushButton("Process")
+    win.process_btn.setStyleSheet(styles.roiBtnStyle())
+    win.process_btn.setFont(styles.roi_btn_font())
+    win.process_btn.setToolTip("Process Traces")
+
+    # Cancel Button
+    win.cancel_btn = QPushButton("Cancel")
+    win.cancel_btn.setStyleSheet(styles.roiBtnStyle())
+    win.cancel_btn.setFont(styles.roi_btn_font())
+    win.cancel_btn.setToolTip("Cancel Processing")
+
+    btn_layout.addWidget(win.process_btn)
+    btn_layout.addWidget(win.cancel_btn)
 
 
 def generate_roi_plots(parent, win):
