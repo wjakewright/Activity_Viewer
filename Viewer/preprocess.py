@@ -32,7 +32,7 @@ def preprocess_fluorescence(parent, parameters):
                 fluorescence_subtracted["Dendrite Poly"] = dend_poly
 
     # Correct the baseline using kernel density estimation
-    for key, value in fluorescence_subtracted:
+    for key, value in fluorescence_subtracted.items():
         if key != "Dendrite Poly":
             temp_f = np.zeros(np.shape(value))
             temp_b = np.zeros(np.shape(value))
@@ -43,26 +43,26 @@ def preprocess_fluorescence(parent, parameters):
                     bout_separations=seps,
                     artifact_frames=parameters["Artifact Frames"],
                 )
-                temp_f[:, i] = f.reshape(-1, 1)
-                temp_b[:, i] = b.reshape(-1, 1)
+                temp_f[:, i] = f
+                temp_b[:, i] = b
             fluorescence_processed[key] = temp_f
             drifting_basline[key] = temp_b
 
         else:
             dend_poly_f = []
             dend_poly_b = []
-            for v in value:
+            for j, v in enumerate(value):
                 temp_f = np.zeros(np.shape(v))
                 temp_b = np.zeros(np.shape(v))
                 for i in range(np.shape(v)[1]):
                     f, b = baseline_correction(
-                        data=value[:, i],
+                        data=v[:, i],
                         sampling_rate=parameters["Sampling Rate"],
                         bout_separations=seps,
                         artifact_frames=parameters["Artifact Frames"],
                     )
-                    temp_f[:, i] = f.reshape(-1, 1)
-                    temp_b[:, i] = b.reshape(-1, 1)
+                    temp_f[:, i] = f
+                    temp_b[:, i] = b
                 dend_poly_f.append(temp_f)
                 dend_poly_b.append(temp_b)
             fluorescence_processed[key] = dend_poly_f
