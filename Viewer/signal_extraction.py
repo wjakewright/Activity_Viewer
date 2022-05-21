@@ -114,7 +114,8 @@ def extract_raw_fluorescence(parent):
         else:
             new_value = []
             for v in value:
-                new_value = v[1:, :]
+                new_v = v[1:, :]
+                new_value.append(new_v)
             fluorescence_data["Dendrite Poly"] = new_value
 
     parent.ROI_fluorescence = fluorescence_data
@@ -139,7 +140,7 @@ def get_roi_fluorescence(parent, roi_type, rois, arr):
         array_region = rois[0].roi.getArrayRegion(
             arr=arr, img=parent.current_image, axes=(1, 2)
         )
-        roi_regions = array_region.sum(axis=(1, 2))
+        roi_regions = array_region.mean(axis=(1, 2))
         return roi_regions.reshape(-1, 1)
 
     elif roi_type == "Dendrite":
