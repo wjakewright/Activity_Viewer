@@ -1,5 +1,6 @@
 """Module to handle the signal processing of the activity traces"""
 
+import matplotlib.pyplot as plt
 import numpy as np
 
 import calculate_dFoF
@@ -40,7 +41,7 @@ def process_traces(parent, win):
 
     # Calculate deltaF/F if specified
     if parameters["Calculate dFoF"] is True:
-        pass
+        parent.dFoF, parent.processed_dFoF = get_dFoF(parent, parameters)
 
     # Devonvolve traces if specified
     if parameters["Deconvolve"] is True:
@@ -92,4 +93,53 @@ def get_processing_params(parent, win):
     }
 
     return parameters
+
+
+def get_dFoF(parent, parameters):
+    """Function to handle calculating dFoF for each ROI"""
+    sampling_rate = parameters["Sampling Rate"]
+    smooth_window = parameters["Smooth Window"]
+    fluorescence = parent.fluorescence_processed
+    baseline = parent.drifting_baseline
+
+    dFoF = {}
+    processed_dFoF = {}
+
+    for (key, fluo), (_, base) in zip(fluorescence.items(), baseline.items()):
+        if key != "Dendrite Poly":
+            temp_df = np.zeros(np.shape(fluo))
+            temp_pdf = np.zeros(np.shape(fluo))
+            for i in range(np.shape(fluo)[1]):
+                df, pdf = calculate_dFoF.calulate_dFoF(
+                    data=fluo[:, i],
+                    baseline=base[:, i],
+                    sampling_rate=sampling_rate,
+                    smooth_window=smooth_window,
+                )
+                temp_df[:, i] = df
+                temp_pdf[:, i] = pdf
+            dFoF[key] = temp_df
+            processed_dFoF[key] = temp_pdf
+
+        else:
+            dend_poly_df = []
+            dend_poly_pdf = []
+            for f, b in zip(fluo, base):
+                temp_df = np.zeros(np.shape(f))
+                temp_pdf = np.zeros(np.shape(f))
+                for i in range(np.shape(f)[1]):
+                    df, pdf = calculate_dFoF.calulate_dFoF(
+                        data=f[:, i],
+                        baseline=b[:, i],
+                        sampling_rate=sampling_rate,
+                        smooth_window=smooth_window,
+                    )
+                    temp_df[:, i] = df
+                    temp_pdf[:, i] = pdf
+                dend_poly_df.append(temp_df)
+                dend_poly_pdf.append(temp_pdf)
+            dFoF[key] = dend_poly_df
+            processed_dFoF[key] = dend_poly_pdf
+
+    return dFoF, processed_dFoF
 
