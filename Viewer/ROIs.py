@@ -675,13 +675,13 @@ class Dendrite_ROI(QGraphicsItemGroup):
     def create_rois(self):
         """Creates individual ellipse rois along the length of the dendrite line"""
         # Constants for ROI size and spacing inbetween
-        ROI_SIZE = 0.2  # um
-        ROI_SPACE = 0.4  # um
+        ROI_SIZE = 0.5  # um
+        ROI_SPACE = 1  # um
         # Get conversion factors between pixels and um
-        _, pix_per_um = display.convert_pixels_to_um(self.GUI)
+        pix_conv = display.convert_pixels_to_um(self.GUI)
         # Get size and spacing of ROIs in pixels
-        roi_size = ROI_SIZE * pix_per_um
-        roi_spacing = ROI_SPACE * pix_per_um
+        roi_size = ROI_SIZE * pix_conv
+        roi_spacing = ROI_SPACE * pix_conv
         # Get the positions of rois to make along the line
         roi_pos = np.linspace(0, self.line.length, int(self.line.length // roi_spacing))
         # Make the ROIs
