@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 import calculate_dFoF
+import deconvolve
 import messages
 import preprocess
 from processing_window import Processing_Window
@@ -43,9 +44,25 @@ def process_traces(parent, win):
     if parameters["Calculate dFoF"] is True:
         parent.dFoF, parent.processed_dFoF = get_dFoF(parent, parameters)
 
+    sensor = parameters["Imaging Sensor"]
     # Devonvolve traces if specified
-    if parameters["Deconvolve"] is True:
-        pass
+    if parameters["Deconvolve"] is True and sensor != "iGluSnFr3":
+        if sensor == "GCaMP6f":
+            tau = 0.7
+        elif sensor == "GCaMP6s":
+            tau = 1.5
+        elif sensor == "GCaMP7b":
+            tau = 1.2
+        elif sensor == "RCaMP2":
+            tau = 1.0
+        parent.deconvolved_spikes = get_deconvolved(parent, parameters, tau)
+
+    plt.figure()
+    plt.plot(parent.processed_dFoF["Soma"][:, 0])
+    plt.savefig("test_dFoF.pdf")
+    plt.figure()
+    plt.plot(parent.deconvolved_spikes["Soma"][:, 0])
+    plt.savefig("test_spikes.pdf")
 
 
 def get_processing_params(parent, win):
@@ -143,3 +160,31 @@ def get_dFoF(parent, parameters):
 
     return dFoF, processed_dFoF
 
+
+def get_deconvolved(parent, parameters, tau):
+    """Helper function to handel estimating deconvolved spikes
+        from calcium fluorescence"""
+    sampling_rate = parameters["Sampling Rate"]
+    fluorescence = parent.fluorescence_processed
+    batch_size = 500
+
+    deconvolved_spikes = {}
+    for key, fluo in fluorescence.items():
+        if key != "Dendrite Poly":
+            dspikes = deconvolve.oasis(
+                fluo=fluo, batch_size=batch_size, tau=tau, sampling_rate=sampling_rate,
+            )
+            deconvolved_spikes[key] = dspikes
+        else:
+            dend_poly = []
+            for poly in fluo:
+                dspikes = deconvolve.oasis(
+                    fluo=poly,
+                    batch_size=batch_size,
+                    tau=tau,
+                    sampling_rate=sampling_rate,
+                )
+                dend_poly.append(dspikes)
+            deconvolved_spikes[key] = dend_poly
+
+    return deconvolved_spikes
