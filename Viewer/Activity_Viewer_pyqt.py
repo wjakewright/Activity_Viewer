@@ -76,11 +76,13 @@ class Activity_Viewer(QMainWindow):
         self.imaging_sensor = "GCaMP6f"
         self.ROI_fluorescence = None
         self.bout_separation_frames = None
+        self.ROI_positions = None
         self.fluorescence_subtracted = None
         self.fluorescence_processed = None
         self.drifting_baseline = None
         self.dFoF = None
         self.processed_dFoF = None
+        self.deconvolved_spikes = None
 
         # Main menu bar
         menus.fileMenu(self)
