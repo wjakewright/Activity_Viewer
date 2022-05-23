@@ -178,3 +178,4 @@ def find_bout_separations(images, frame_counts):
         previous_frames = previous_frames + count
 
     return bout_separations
+
