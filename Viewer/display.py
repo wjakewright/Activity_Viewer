@@ -104,10 +104,9 @@ def get_mouse_position(pos, parent):
 
 def convert_pixels_to_um(parent):
     zoom_value = float(parent.zoom_input.text())
-    um_per_pix = zoom_value / 2
-    pix_per_um = zoom_value * 2
+    pix_conv = zoom_value / 2
 
-    return um_per_pix, pix_per_um
+    return pix_conv
 
 
 class ImageViewBox(pg.ViewBox):
