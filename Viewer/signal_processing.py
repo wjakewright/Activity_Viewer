@@ -36,7 +36,7 @@ def process_traces(parent, win):
     parameters = get_processing_params(parent, win)
 
     # get ROI spatial potisions
-    parent.ROI_positions = get_spatial_positions(parent)
+    parent.ROI_positions = get_spatial_positions(parent, parameters)
     # subtract the time varying background from all the traces
     (
         parent.fluorescence_subtracted,
@@ -109,10 +109,11 @@ def get_processing_params(parent, win):
     return parameters
 
 
-def get_spatial_positions(parent):
+def get_spatial_positions(parent, parameters):
     """Function to handel extracting the spatial positions for each roi
         Transforms pixel locations in to um values"""
     roi_positions = {}
+    spine_groupings = parameters["Spine Groupings"]
     # Get um to pix conversion factors
     pix_conv = convert_pixels_to_um(parent)
     # Get positions for each roi
@@ -137,7 +138,23 @@ def get_spatial_positions(parent):
                     coords = get_dend_coords(parent, v, pix_conv)
                     dend_coords.append(coords)
                 roi_positions["Dendrite"] = dend_coords
-                print(roi_positions["Dendrite"][0])
+
+            # Get the positions of spines along its parent dendrite
+            elif key == "Spine":
+                spine_coords = []
+                for i, v in enumerate(value):
+                    if spine_groupings:
+                        for j, grouping in enumerate(spine_groupings):
+                            if i in grouping:
+                                group = j
+                    else:
+                        group = 0
+                    roi = v.roi
+                    coords = get_spine_coords(parent, roi, group, pix_conv)
+                    spine_coords.append(coords)
+                roi_positions["Spine"] = spine_coords
+
+    return roi_positions
 
 
 def get_dend_coords(parent, roi, pix_conv):
@@ -152,7 +169,21 @@ def get_dend_coords(parent, roi, pix_conv):
         point = ShP(x, y)
         dist = dend_line.project(point) / pix_conv
         roi_pos.append(dist)
+
     return roi_pos
+
+
+def get_spine_coords(parent, roi, group, pix_conv):
+    """Function to get spine positiotns along the length of its parent
+        dendrite"""
+    dend = parent.ROIs["Dendrite"][group]
+    dend_line = dend.roi.line
+    roi_rect = roi.mapRectToParent(roi.boundingRect())
+    roi_coords = roi_rect.center()
+    point = ShP(roi_coords.x(), roi_coords.y())
+    dist = dend_line.project(point) / pix_conv
+
+    return dist
 
 
 def get_dFoF(parent, parameters):
