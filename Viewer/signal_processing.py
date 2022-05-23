@@ -146,12 +146,11 @@ def get_dend_coords(parent, roi, pix_conv):
     dend_line = roi.roi.line
     roi_pos = []
     for poly in roi.roi.poly_rois:
-        x, y = poly.pos()
-        size, _ = poly.size()
-        x = x + (size * 2)
-        y = y + (size * 2)
+        rect = poly.mapRectToParent(poly.boundingRect())
+        x = rect.center().x()
+        y = rect.center().y()
         point = ShP(x, y)
-        dist = dend_line.project(point)
+        dist = dend_line.project(point) / pix_conv
         roi_pos.append(dist)
     return roi_pos
 
