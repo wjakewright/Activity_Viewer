@@ -2,11 +2,13 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
+from shapely.geometry import Point as ShP
 
 import calculate_dFoF
 import deconvolve
 import messages
 import preprocess
+from display import convert_pixels_to_um
 from processing_window import Processing_Window
 
 
@@ -33,6 +35,8 @@ def process_traces(parent, win):
     # get processing parameters
     parameters = get_processing_params(parent, win)
 
+    # get ROI spatial potisions
+    parent.ROI_positions = get_spatial_positions(parent)
     # subtract the time varying background from all the traces
     (
         parent.fluorescence_subtracted,
@@ -56,13 +60,6 @@ def process_traces(parent, win):
         elif sensor == "RCaMP2":
             tau = 1.0
         parent.deconvolved_spikes = get_deconvolved(parent, parameters, tau)
-
-    plt.figure()
-    plt.plot(parent.processed_dFoF["Soma"][:, 0])
-    plt.savefig("test_dFoF.pdf")
-    plt.figure()
-    plt.plot(parent.deconvolved_spikes["Soma"][:, 0])
-    plt.savefig("test_spikes.pdf")
 
 
 def get_processing_params(parent, win):
@@ -110,6 +107,53 @@ def get_processing_params(parent, win):
     }
 
     return parameters
+
+
+def get_spatial_positions(parent):
+    """Function to handel extracting the spatial positions for each roi
+        Transforms pixel locations in to um values"""
+    roi_positions = {}
+    # Get um to pix conversion factors
+    pix_conv = convert_pixels_to_um(parent)
+    # Get positions for each roi
+    for key, value in parent.ROIs.items():
+        if key != "Background":
+            # Get locations of somas relative to origin
+            if key == "Soma":
+                soma_coords = []
+                for v in value:
+                    roi = v.roi
+                    roi_rect = roi.mapRectToParent(roi.boundingRect())
+                    roi_coords_pix = roi_rect.center()
+                    roi_coords_um = roi_coords_pix / pix_conv
+                    roi_coords_um = (roi_coords_um.x(), roi_coords_um.y())
+                    soma_coords.append(roi_coords_um)
+                roi_positions["Soma"] = soma_coords
+
+            # Get the positions of each dendrite poly roi
+            elif key == "Dendrite":
+                dend_coords = []
+                for v in value:
+                    coords = get_dend_coords(parent, v, pix_conv)
+                    dend_coords.append(coords)
+                roi_positions["Dendrite"] = dend_coords
+                print(roi_positions["Dendrite"][0])
+
+
+def get_dend_coords(parent, roi, pix_conv):
+    """Function to get position of each dendrite poly roi along the 
+        length of the dendrite"""
+    dend_line = roi.roi.line
+    roi_pos = []
+    for poly in roi.roi.poly_rois:
+        x, y = poly.pos()
+        size, _ = poly.size()
+        x = x + (size * 2)
+        y = y + (size * 2)
+        point = ShP(x, y)
+        dist = dend_line.project(point)
+        roi_pos.append(dist)
+    return roi_pos
 
 
 def get_dFoF(parent, parameters):
