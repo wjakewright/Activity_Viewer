@@ -36,6 +36,17 @@ def calculate_spine_volume(parent):
                     dend_pixels.append(poly_pixels)
                 roi_pixels[key] = dend_pixels
 
+    background = np.nanmean(roi_pixels["Background"])
+
+    # Get the integrated intensity of each spine roi
+    integrated_spine_intensity = []
+    for spine in roi_pixels["Spine"]:
+        above_background = spine[spine - background > 0] - background
+        integrated_spine_intensity.append(np.nansum(above_background))
+
+    # Get mean intensity for each poly roi for each dendrite
+    mean_dend_intensity = []
+
 
 def get_total_avg_projection(parent):
     """Helper function to get the average projection across all tif images"""
