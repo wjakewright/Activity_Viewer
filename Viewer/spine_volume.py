@@ -6,7 +6,7 @@ import numpy as np
 from skimage import io as sio
 
 
-def calculate_spine_volume(parent):
+def calculate_spine_volume(parent, parameters):
     """Function to estimate the volume of each spine ROI"""
     # Dendrite length constant to normalize to
     DEND_LEN = 20
@@ -42,8 +42,10 @@ def calculate_spine_volume(parent):
 
     # Get the integrated intensity of each spine roi
     integrated_spine_intensity = []
+    spine_pix_intensity = []
     for spine in roi_pixels["Spine"]:
         above_background = spine[spine - background > 0] - background
+        spine_pix_intensity.append(above_background)
         integrated_spine_intensity.append(np.nansum(above_background))
 
     # Get mean intensity for each poly roi for each dendrite
@@ -56,7 +58,30 @@ def calculate_spine_volume(parent):
         mean_dend_intensity.append(poly_intensity)
 
     # Normalize spine intensity to 20um of local dendrite
-    nomralized_spine_intensity = []
+    normalized_spine_intensity = []
+    for i, spine in enumerate(integrated_spine_intensity):
+        # First match spine to its parent dendrite
+        if parameters["Spine Groupings"]:
+            for j, grouping in enumerate(parameters["Spine Groupings"]):
+                if i in grouping:
+                    group = j
+        else:
+            group = 0
+        parent_dend = mean_dend_intensity[group]
+        parent_dend_pos = parent.ROI_positions["Dendrite"][group]
+        parent_dend_pos_to_spine = (
+            np.array(parent_dend_pos) - parent.ROI_positions["Spine"][i]
+        )
+        local_dend_idx = np.where(
+            (parent_dend_pos_to_spine > -10) & (parent_dend_pos_to_spine < 10)
+        )[0]
+
+        print(local_dend_idx)
+        local_dend = np.nanmean(np.array(parent_dend)[local_dend_idx])
+        norm_spine = spine / local_dend
+        normalized_spine_intensity.append(norm_spine)
+
+    return spine_pix_intensity, normalized_spine_intensity
 
 
 def get_total_avg_projection(parent):
