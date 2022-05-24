@@ -8,6 +8,8 @@ from skimage import io as sio
 
 def calculate_spine_volume(parent):
     """Function to estimate the volume of each spine ROI"""
+    # Dendrite length constant to normalize to
+    DEND_LEN = 20
 
     # Get average image projection to use for volume estimation
     avg_projection = get_total_avg_projection(parent)
@@ -46,6 +48,15 @@ def calculate_spine_volume(parent):
 
     # Get mean intensity for each poly roi for each dendrite
     mean_dend_intensity = []
+    for dend in roi_pixels["Dendrite"]:
+        poly_intensity = []
+        for poly in dend:
+            background_sub = poly - background
+            poly_intensity.append(np.mean(background_sub))
+        mean_dend_intensity.append(poly_intensity)
+
+    # Normalize spine intensity to 20um of local dendrite
+    nomralized_spine_intensity = []
 
 
 def get_total_avg_projection(parent):
