@@ -83,6 +83,8 @@ class Activity_Viewer(QMainWindow):
         self.dFoF = None
         self.processed_dFoF = None
         self.deconvolved_spikes = None
+        self.spine_pixel_intensity = None
+        self.spine_volume = None
 
         # Main menu bar
         menus.fileMenu(self)
