@@ -8,6 +8,7 @@ import calculate_dFoF
 import deconvolve
 import messages
 import preprocess
+import spine_volume
 from display import convert_pixels_to_um
 from processing_window import Processing_Window
 
@@ -60,6 +61,14 @@ def process_traces(parent, win):
         elif sensor == "RCaMP2":
             tau = 1.0
         parent.deconvolved_spikes = get_deconvolved(parent, parameters, tau)
+
+    if parameters["Calculate Volume"] is True:
+        (
+            parent.spine_pixel_intensity,
+            parent.spine_volume,
+        ) = spine_volume.calculate_spine_volume(parent, parameters)
+
+    print(parent.spine_volume)
 
 
 def get_processing_params(parent, win):
