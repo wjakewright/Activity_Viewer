@@ -1,6 +1,5 @@
 """Module to handle the signal processing of the activity traces"""
 
-import matplotlib.pyplot as plt
 import numpy as np
 from shapely.geometry import Point as ShP
 
@@ -10,6 +9,7 @@ import messages
 import preprocess
 import spine_volume
 from display import convert_pixels_to_um
+from output_window import Output_Window
 from processing_window import Processing_Window
 
 
@@ -68,7 +68,9 @@ def process_traces(parent, win):
             parent.spine_volume,
         ) = spine_volume.calculate_spine_volume(parent, parameters)
 
-    print(parent.spine_volume)
+    win.close_window()
+    output_window = Output_Window(parent)
+    output_window.show()
 
 
 def get_processing_params(parent, win):
