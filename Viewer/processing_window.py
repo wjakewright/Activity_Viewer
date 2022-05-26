@@ -1,5 +1,8 @@
 """Module for creating the processing window after fluorescence trace extractin"""
 
+import random
+
+import cmapy
 import numpy as np
 import pyqtgraph as pg
 from PyQt5.QtWidgets import (
@@ -106,6 +109,7 @@ def parameters_window(parent, win):
     win.dFoF_check_bx.setStyleSheet(styles.parameterCheckBoxStyle())
     win.dFoF_check_bx.setFont(styles.roi_btn_font())
     win.dFoF_check_bx.setToolTip("Check to calculate dFoF")
+    win.dFoF_check_bx.setChecked(True)
 
     # Deconvolve
     win.deconvolve_check_bx = QCheckBox("Deconvolve Trace", parent=win)
@@ -274,7 +278,12 @@ def processing_buttons(parent, win):
 
 def generate_roi_plots(parent, win):
     """Functon to make all the plot data items for each roi"""
-    colors = np.uint8(np.random.randint(0, 255, size=(win.ROI_list_window.count(), 3)))
+    # colors = np.uint8(np.random.randint(0, 255, size=(win.ROI_list_window.count(), 3)))
+    c_i = np.linspace(0, 256, win.ROI_list_window.count(), dtype=int)
+    colors = [
+        cmapy.color("jet", c_i[i], rgb_order=True)
+        for i in range(win.ROI_list_window.count())
+    ]
     c_idx = 0
     for n, (key, value) in enumerate(parent.ROI_fluorescence.items()):
         if key != "Dendrite Poly":
