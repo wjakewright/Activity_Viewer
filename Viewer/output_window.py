@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import (
     QGroupBox,
     QPushButton,
     QVBoxLayout,
+    QWidget,
 )
 
 import styles
@@ -43,8 +44,15 @@ class Output_Window(QDialog):
         # Make data display control frame
         display_control_window(self.parent, self)
 
+        # Make the side panel display
+        self.side_panel = QWidget()
+        side_panel_layout = QVBoxLayout()
+        self.side_panel.setLayout(side_panel_layout)
+        self.side_panel.setFixedWidth(130)
+        side_panel_layout.addWidget(self.control_widget)
+
         # Add items to the grid layout
-        self.grid_layout.addWidget(self.control_widget, 0, 0)
+        self.grid_layout.addWidget(self.side_panel, 0, 0)
 
 
 def display_control_window(parent, win):
