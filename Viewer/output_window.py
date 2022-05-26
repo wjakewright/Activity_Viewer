@@ -104,6 +104,11 @@ def update_plot_area(win):
         column = i // 2
         win.plot_window_layout.addWidget(win.plot_widgets[i], row, column)
 
+    # Link all the x axis for simultaneous zooming
+    if len(win.plot_widgets) > 1:
+        for i in win.plot_widgets[1:]:
+            i.setXLink(win.plot_widgets[0])
+
 
 def display_control_window(parent, win):
     """Makes the display control window that allows you to determine 
