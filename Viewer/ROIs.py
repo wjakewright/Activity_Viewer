@@ -274,9 +274,12 @@ def delete_ROIs(parent):
                     del_idx.append(i)
             parent.display_image.removeItem(roi.label)
             parent.display_image.removeItem(roi.roi)
-        for i in del_idx:
-            del parent.ROIs[t][i]
+        temp_rois = [
+            parent.ROIs[t][i] for i, _ in enumerate(parent.ROIs[t]) if i not in del_idx
+        ]
         parent.selected_ROIs[t] = []
+        parent.ROIs[t] = temp_rois
+        del temp_rois
     to_relable_ROIs(parent)
     parent.status_label.setText("Ready...")
 
