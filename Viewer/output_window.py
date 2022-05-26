@@ -39,7 +39,8 @@ class Output_Window(QDialog):
         """Putting everything in the window"""
 
         self.data_to_display = []
-        self.plots = []
+        self.plot_items = []
+        self.plot_widgets = []
 
         # Set up grid layout
         self.grid_layout = QGridLayout()
@@ -62,8 +63,8 @@ class Output_Window(QDialog):
 
         # Make the plot area
         self.plot_window = QWidget()
-        plot_window_layout = QGridLayout()
-        self.plot_window.setLayout(plot_window_layout)
+        self.plot_window_layout = QGridLayout()
+        self.plot_window.setLayout(self.plot_window_layout)
 
         # Add items to the grid layout
         self.grid_layout.addWidget(self.side_panel, 0, 0)
@@ -72,7 +73,36 @@ class Output_Window(QDialog):
 
 def set_display_data(win, data_type):
     """Function to update what data to display"""
-    win.data_to_display.append(data_type)
+    if data_type not in win.data_to_display:
+        win.data_to_display.append(data_type)
+    else:
+        win.data_to_display.remove(data_type)
+
+    update_plot_area(win)
+
+
+def update_plot_area(win):
+    """Function to update the plotting area in the window"""
+    # clearing existing plot items to reset everything
+    if win.plot_widgets:
+        for i in win.plot_widgets:
+            win.plot_window_layout.removeWidget(i)
+            i.hide()
+    del win.plot_widgets[:]
+    del win.plot_items[:]
+
+    # Make all the plot items and widgets
+    for i, item in enumerate(win.data_to_display):
+        plot = pg.PlotItem()
+        plot.setTitle(item)
+        plot.setMouseEnabled(y=False)
+        plot.addLegend()
+        plot_widget = pg.PlotWidget(win, plotItem=plot)
+        win.plot_items.append(plot)
+        win.plot_widgets.append(plot_widget)
+        row = i - 2 if i - 2 >= 0 else i
+        column = i // 2
+        win.plot_window_layout.addWidget(win.plot_widgets[i], row, column)
 
 
 def display_control_window(parent, win):
