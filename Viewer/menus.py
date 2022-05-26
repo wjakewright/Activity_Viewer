@@ -75,12 +75,15 @@ def imageMenu(parent):
     parent.plasma.triggered.connect(lambda: images.set_cmap(parent, "Plasma"))
     parent.hot = QAction("&Hot", parent)
     parent.hot.triggered.connect(lambda: images.set_cmap(parent, "Hot"))
+    parent.GNU = QAction("&GNU", parent)
+    parent.GNU.triggered.connect(lambda: images.set_cmap(parent, "GNU"))
     parent.gray = QAction("&Gray", parent)
     parent.gray.triggered.connect(lambda: images.set_cmap(parent, "Gray"))
 
     parent.cmap.addAction(parent.gray)
     parent.cmap.addAction(parent.hot)
     parent.cmap.addAction(parent.inferno)
+    parent.cmap.addAction(parent.GNU)
     parent.cmap.addAction(parent.plasma)
     parent.cmap.addAction(parent.cividis)
 
