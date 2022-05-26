@@ -4,6 +4,7 @@
     CREATOR
         William (Jake) Wright - 12/18/2021"""
 
+import cmapy
 import cv2
 import numpy as np
 from skimage import io as sio
@@ -37,13 +38,15 @@ def process_images(parent, image):
     i = image
     # set color map to image
     if parent.color_map == "Inferno":
-        heat = cv2.applyColorMap(i, cv2.COLORMAP_INFERNO)
+        heat = cv2.applyColorMap(i, cmapy.cmap("inferno"))
     elif parent.color_map == "Cividis":
-        heat = cv2.applyColorMap(i, cv2.COLORMAP_CIVIDIS)
+        heat = cv2.applyColorMap(i, cmapy.cmap("cividis"))
     elif parent.color_map == "Plasma":
-        heat = cv2.applyColorMap(i, cv2.COLORMAP_PLASMA)
+        heat = cv2.applyColorMap(i, cmapy.cmap("plasma"))
     elif parent.color_map == "Hot":
-        heat = cv2.applyColorMap(i, cv2.COLORMAP_HOT)
+        heat = cv2.applyColorMap(i, cmapy.cmap("hot"))
+    elif parent.color_map =="GNU":
+        heat = cv2.applyColorMap(i, cmapy.cmap("gnuplot2"))
     else:
         pass
     if parent.color_map == "Gray":
