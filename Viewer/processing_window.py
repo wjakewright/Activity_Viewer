@@ -83,6 +83,11 @@ class Processing_Window(QDialog):
         self.plot = pg.PlotItem()
         self.plot.setTitle("Raw Fluorescence")
         self.plot.setMouseEnabled(y=False)
+        # self.legend = pg.LegendItem(brush=pg.mkBrush((166, 160, 150, 0.5)))
+        # self.legend.setParentItem(self.plot)
+        self.plot.addLegend(
+            labelTextColor=(255, 255, 255), brush=pg.mkBrush((0, 0, 0, 150))
+        )
         self.plot_win = pg.PlotWidget(self, plotItem=self.plot)
 
         # Add items to grid layout
@@ -289,7 +294,7 @@ def generate_roi_plots(parent, win):
         if key != "Dendrite Poly":
             win.roi_plots[key] = []
             for i in range(np.shape(value)[1]):
-                p = pg.PlotDataItem(value[:, i])
+                p = pg.PlotDataItem(value[:, i], name=f"{key} {i+1}")
                 p.setPen(pg.mkPen(tuple(colors[c_idx]), width=1))
                 win.roi_plots[key].append(p)
                 c_idx = c_idx + 1
