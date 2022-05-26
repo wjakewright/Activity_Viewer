@@ -78,7 +78,11 @@ def roiBtnStyle():
                         QPushButton:pressed {
                                      background:#02449B;
                                      color:white
-                                     } """
+                                     } 
+                        QPushButton:disabled {
+                                     background:#132743;
+                                     color:grey;
+                                     }"""
     return roi_btn_style
 
 
