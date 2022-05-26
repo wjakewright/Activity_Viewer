@@ -35,6 +35,7 @@ def process_traces(parent, win):
 
     # get processing parameters
     parameters = get_processing_params(parent, win)
+    parent.parameters = parameters
 
     # get ROI spatial potisions
     parent.ROI_positions = get_spatial_positions(parent, parameters)
