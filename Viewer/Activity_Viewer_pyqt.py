@@ -6,7 +6,6 @@ import pyqtgraph as pg
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import (
     QApplication,
-    QGraphicsItemGroup,
     QGridLayout,
     QLabel,
     QMainWindow,
@@ -18,7 +17,6 @@ import buttons
 import display
 import menus
 import messages
-import ROIs
 import styles
 
 
@@ -87,6 +85,7 @@ class Activity_Viewer(QMainWindow):
         self.processed_dFoF = None
         self.deconvolved_spikes = None
         self.spine_pixel_intensity = None
+        self.dend_seg_intensity = None
         self.spine_volume = None
 
         # Main menu bar
