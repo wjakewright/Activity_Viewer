@@ -1,5 +1,6 @@
 """Module for creating window to visualize the final outputs after processing"""
 
+import cmapy
 import numpy as np
 import pyqtgraph as pg
 from PyQt5.QtWidgets import (
@@ -41,6 +42,7 @@ class Output_Window(QDialog):
         self.data_to_display = []
         self.plot_items = []
         self.plot_widgets = []
+        self.rois_to_plot = []
 
         # Set up grid layout
         self.grid_layout = QGridLayout()
@@ -51,6 +53,9 @@ class Output_Window(QDialog):
 
         # Make roi list display
         roi_list_display(self.parent, self)
+
+        # Make ROI plots
+        self.roi_plots, self.roi_data = make_roi_plots(self.parent, self)
 
         # Make the side panel display
         self.side_panel = QWidget()
@@ -108,6 +113,91 @@ def update_plot_area(win):
     if len(win.plot_widgets) > 1:
         for i in win.plot_widgets[1:]:
             i.setXLink(win.plot_widgets[0])
+    update_roi_plots(win)
+
+
+def make_roi_plots(parent, win):
+    """Function to make all the roi plots"""
+    # Make colors
+    c_i = np.linspace(0, 256, win.roi_list.count(), dtype=int)
+    colors = [
+        cmapy.color("jet", c_i[i], rgb_order=True) for i in range(win.roi_list.count())
+    ]
+
+    roi_plots = {"Fluorescence": []}
+    roi_data = {"Fluorescence": []}
+    if parent.dFoF is not None:
+        roi_plots["dFoF"] = []
+        roi_plots["Processed dFoF"] = []
+        roi_data["dFoF"] = []
+        roi_data["Processed dFoF"] = []
+    if parent.deconvolved_spikes is not None:
+        roi_plots["Estimated Spikes"] = []
+        roi_data["Estimated Spikes"] = []
+
+    rois = [win.roi_list.item(x).text() for x in range(win.roi_list.count())]
+    c_idx = 0
+    for roi in rois:
+        # for fluorescence
+        roi_type, idx = roi.split(" ")
+        idx = int(idx) - 1
+        data = parent.fluorescence_processed[roi_type][:, idx]
+        data = (data - data.min()) / (data.max() - data.min())
+        p = pg.PlotDataItem(data, name=f"{roi_type} {idx+1}")
+        p.setPen(pg.mkPen(tuple(colors[c_idx]), width=1))
+        roi_plots["Fluorescence"].append(p)
+        roi_data["Fluorescence"].append(data)
+        # for dFoF
+        if parent.dFoF is not None:
+            data_d = parent.dFoF[roi_type][:, idx]
+            data_d = (data_d - data_d.min()) / (data_d.max() - data_d.min())
+            d = pg.PlotDataItem(data_d, name=f"{roi_type} {idx+1}")
+            d.setPen(pg.mkPen(tuple(colors[c_idx]), width=1))
+            roi_plots["dFoF"].append(d)
+            roi_data["dFoF"].append(data_d)
+
+            data_p = parent.processed_dFoF[roi_type][:, idx]
+            data_p = (data_p - data_p.min()) / (data_p.max() - data_p.min())
+            pd = pg.PlotDataItem(data_p, name=f"{roi_type} {idx+1}")
+            pd.setPen(pg.mkPen(tuple(colors[c_idx]), width=1))
+            roi_plots["Processed dFoF"].append(pd)
+            roi_data["Processed dFoF"].append(data_p)
+        # For estimated spikes
+        if parent.deconvolved_spikes is not None:
+            data_s = parent.deconvolved_spikes[roi_type][:, idx]
+            data_s = (data_s - data_s.min()) / (data_s.max() - data_s.min())
+            s = pg.PlotDataItem(data_s, name=f"{roi_type} {idx+1}")
+            s.setPen(pg.mkPen(tuple(colors[c_idx]), width=1))
+            roi_plots["Estimated Spikes"].append(s)
+            roi_data["Estimated Spikes"].append(data_s)
+        c_idx = c_idx + 1
+
+    return roi_plots, roi_data
+
+
+def add_roi_plots(parent, win, roi):
+    """Function to add rois to the plots"""
+    idx = win.roi_list.row(roi)
+    if idx not in win.rois_to_plot:
+        win.rois_to_plot.append(idx)
+    else:
+        win.rois_to_plot.remove(idx)
+
+    win.rois_to_plot.sort()
+
+    update_roi_plots(win)
+
+
+def update_roi_plots(win):
+    """Function to update the plots with new roi data"""
+    for plt in win.plot_widgets:
+        plt.clear()
+        d_type = plt.getPlotItem().titleLabel.text
+        for i, idx in enumerate(win.rois_to_plot):
+            plot = win.roi_plots[d_type][idx]
+            data = np.array(win.roi_data[d_type][idx]) + i
+            plot.setData(data)
+            plt.getPlotItem().addItem(plot)
 
 
 def display_control_window(parent, win):
@@ -126,7 +216,7 @@ def display_control_window(parent, win):
     win.fluorescence_btn = QPushButton("Fluorescence")
     win.fluorescence_btn.setStyleSheet(styles.roiBtnStyle())
     win.fluorescence_btn.setFont(styles.roi_btn_font())
-    win.fluorescence_btn.clicked.connect(lambda: set_display_data(win, "fluorescence"))
+    win.fluorescence_btn.clicked.connect(lambda: set_display_data(win, "Fluorescence"))
     win.fluorescence_btn.setToolTip("Display fluorescence traces")
 
     # dF/F button
@@ -143,7 +233,7 @@ def display_control_window(parent, win):
     win.processed_dFoF_btn.setStyleSheet(styles.roiBtnStyle())
     win.processed_dFoF_btn.setFont(styles.roi_btn_font())
     win.processed_dFoF_btn.clicked.connect(
-        lambda: set_display_data(win, "processed_dFoF")
+        lambda: set_display_data(win, "Processed dFoF")
     )
     win.processed_dFoF_btn.setToolTip("Display processed dFoF traces")
     if parent.processed_dFoF is None:
@@ -217,7 +307,7 @@ def roi_list_display(parent, win):
                     roi_labels.append(spine_label)
                     item = QListWidgetItem(spine_label)
                     win.roi_list.addItem(item)
-    win.roi_list.itemClicked.connect(lambda x: print(x))
+    win.roi_list.itemClicked.connect(lambda x: add_roi_plots(parent, win, x))
 
     roi_list_layout.addWidget(win.roi_list)
     roi_list_layout.addStretch(1)
