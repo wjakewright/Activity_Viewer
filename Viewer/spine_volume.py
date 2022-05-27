@@ -59,6 +59,7 @@ def calculate_spine_volume(parent, parameters):
 
     # Normalize spine intensity to 20um of local dendrite
     normalized_spine_intensity = []
+    dend_segment_intensity = []
     for i, spine in enumerate(integrated_spine_intensity):
         # First match spine to its parent dendrite
         if parameters["Spine Groupings"]:
@@ -76,12 +77,12 @@ def calculate_spine_volume(parent, parameters):
             (parent_dend_pos_to_spine > -10) & (parent_dend_pos_to_spine < 10)
         )[0]
 
-        print(local_dend_idx)
         local_dend = np.nanmean(np.array(parent_dend)[local_dend_idx])
         norm_spine = spine / local_dend
         normalized_spine_intensity.append(norm_spine)
+        dend_segment_intensity.append(local_dend)
 
-    return spine_pix_intensity, normalized_spine_intensity
+    return spine_pix_intensity, normalized_spine_intensity, dend_segment_intensity
 
 
 def get_total_avg_projection(parent):
