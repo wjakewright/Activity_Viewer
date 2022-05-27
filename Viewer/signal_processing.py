@@ -67,6 +67,7 @@ def process_traces(parent, win):
         (
             parent.spine_pixel_intensity,
             parent.spine_volume,
+            parent.dend_seg_intensity,
         ) = spine_volume.calculate_spine_volume(parent, parameters)
 
     win.close_window()
