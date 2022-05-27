@@ -127,3 +127,17 @@ def no_background_warning(parent):
     # Button to clear warning
     warning.setStandardButtons(QMessageBox.Ok)
     retval = warning.exec()
+
+
+def save_ROI_warning(parent):
+    # Warning to save rois before closing main window
+    warning = QMessageBox()
+    warning.setIcon(QMessageBox.Question)
+    warning.setText("Save ROIs before exiting?")
+    warning.setWindowTitle("Save ROIs")
+    # Save ROI button
+    save_btn = QPushButton("Save")
+    save_btn.clicked.connect(lambda: ROIs.save_ROIs(parent))
+    warning.addButton(save_btn, QMessageBox.ActionRole)
+    warning.setStandardButtons(QMessageBox.Close)
+    retval = warning.exec()
