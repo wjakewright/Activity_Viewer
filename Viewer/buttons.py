@@ -167,20 +167,6 @@ def ROI_Buttons(parent):
     )
     parent.extract_roi_btn.setToolTip("Extract ROI fluorescence")
 
-    ### Save Traces
-    parent.save_trace_btn = QPushButton("Save Traces")
-    parent.save_trace_btn.setStyleSheet(roi_btn_style)
-    parent.save_trace_btn.setFixedHeight(20)
-    parent.save_trace_btn.setFont(roi_btn_font)
-    parent.save_trace_btn.clicked.connect(
-        lambda: print(
-            parent.ROIs["Dendrite"][0].roi.mapRectToParent(
-                parent.ROIs["Dendrite"][0].roi.boundingRect()
-            )
-        )
-    )
-    parent.save_trace_btn.setToolTip("Save and Resave activity traces")
-
     # Add manage buttons to manage frame
     manage_btn_layout.addWidget(parent.select_roi_btn)
     manage_btn_layout.addWidget(parent.shift_roi_btn)
@@ -190,7 +176,6 @@ def ROI_Buttons(parent):
     manage_btn_layout.addWidget(parent.clear_roi_btn)
     manage_btn_layout.addWidget(parent.save_roi_btn)
     manage_btn_layout.addWidget(parent.extract_roi_btn)
-    manage_btn_layout.addWidget(parent.save_trace_btn)
     manage_btn_layout.addStretch(1)
     manage_btn_layout.setSpacing(7)
 
