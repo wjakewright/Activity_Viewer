@@ -17,6 +17,8 @@ from PyQt5.QtWidgets import (
 import buttons
 import display
 import menus
+import messages
+import ROIs
 import styles
 
 
@@ -132,6 +134,12 @@ class Activity_Viewer(QMainWindow):
         self.grid_layout.addWidget(self.win, 0, 1)
         self.grid_layout.addWidget(self.mouse_position_label, 1, 0)
         self.grid_layout.addWidget(self.slider_widget, 1, 1)
+
+    def closeEvent(self, event):
+        """Custom close window function"""
+        messages.save_ROI_warning(self)
+
+        event.accept()
 
 
 if __name__ == "__main__":
