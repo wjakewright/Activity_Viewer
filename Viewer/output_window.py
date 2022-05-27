@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import (
     QDialog,
     QGridLayout,
     QGroupBox,
+    QHBoxLayout,
     QListWidget,
     QListWidgetItem,
     QPushButton,
@@ -16,6 +17,7 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
+import output
 import styles
 
 
@@ -54,6 +56,9 @@ class Output_Window(QDialog):
         # Make roi list display
         roi_list_display(self.parent, self)
 
+        # Make buttons
+        final_buttons(self.parent, self)
+
         # Make ROI plots
         self.roi_plots, self.roi_data = make_roi_plots(self.parent, self)
 
@@ -64,6 +69,7 @@ class Output_Window(QDialog):
         self.side_panel.setFixedWidth(130)
         side_panel_layout.addWidget(self.control_widget)
         side_panel_layout.addWidget(self.roi_list_display)
+        side_panel_layout.addWidget(self.btn_box)
         side_panel_layout.addStretch(1)
 
         # Make the plot area
@@ -311,3 +317,30 @@ def roi_list_display(parent, win):
 
     roi_list_layout.addWidget(win.roi_list)
     roi_list_layout.addStretch(1)
+
+
+def final_buttons(parent, win):
+    """Make buttons to save or reject final outputs"""
+
+    # Make button layout
+    btn_layout = QHBoxLayout()
+    win.btn_box = QGroupBox(win)
+    win.btn_box.setLayout(btn_layout)
+    win.btn_box.setFixedWidth(120)
+
+    # Save results button
+    win.save_results_btn = QPushButton("Save")
+    win.save_results_btn.setStyleSheet(styles.roiBtnStyle())
+    win.save_results_btn.setFont(styles.roi_btn_font())
+    win.save_results_btn.clicked.connect(lambda: output.output_data(parent))
+    win.save_results_btn.setToolTip("Save Results")
+
+    # Cancel Button
+    win.cancel_btn = QPushButton("Cancel")
+    win.cancel_btn.setStyleSheet(styles.roiBtnStyle())
+    win.cancel_btn.setFont(styles.roi_btn_font())
+    win.cancel_btn.clicked.connect(lambda: print("Add function"))
+    win.cancel_btn.setToolTip("Cancel Exporting")
+
+    btn_layout.addWidget(win.save_results_btn)
+    btn_layout.addWidget(win.cancel_btn)
