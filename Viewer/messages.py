@@ -4,6 +4,7 @@
 from PyQt5.QtWidgets import QMessageBox, QPushButton
 
 import display
+import output
 import ROIs
 
 
@@ -138,6 +139,20 @@ def save_ROI_warning(parent):
     # Save ROI button
     save_btn = QPushButton("Save")
     save_btn.clicked.connect(lambda: ROIs.save_ROIs(parent))
+    warning.addButton(save_btn, QMessageBox.ActionRole)
+    warning.setStandardButtons(QMessageBox.Close)
+    retval = warning.exec()
+
+
+def save_output_warning(parent):
+    # Warning to save output before closing output window
+    warning = QMessageBox()
+    warning.setIcont(QMessageBox.Question)
+    warning.setText("Save output before exiting?")
+    warning.setWindowTitle("Save Output")
+    # Save output button
+    save_btn = QPushButton("Save")
+    save_btn.clicked.connect(lambda: output.output_data(parent))
     warning.addButton(save_btn, QMessageBox.ActionRole)
     warning.setStandardButtons(QMessageBox.Close)
     retval = warning.exec()
