@@ -8,14 +8,21 @@ import pyqtgraph as pg
 from PyQt5.QtCore import QLineF, Qt, pyqtSignal
 from PyQt5.QtGui import QColor, QCursor, QTransform
 from PyQt5.QtWidgets import (
+    QAbstractItemView,
     QApplication,
     QColorDialog,
+    QDesktopWidget,
+    QDialog,
     QFileDialog,
     QGraphicsItem,
     QGraphicsItemGroup,
     QGraphicsLineItem,
     QGraphicsTextItem,
     QInputDialog,
+    QListWidget,
+    QListWidgetItem,
+    QPushButton,
+    QVBoxLayout,
 )
 from shapely.geometry import LineString as ShLS
 from shapely.geometry import Point as ShP
@@ -625,6 +632,8 @@ class Dendrite_ROI(QGraphicsItemGroup):
         self.drawnLine = []
         self.previous_position = None
 
+        self.selected_polys = []
+
         self.create_line()
         self.draw_line()
         self.create_rois()
@@ -643,11 +652,15 @@ class Dendrite_ROI(QGraphicsItemGroup):
     def mousePressEvent(self, event):
         """Reimplementing the mouse press event for additional function"""
         self.previous_position = self.pos()
-        if self.GUI.select_ROIs is False:
-            QGraphicsItemGroup.mousePressEvent(self, event)
-        else:
-            select_ROIs(self.GUI, self.parent_ROI)
-            QGraphicsItemGroup.mousePressEvent(self, event)
+        if event.buttons() & Qt.LeftButton:
+            if self.GUI.select_ROIs is False:
+                QGraphicsItemGroup.mousePressEvent(self, event)
+            else:
+                select_ROIs(self.GUI, self.parent_ROI)
+                QGraphicsItemGroup.mousePressEvent(self, event)
+        elif event.buttons() & Qt.RightButton:
+            self.poly_win = Poly_ROI_Window(self.GUI, self.parent_ROI)
+            self.poly_win.show()
 
     def hoverEnterEvent(self, event):
         self.paint_hover_color()
@@ -706,6 +719,30 @@ class Dendrite_ROI(QGraphicsItemGroup):
             new_roi.removeHandle(0)
             self.poly_rois.append(new_roi)
 
+    def highlight_poly(self, roi):
+        """Function to highlight individual poly rois when selecting for deleting"""
+        self.wash_hover_color()
+        idx = int(roi.text().split(" ")[1]) - 1
+        if idx not in self.selected_polys:
+            self.selected_polys.append(idx)
+        else:
+            self.selected_polys.remove(idx)
+
+        for i in self.selected_polys:
+            self.poly_rois[i].setPen(self.GUI.selection_pen)
+        self.update()
+
+    def del_poly(self, list):
+        """Function to delete selected poly ROIs"""
+        idxs = [int(roi.text().split(" ")[1]) - 1 for roi in list.selectedItems()]
+        for i in idxs:
+            self.GUI.display_image.removeItem(self.poly_rois[i])
+        self.poly_rois = [
+            self.poly_rois[i] for i, _ in enumerate(self.poly_rois) if i not in idxs
+        ]
+
+        self.poly_win.close()
+
     def paint_hover_color(self):
         """Function allow for over color change over the ROI"""
         for line in self.drawnLine:
@@ -719,4 +756,48 @@ class Dendrite_ROI(QGraphicsItemGroup):
             line.setPen(self.pen)
         for roi in self.poly_rois:
             roi.setPen(self.pen)
+
+
+class Poly_ROI_Window(QDialog):
+    """Custom window to display a list of poly rois that will allow you to delete them"""
+
+    def __init__(self, parent, roi):
+        super(Poly_ROI_Window, self).__init__(parent=parent)
+        self.parent = parent
+        self.roi = roi
+
+        screen_size = QDesktopWidget().screenGeometry()
+        win_h = int(screen_size.height() * 0.5)
+        win_w = int(screen_size.width() * 0.1)
+        self.setGeometry(150, 150, win_w, win_h)
+        self.setStyleSheet("border: 3px solid #132743")
+        self.setWindowTitle("Poly ROIs")
+
+        self.initWindow()
+
+    def initWindow(self):
+        """Initialize the window"""
+        self.layout = QVBoxLayout()
+        self.setLayout(self.layout)
+
+        # Make the list
+        self.poly_roi_list = QListWidget()
+        self.poly_roi_list.setSelectionMode(QAbstractItemView.MultiSelection)
+        self.poly_roi_list.setStyleSheet(styles.roiListStyle())
+        poly_rois = self.roi.roi.poly_rois
+        for roi in range(len(poly_rois)):
+            label = f"ROI {roi+1}"
+            item = QListWidgetItem(label)
+            self.poly_roi_list.addItem(item)
+        self.poly_roi_list.itemClicked.connect(lambda x: self.roi.roi.highlight_poly(x))
+
+        # Make the delete button
+        self.del_btn = QPushButton("Delete")
+        self.del_btn.setStyleSheet(styles.roiBtnStyle())
+        self.del_btn.setFont(styles.roi_btn_font())
+        self.del_btn.clicked.connect(lambda: self.roi.roi.del_poly(self.poly_roi_list))
+        self.del_btn.setToolTip("Delete selected Poly ROIs")
+
+        self.layout.addWidget(self.poly_roi_list)
+        self.layout.addWidget(self.del_btn)
 
