@@ -17,6 +17,7 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
+import messages
 import output
 import styles
 
@@ -80,6 +81,12 @@ class Output_Window(QDialog):
         # Add items to the grid layout
         self.grid_layout.addWidget(self.side_panel, 0, 0)
         self.grid_layout.addWidget(self.plot_window, 0, 1)
+
+    def closeEvent(self, event):
+        """Function to prompt saving when closing the window"""
+        messages.save_output_warning(self.parent)
+
+        event.accept()
 
 
 def set_display_data(win, data_type):
