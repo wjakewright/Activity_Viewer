@@ -1,7 +1,5 @@
 """Module for creating the processing window after fluorescence trace extractin"""
 
-import random
-
 import cmapy
 import numpy as np
 import pyqtgraph as pg
