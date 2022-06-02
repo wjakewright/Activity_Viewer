@@ -1,0 +1,38 @@
+from importlib_metadata import entry_points
+from setuptools import find_packages, setup
+
+
+def readme():
+    with open("README.md") as f:
+        return f.read()
+
+
+dependencies = [
+    "<numpy>",
+    "<pyqtgraph>",
+    "<PyQt5>",
+    "<numba>",
+    "<cmapy>",
+    "<skimage>",
+    "<opencv-python>",
+    "<dataclasses>",
+    "<scipy>",
+    "<shapely>",
+]
+
+setup(
+    name="Activity_Viewer",
+    version="0.0.1",
+    description="GUI to extract fluorescence for nerual activity videos",
+    long_description=readme(),
+    long_description_content_type="text/markdown",
+    url="https://github.com/wjakewright/Activity_Viewer",
+    author="William (Jake) Wright",
+    liscence="",
+    packages=find_packages(),
+    install_requires=dependencies,
+    entry_points={
+        "consol_scripts": ["Viewer = Activity_Viewer.Activity_Viewer_pyqt.py:main"]
+    },
+)
+
