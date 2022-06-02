@@ -7,19 +7,6 @@ def readme():
         return f.read()
 
 
-dependencies = [
-    "<numpy>",
-    "<pyqtgraph>",
-    "<PyQt5>",
-    "<numba>",
-    "<cmapy>",
-    "<skimage>",
-    "<opencv-python>",
-    "<dataclasses>",
-    "<scipy>",
-    "<shapely>",
-]
-
 setup(
     name="Activity_Viewer",
     version="0.0.1",
@@ -30,9 +17,22 @@ setup(
     author="William (Jake) Wright",
     liscence="",
     packages=find_packages(),
-    install_requires=dependencies,
+    install_requires=[
+        "numpy",
+        "pyqtgraph",
+        "PyQt5",
+        "numba",
+        "cmapy",
+        "scikit-image",
+        "opencv-python",
+        "dataclasses",
+        "scipy",
+        "shapely",
+    ],
     entry_points={
-        "consol_scripts": ["Viewer = Activity_Viewer.Activity_Viewer_pyqt.py:main"]
+        "consol_scripts": [
+            "Viewer = Activity_Viewer.Activity_Viewer.Activity_Viewer_pyqt.py:main"
+        ]
     },
 )
 
