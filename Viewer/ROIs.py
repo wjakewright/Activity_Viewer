@@ -18,6 +18,7 @@ from PyQt5.QtWidgets import (
     QGraphicsItemGroup,
     QGraphicsLineItem,
     QGraphicsTextItem,
+    QGridLayout,
     QInputDialog,
     QListWidget,
     QListWidgetItem,
@@ -306,11 +307,20 @@ def to_flag_ROIs(parent):
 
 def flag_ROIs(parent, roi):
     """Function to add flags to ROIs"""
-    flags = ["New Spine", "Eliminated Spine", "Shaft Spine"]
-    flag_dialog = QInputDialog()
-    flag_dialog.setStyleSheet(styles.flagInputStyle())
-    flag, done1 = flag_dialog.getItem(None, "ROI Flag", "Add ROI Flag: ", flags)
-    roi.flag.append(flag)
+    flag_win = Flag_Window(parent, roi)
+    flag_win.show()
+
+
+def add_flags(parent, roi, win, list):
+    selected_flags = list.selectedItems()
+    selected_flags = [x.text() for x in selected_flags]
+    for flag in selected_flags:
+        if flag not in roi.flag:
+            roi.flag.append(flag)
+    for flag in roi.flag:
+        if flag not in selected_flags:
+            roi.flag.remove(flag)
+    win.close()
     parent.flag_ROIs = False
     parent.select_ROIs = False
     parent.status_label.setText("Ready...")
@@ -801,3 +811,64 @@ class Poly_ROI_Window(QDialog):
         self.layout.addWidget(self.poly_roi_list)
         self.layout.addWidget(self.del_btn)
 
+
+class Flag_Window(QDialog):
+    """Custom window to add and remove flags from rois"""
+
+    def __init__(self, parent, roi):
+        super(Flag_Window, self).__init__(parent=parent)
+        self.parent = parent
+        self.roi = roi
+        self.flags = ["New Spine", "Eliminated Spine", "Shaft Spine"]
+
+        self.setStyleSheet("border: 3px solid #132743")
+        self.setWindowTitle("ROI Flags")
+
+        self.initWindow()
+
+    def initWindow(self):
+        """Initialize the window"""
+        self.layout = QGridLayout()
+        self.setLayout(self.layout)
+
+        roi_flags = self.roi.flag
+        # Make the list
+        self.flag_list = QListWidget()
+        self.flag_list.setSelectionMode(QAbstractItemView.MultiSelection)
+        self.flag_list.setStyleSheet(styles.roiListStyle())
+        self.flag_list.setFixedWidth(150)
+        for flag in self.flags:
+            label = flag
+            item = QListWidgetItem(label)
+            self.flag_list.addItem(item)
+
+        for flag in roi_flags:
+            item = self.flag_list.findItems(flag, Qt.MatchExactly)
+            if item:
+                item[0].setSelected(True)
+
+        # Make the flag button
+        self.flag_btn = QPushButton("Flag ROIs")
+        self.flag_btn.setStyleSheet(styles.roiBtnStyle())
+        self.flag_btn.setFont(styles.roi_btn_font())
+        self.flag_btn.clicked.connect(
+            lambda: add_flags(self.parent, self.roi, self, self.flag_list)
+        )
+        self.flag_btn.setToolTip("Add selected flags")
+
+        # Make Cancel Button
+        self.cancel_btn = QPushButton("Cancel")
+        self.cancel_btn.setStyleSheet(styles.roiBtnStyle())
+        self.cancel_btn.setFont(styles.roi_btn_font())
+        self.cancel_btn.clicked.connect(lambda: self.close_win())
+        self.cancel_btn.setToolTip("Cancel adding flag")
+
+        self.layout.addWidget(self.flag_list, 0, 0, 1, 2)
+        self.layout.addWidget(self.flag_btn, 1, 0)
+        self.layout.addWidget(self.cancel_btn, 1, 1)
+
+    def close_win(self):
+        self.parent.flag_ROIs = False
+        self.parent.select_ROIs = False
+        self.parent.status_label.setText("Ready...")
+        self.close()
