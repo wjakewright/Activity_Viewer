@@ -3,14 +3,16 @@
 import numpy as np
 from shapely.geometry import Point as ShP
 
-import calculate_dFoF
-import deconvolve
-import messages
-import preprocess
-import spine_volume
-from display import convert_pixels_to_um
-from output_window import Output_Window
-from processing_window import Processing_Window
+from Activity_Viewer import (
+    calculate_dFoF,
+    deconvolve_calcium,
+    messages,
+    preprocess,
+    spine_volume,
+)
+from Activity_Viewer.display import convert_pixels_to_um
+from Activity_Viewer.output_window import Output_Window
+from Activity_Viewer.processing_window import Processing_Window
 
 
 def trigger_processing(parent):
@@ -258,14 +260,14 @@ def get_deconvolved(parent, parameters, tau):
     deconvolved_spikes = {}
     for key, fluo in fluorescence.items():
         if key != "Dendrite Poly":
-            dspikes = deconvolve.oasis(
+            dspikes = deconvolve_calcium.oasis(
                 fluo=fluo, batch_size=batch_size, tau=tau, sampling_rate=sampling_rate,
             )
             deconvolved_spikes[key] = dspikes
         else:
             dend_poly = []
             for poly in fluo:
-                dspikes = deconvolve.oasis(
+                dspikes = deconvolve_calcium.oasis(
                     fluo=poly,
                     batch_size=batch_size,
                     tau=tau,

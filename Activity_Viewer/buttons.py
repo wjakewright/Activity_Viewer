@@ -16,10 +16,7 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-import display
-import ROIs
-import signal_extraction
-import styles
+from Activity_Viewer import ROIs, display, signal_extraction, styles
 
 
 def ROI_Buttons(parent):

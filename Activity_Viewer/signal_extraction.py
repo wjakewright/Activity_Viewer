@@ -8,8 +8,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QFileDialog, QProgressDialog
 from skimage import io as sio
 
-import messages
-import signal_processing
+from Activity_Viewer import messages, signal_processing
 
 
 def extract_raw_fluorescence(parent):

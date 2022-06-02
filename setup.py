@@ -1,4 +1,3 @@
-from importlib_metadata import entry_points
 from setuptools import find_packages, setup
 
 
@@ -30,8 +29,8 @@ setup(
         "shapely",
     ],
     entry_points={
-        "consol_scripts": [
-            "Viewer = Activity_Viewer.Activity_Viewer.Activity_Viewer_pyqt.py:main"
+        "console_scripts": [
+            "Activity_Viewer = Activity_Viewer.Activity_Viewer_pyqt:main",
         ]
     },
 )

@@ -3,9 +3,7 @@
 
 from PyQt5.QtWidgets import QMessageBox, QPushButton
 
-import display
-import output
-import ROIs
+from Activity_Viewer import ROIs, display, output
 
 
 def load_image_warning(parent):

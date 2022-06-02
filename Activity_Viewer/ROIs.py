@@ -28,9 +28,7 @@ from PyQt5.QtWidgets import (
 from shapely.geometry import LineString as ShLS
 from shapely.geometry import Point as ShP
 
-import display
-import messages
-import styles
+from Activity_Viewer import display, messages, styles
 
 
 def Draw_ROI(parent):

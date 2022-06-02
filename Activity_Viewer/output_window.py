@@ -17,9 +17,7 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-import messages
-import output
-import styles
+from Activity_Viewer import messages, output, styles
 
 
 class Output_Window(QDialog):

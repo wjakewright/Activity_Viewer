@@ -15,8 +15,7 @@ from PyQt5.QtWidgets import (
     QGraphicsLineItem,
 )
 
-import images
-import ROIs
+from Activity_Viewer import ROIs, images
 
 
 def create_display(parent):

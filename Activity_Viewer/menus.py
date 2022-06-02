@@ -8,10 +8,7 @@
 
 from PyQt5.QtWidgets import QAction
 
-import display
-import images
-import ROIs
-import styles
+from Activity_Viewer import ROIs, display, images, styles
 
 
 def fileMenu(parent):

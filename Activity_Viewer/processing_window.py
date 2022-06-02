@@ -20,8 +20,7 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-import signal_processing
-import styles
+from Activity_Viewer import signal_processing, styles
 
 
 class Processing_Window(QDialog):

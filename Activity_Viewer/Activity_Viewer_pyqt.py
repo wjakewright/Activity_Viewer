@@ -13,14 +13,10 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-import buttons
-import display
-import menus
-import messages
-import styles
+from Activity_Viewer import buttons, display, menus, messages, styles
 
 
-class Activity_Viewer(QMainWindow):
+class My_Viewer(QMainWindow):
     """GUI to label neural ROIs and extract fluorescence timecourse from 
         from two-photon imaging videos.
         
@@ -29,7 +25,7 @@ class Activity_Viewer(QMainWindow):
 
     def __init__(self):
         """Initialize class and set up some parameters """
-        super(Activity_Viewer, self).__init__()
+        super(My_Viewer, self).__init__()
 
         # Set up some basic window properties
         pg.setConfigOptions(imageAxisOrder="row-major")
@@ -143,7 +139,7 @@ class Activity_Viewer(QMainWindow):
 
 def main():
     app = QApplication(sys.argv)
-    win = Activity_Viewer()
+    win = My_Viewer()
     win.show()
     ## This if running in interactive IDE
     sys.exit(app.exec_())
