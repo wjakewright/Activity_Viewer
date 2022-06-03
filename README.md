@@ -23,7 +23,7 @@ After drawing ROIs, extract the traces. You will be prompted to select the direc
     - Image
         - Color Map - change the color map of the reference image from the given options
         - Display Options - change how the reference iamge is being displayed if a video. Can be shown as a video, max, or average projections
-            - Aspect Ratio - choose the aspect ratio of the reference image to be fixed or fit the window
+        - Aspect Ratio - choose the aspect ratio of the reference image to be fixed or fit the window
     - ROIs
         -Color - allows you to select the color of the drawn rois
 
