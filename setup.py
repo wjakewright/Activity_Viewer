@@ -8,7 +8,7 @@ def readme():
 
 setup(
     name="Activity_Viewer",
-    version="0.0.1",
+    version="0.0.2",
     description="GUI to extract fluorescence for nerual activity videos",
     long_description=readme(),
     long_description_content_type="text/markdown",
