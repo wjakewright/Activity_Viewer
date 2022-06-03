@@ -13,27 +13,27 @@ After drawing ROIs, extract the traces. You will be prompted to select the direc
 ## Functionality
 
 ### ROI Drawing
-From the main menu bar
-- File
-    - Open Image - opens reference image
-    - Load ROIs - loads ROIs previously drawn and saved
-    - Save ROIs - save current ROIs to use later
-    - New Session - no current function
-    - Exit - Closes the GUI
-- Image
-    - Color Map - change the color map of the reference image from the given options
-    - Display Options - change how the reference iamge is being displayed if a video. Can be shown as a video, max, or average projections
-    - Aspect Ratio - choose the aspect ratio of the reference image to be fixed or fit the window
-- ROIs
-    -Color - allows you to select the color of the drawn rois
+- Menu Bar
+    - File
+        - Open Image - opens reference image
+        - Load ROIs - loads ROIs previously drawn and saved
+        - Save ROIs - save current ROIs to use later
+        - New Session - no current function
+        - Exit - Closes the GUI
+    - Image
+        - Color Map - change the color map of the reference image from the given options
+        - Display Options - change how the reference iamge is being displayed if a video. Can be shown as a video, max, or average projections
+            - Aspect Ratio - choose the aspect ratio of the reference image to be fixed or fit the window
+    - ROIs
+        -Color - allows you to select the color of the drawn rois
 
-Draw ROIs section
+- Draw ROIs section
     - Background - Draw a single ROI to caputure the background
     - Dendrite - Draw series of ROIs along the length of dendrite that are held together in a container
     - Spine - Draw individual ROIs for dendritic spines
     - Soma - Draw individual ROIs for cell somas
 
-Manage ROIs section
+- Manage ROIs section
     - Select ROIs - allows for ROI selection
     - Shift ROIs - allows for shifting all ROIs together at once
     - Label ROIs - toggles the ROIs labels
@@ -43,13 +43,13 @@ Manage ROIs section
     - Save ROIs - saves ROIs to for later use
     - Extract Traces - extract fluorescence traces from tif images
 
-Parameters
+- Parameters
     - Imaging Sensor - select imaging sensor used
     - Zoom Value - specify the digital zoom value used (this is specifically for BScope with 16x Nikon objective)
     - Imaging Rate - imaging rate used
 
 ### Processing Window
-Parameters
+- Parameters
     - Calculate dFoF - to calculate dFoF
     - Deconvolve Trace - to deconvolve to estimate spikes
     - Calculate Volume - to calculate spine volume (spines only)
@@ -58,19 +58,19 @@ Parameters
     - Artifact Frames - specify frames to be ignored due to artifacts
     - Dendrite Grouping - specify which spines belong to which dendrites
 
-ROIs
+- ROIs
     - Select ROIs to display their raw fluorescence traces in the plot
 
-Process
+- Process
     - Triggers further processing
 
 ### Output Window
-Display Data
+- Display Data
     - Select what data you wish to display in the plots
 
-ROIs
+- ROIs
     - Select ROIs to display their data in the plosts
 
-Save
+- Save
     - Save the final output
 
