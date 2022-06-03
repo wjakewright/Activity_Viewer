@@ -145,7 +145,7 @@ def save_ROI_warning(parent):
 def save_output_warning(parent):
     # Warning to save output before closing output window
     warning = QMessageBox()
-    warning.setIcont(QMessageBox.Question)
+    warning.setIcon(QMessageBox.Question)
     warning.setText("Save output before exiting?")
     warning.setWindowTitle("Save Output")
     # Save output button
