@@ -22,7 +22,7 @@ def output_data(parent):
                 dends = []
                 for poly in range(dend.shape[1]):
                     dends.append(f"{key} {i} Poly {poly + 1}")
-                ids.append(poly)
+                ids.append(dends)
         ROI_ids[key] = ids
 
     ROI_flags = {}
