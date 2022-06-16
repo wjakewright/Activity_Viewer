@@ -28,7 +28,10 @@ def extract_raw_fluorescence(parent):
             return
 
     image_directory = QFileDialog.getExistingDirectory(
-        parent, "Select Image Directory", options=QFileDialog.ShowDirsOnly
+        parent,
+        "Select Image Directory",
+        directory=parent.image_directory,
+        options=QFileDialog.ShowDirsOnly,
     )
     parent.image_directory = image_directory
     image_files = [

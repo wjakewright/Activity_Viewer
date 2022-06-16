@@ -3,6 +3,7 @@
     
     CREATOR
         William (Jake) Wright - 12/27/2021"""
+import os
 
 import numpy as np
 import pyqtgraph as pg
@@ -33,8 +34,20 @@ def create_display(parent):
 
 def Load_File(parent):
     # Load and display image
-    filename = QFileDialog.getOpenFileName(parent, "Open File")[0]
+    # load_dialog = QFileDialog(caption="Select Reference Image")
+    # load_dialog.setFileMode(QFileDialog.AnyFile)
+    # load_dialog.setAcceptMode(QFileDialog.AcceptOpen)
+    # load_dialog.setDirectory(parent.default_directory)
+    # load_dialog.show()
+    # if load_dialog.exec() == QFileDialog.Accepted:
+    # filename = load_dialog.selectedFiles()[0]
+    filename = QFileDialog.getOpenFileName(
+        parent, "Select Reference Image", directory=parent.default_directory,
+    )[0]
     parent.filename = filename
+    parent.image_directory = os.path.join(
+        *os.path.normpath(filename).split(os.sep)[:-2]
+    )
     # Load the image stack
     ## Generates parent.tif_images
     images.set_display_image(parent, filename)

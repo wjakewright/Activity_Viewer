@@ -46,7 +46,7 @@ class My_Viewer(QMainWindow):
         self.gamma = 1
         self.image_status = "video"
         self.idx = 0
-        self.default_directory = None
+        self.default_directory = r"Z:People\Jake\Imaging_Data"
         self.filename = None
         self.image_directory = None
         self.tif_stack = None
