@@ -1,5 +1,7 @@
+import os
 import pickle
 import re
+import time
 from dataclasses import dataclass
 
 from PyQt5.QtWidgets import QFileDialog
@@ -52,10 +54,24 @@ def output_data(parent):
         spine_volume=parent.spine_volume,
     )
 
-    save_name = QFileDialog.getSaveFileName(parent, "Save Output")[0]
-    pickle_name = save_name + ".pickle"
-    with open(pickle_name, "wb") as f:
-        pickle.dump(output, f)
+    # save_name = QFileDialog.getSaveFileName(parent, "Save Output")[0]
+    save_dialog = QFileDialog()
+    # save_dialog.setOptions(QFileDialog.DontUseNativeDialog)
+    save_dialog.setFileMode(QFileDialog.AnyFile)
+    save_dialog.setAcceptMode(QFileDialog.AcceptSave)
+    save_dialog.setDirectory(r"C:\Users\Jake\Desktop\Analyzed_data\individual")
+    year = time.ctime(os.path.getctime(parent.filename))[-2:]
+    mouse = re.search("JW[0-9]{3}", parent.filename).group()
+    date = year + re.search("[0-9]{4}", parent.filename).group()
+    sname = f"{mouse}_{date}_imaging_data"
+    save_dialog.selectFile(sname)
+    save_dialog.show()
+
+    if save_dialog.exec() == QFileDialog.Accepted:
+        save_name = save_dialog.selectedFiles()[0]
+        pickle_name = save_name + ".pickle"
+        with open(pickle_name, "wb") as f:
+            pickle.dump(output, f)
 
 
 @dataclass
