@@ -52,6 +52,9 @@ def output_data(parent):
         spine_pixel_intensity=parent.spine_pixel_intensity,
         dend_segment_intensity=parent.dend_seg_intensity,
         spine_volume=parent.spine_volume,
+        corrected_spine_pixel_intensity=parent.corrected_spine_pixel_intensity,
+        corrected_dend_segment_intensity=parent.corrected_dend_segment_intensity,
+        corrected_spine_volume=parent.corrected_spine_volume,
     )
 
     # save_name = QFileDialog.getSaveFileName(parent, "Save Output")[0]
@@ -93,4 +96,7 @@ class Activity_Output:
     spine_pixel_intensity: list
     dend_segment_intensity: list
     spine_volume: list
+    corrected_spine_pixel_intensity: list
+    corrected_dend_segment_intensity: list
+    corrected_spine_volume: list
 

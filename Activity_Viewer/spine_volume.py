@@ -6,7 +6,7 @@ import numpy as np
 from skimage import io as sio
 
 
-def calculate_spine_volume(parent, parameters):
+def calculate_spine_volume(parent, parameters, corrected=False):
     """Function to estimate the volume of each spine ROI"""
     # Dendrite length constant to normalize to
     DEND_LEN = 20
@@ -21,12 +21,17 @@ def calculate_spine_volume(parent, parameters):
             if key == "Background" or key == "Spine":
                 pixels = []
                 for i, v in enumerate(value):
-                    activity = parent.processed_dFoF[key][:, i]
-                    std = np.nanstd(activity)
-                    inactive = np.nonzero(activity > std * 2)[0]
-                    avg_projection = get_total_avg_projection(
-                        parent, include_frames=inactive
-                    )
+                    if corrected:
+                        activity = parent.processed_dFoF[key][:, i]
+                        std = np.nanstd(activity)
+                        inactive = np.nonzero(activity > std * 2)[0]
+                        avg_projection = get_total_avg_projection(
+                            parent, include_frames=inactive
+                        )
+                    else:
+                        avg_projection = get_total_avg_projection(
+                            parent, include_frames=None
+                        )
                     p = v.roi.getArrayRegion(
                         arr=avg_projection, img=parent.current_image, axes=(0, 1)
                     )

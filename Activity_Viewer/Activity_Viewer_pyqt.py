@@ -4,14 +4,8 @@ import sys
 
 import pyqtgraph as pg
 from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtWidgets import (
-    QApplication,
-    QGridLayout,
-    QLabel,
-    QMainWindow,
-    QStatusBar,
-    QWidget,
-)
+from PyQt5.QtWidgets import (QApplication, QGridLayout, QLabel, QMainWindow,
+                             QStatusBar, QWidget)
 
 from Activity_Viewer import buttons, display, menus, messages, styles
 
@@ -83,6 +77,9 @@ class My_Viewer(QMainWindow):
         self.spine_pixel_intensity = None
         self.dend_seg_intensity = None
         self.spine_volume = None
+        self.corrected_spine_pixel_intensity = None
+        self.corrected_dend_seg_intensity = None
+        self.corrected_spine_volume = None
 
         # Main menu bar
         menus.fileMenu(self)
