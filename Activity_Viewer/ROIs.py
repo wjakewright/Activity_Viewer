@@ -8,6 +8,7 @@ import time
 
 import numpy as np
 import pyqtgraph as pg
+import pyqtgraph.exporters
 from PyQt5.QtCore import QLineF, Qt, pyqtSignal
 from PyQt5.QtGui import QColor, QCursor, QTransform
 from PyQt5.QtWidgets import (
@@ -460,7 +461,7 @@ def save_ROIs(parent):
 
     if save_dialog.exec() == QFileDialog.Accepted:
         save_name = save_dialog.selectedFiles()[0]
-        pickle_name = save_name + ".pickle"
+        pickle_name = save_name + ".rois"
         rois = {"Background": [], "Soma": [], "Dendrite": [], "Spine": []}
         for key, value in parent.ROIs.items():
             if key != "Dendrite":
@@ -473,6 +474,11 @@ def save_ROIs(parent):
                     rois[key].append(points)
         with open(pickle_name, "wb") as f:
             pickle.dump(rois, f)
+
+        # Export the image
+        image_name = save_name + ".png"
+        exporter = pg.exporters.ImageExporter(parent.display_image)
+        exporter.export(image_name)
 
 
 def load_ROIs(parent):
