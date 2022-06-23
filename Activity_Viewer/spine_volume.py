@@ -12,7 +12,7 @@ def calculate_spine_volume(parent, parameters):
     DEND_LEN = 20
 
     # Get average image projection to use for volume estimation
-    avg_projection = get_total_avg_projection(parent)
+    # avg_projection = get_total_avg_projection(parent, exclude_frames)
 
     # Get ROI pixels from the avg projection image
     roi_pixels = {}
@@ -20,7 +20,13 @@ def calculate_spine_volume(parent, parameters):
         if key != "Soma":
             if key == "Background" or key == "Spine":
                 pixels = []
-                for v in value:
+                for i, v in enumerate(value):
+                    activity = parent.processed_dFoF[key][:, i]
+                    std = np.nanstd(activity)
+                    inactive = np.nonzero(activity > std * 2)[0]
+                    avg_projection = get_total_avg_projection(
+                        parent, include_frames=inactive
+                    )
                     p = v.roi.getArrayRegion(
                         arr=avg_projection, img=parent.current_image, axes=(0, 1)
                     )
@@ -28,6 +34,7 @@ def calculate_spine_volume(parent, parameters):
                 roi_pixels[key] = pixels
             elif key == "Dendrite":
                 dend_pixels = []
+                avg_projection = get_total_avg_projection(parent, indluce_frames=None)
                 for v in value:
                     poly_pixels = []
                     for poly in v.roi.poly_rois:
@@ -85,22 +92,28 @@ def calculate_spine_volume(parent, parameters):
     return spine_pix_intensity, normalized_spine_intensity, dend_segment_intensity
 
 
-def get_total_avg_projection(parent):
+def get_total_avg_projection(parent, include_frames=None):
     """Helper function to get the average projection across all tif images"""
     # Get image file names
     image_files = [
         img for img in os.listdir(parent.image_directory) if img.endswith(".tif")
     ]
     frame_tracker = 0
+    image_frames = 0
     summed_files = []
     for image in image_files:
         image = sio.imread(
             os.path.join(parent.image_directory, image), plugin="tifffile"
         )
-        summed_image = np.sum(image, axis=0)
         frame_tracker = frame_tracker + np.shape(image)[0]
+        if include_frames:
+            include_frames = include_frames - frame_tracker
+            include = [x for x in include_frames if x > 0 and x <= np.shape(image)[0]]
+            image = image[include_frames, :, :]
+        summed_image = np.sum(image, axis=0)
+        image_frames = image_frames + np.shape(image)[0]
         summed_files.append(summed_image)
 
-    average_projection = np.sum(summed_files, axis=0) / frame_tracker
+    average_projection = np.sum(summed_files, axis=0) / image_frames
 
     return average_projection
