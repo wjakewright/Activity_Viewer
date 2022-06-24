@@ -32,7 +32,7 @@ def event_detection(dFoF, threshold, sampling_rate):
     #### Important for silent ROIs
     LOWER_THRESH = 1
     LOWER_LIMIT = 0.2
-    SEC_TO_SMOOTH = 1
+    SEC_TO_SMOOTH = 0.5
 
     smooth_window = int(sampling_rate * SEC_TO_SMOOTH)
     # Make sure smooth window is odd
