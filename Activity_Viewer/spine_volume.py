@@ -22,9 +22,8 @@ def calculate_spine_volume(parent, parameters, corrected=False):
                 pixels = []
                 for i, v in enumerate(value):
                     if corrected:
-                        activity = parent.processed_dFoF[key][:, i]
-                        std = np.nanstd(activity)
-                        inactive = np.nonzero(activity > std * 2)[0]
+                        activity = parent.activity_trace[key][:, i]
+                        inactive = np.nonzero(activity == 0)[0]
                         avg_projection = get_total_avg_projection(
                             parent, include_frames=inactive
                         )
