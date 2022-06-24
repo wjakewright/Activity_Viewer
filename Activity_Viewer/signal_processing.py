@@ -267,7 +267,7 @@ def get_dFoF(parent, parameters):
 def get_events(parent, parameters, dFoF):
     """Helper function to handle event detection from dFoF"""
     threshold = parameters["Threshold"]
-    sampling_rate = parameters["Sampmling Rate"]
+    sampling_rate = parameters["Sampling Rate"]
 
     activity_trace = {}
     floored_trace = {}
