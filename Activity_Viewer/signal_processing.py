@@ -273,7 +273,7 @@ def get_events(parent, parameters, dFoF):
     floored_trace = {}
     threshold_values = {}
 
-    for (key, df), (_, pdf) in zip(dFoF.items(), processed_dFoF.items()):
+    for key, df in dFoF.items():
         if key != "Dendrite Poly":
             a_trace, f_trace, thresh = event_detection(df, threshold, sampling_rate)
             activity_trace[key] = a_trace
@@ -283,7 +283,7 @@ def get_events(parent, parameters, dFoF):
             poly_a_trace = []
             poly_f_trace = []
             poly_thresh = []
-            for poly_f, poly_pf in zip(df, pdf):
+            for poly_f in df:
                 a_trace, f_trace, thresh = event_detection(
                     poly_f, threshold, sampling_rate
                 )
