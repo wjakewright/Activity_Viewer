@@ -95,8 +95,9 @@ def event_detection(dFoF, threshold, sampling_rate):
             to_exclude.append(any(x <= 0) or any(x > len(roi)))
 
         # Refine start times of activity when dFoF goes above high thresh
+        thresh_low_high_smooth_idx = np.array(thresh_low_high_smooth_idx, dtype=object)
         thresh_low_high_raw_idx = []
-        for idx in np.array(thresh_low_high_smooth_idx)[[not x for x in to_exclude]]:
+        for idx in thresh_low_high_smooth_idx[[not x for x in to_exclude]]:
             thresh_low_high_raw_idx.append(refine_start_times(idx, roi, high_thresh))
 
         # Exlude periods before and after the imaging session
