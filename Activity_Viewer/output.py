@@ -48,6 +48,8 @@ def output_data(parent):
         drifting_baseline=parent.drifting_baseline,
         dFoF=parent.dFoF,
         processed_dFoF=parent.processed_dFoF,
+        activity_trace=parent.activity_trace,
+        floored_trace=parent.floored_trace,
         deconvolved_spikes=parent.deconvolved_spikes,
         spine_pixel_intensity=parent.spine_pixel_intensity,
         dend_segment_intensity=parent.dend_seg_intensity,
@@ -92,6 +94,8 @@ class Activity_Output:
     drifting_baseline: dict
     dFoF: dict
     processed_dFoF: dict
+    activity_trace: dict
+    floored_trace: dict
     deconvolved_spikes: dict
     spine_pixel_intensity: list
     dend_segment_intensity: list

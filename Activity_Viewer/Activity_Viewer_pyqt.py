@@ -4,8 +4,14 @@ import sys
 
 import pyqtgraph as pg
 from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtWidgets import (QApplication, QGridLayout, QLabel, QMainWindow,
-                             QStatusBar, QWidget)
+from PyQt5.QtWidgets import (
+    QApplication,
+    QGridLayout,
+    QLabel,
+    QMainWindow,
+    QStatusBar,
+    QWidget,
+)
 
 from Activity_Viewer import buttons, display, menus, messages, styles
 
@@ -73,6 +79,9 @@ class My_Viewer(QMainWindow):
         self.drifting_baseline = None
         self.dFoF = None
         self.processed_dFoF = None
+        self.activity_trace = None
+        self.floored_trace = None
+        self.threshold_values = None
         self.deconvolved_spikes = None
         self.spine_pixel_intensity = None
         self.dend_seg_intensity = None

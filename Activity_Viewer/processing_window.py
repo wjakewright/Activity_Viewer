@@ -147,6 +147,19 @@ def parameters_window(parent, win):
     win.smooth_win_input.setText(default_smooth)
     win.smooth_win_input.setToolTip("Window to smooth trace over in processing")
 
+    win.thresh_label = QLabel("Event Threshold")
+    win.thresh_label.setStyleSheet(styles.parameterLabelStyle())
+    win.thresh_label.setFont(styles.parameterLabelFont())
+    win.thresh_input = QLineEdit()
+    win.thresh_input.setStyleSheet(styles.parameterInputStyle())
+    win.thresh_input.setFont(styles.roi_btn_font())
+    if parent.imaging_sensor == "iGluSnFr3" or parent.imaging_sensor == "RCaMP2":
+        default_thresh = 2
+    else:
+        default_thresh = 3
+    win.thresh_input.setText(default_thresh)
+    win.thresh_input.setToolTip("Threshold multiplier for event detection over noise")
+
     # Artifact Frames
     win.artifact_label = QLabel("Artifact Frames")
     win.artifact_label.setStyleSheet(styles.parameterLabelStyle())
@@ -166,6 +179,8 @@ def parameters_window(parent, win):
     param_layout.addWidget(win.bout_sep_check_bx)
     param_layout.addWidget(win.smooth_label)
     param_layout.addWidget(win.smooth_win_input)
+    param_layout.addWidget(win.thresh_label)
+    param_layout.addWidget(win.thresh_input)
     param_layout.addWidget(win.artifact_label)
     param_layout.addWidget(win.artifact_input)
     param_layout.addWidget(win.artifact_sublabel)

@@ -11,6 +11,7 @@ from Activity_Viewer import (
     spine_volume,
 )
 from Activity_Viewer.display import convert_pixels_to_um
+from Activity_Viewer.event_detection import event_detection
 from Activity_Viewer.output_window import Output_Window
 from Activity_Viewer.processing_window import Processing_Window
 
@@ -51,6 +52,11 @@ def process_traces(parent, win):
     # Calculate deltaF/F if specified
     if parameters["Calculate dFoF"] is True:
         parent.dFoF, parent.processed_dFoF = get_dFoF(parent, parameters)
+
+        (parent.activity_trace, parent.floored_trace, threshold_values,) = get_events(
+            parent, parameters, parent.processed_dFoF
+        )
+        parent.parameters["Threshold Values"] = threshold_values
 
     sensor = parameters["Imaging Sensor"]
     # Devonvolve traces if specified
@@ -95,6 +101,7 @@ def get_processing_params(parent, win):
     volume = win.volume_check_bx.isChecked()
     bout_sep = win.bout_sep_check_bx.isChecked()
     smooth = float(win.smooth_win_input.text())
+    threshold = float(win.thresh_input.text())
 
     # Get artifact frames only if specified
     artifact_frames = []
@@ -123,6 +130,7 @@ def get_processing_params(parent, win):
         "Calculate Volume": volume,
         "Correct Bout Separation": bout_sep,
         "Smooth Window": smooth,
+        "Threshold": threshold,
         "Artifact Frames": artifact_frames,
         "Spine Groupings": dend_groupings,
     }
@@ -254,6 +262,40 @@ def get_dFoF(parent, parameters):
             processed_dFoF[key] = dend_poly_pdf
 
     return dFoF, processed_dFoF
+
+
+def get_events(parent, parameters, dFoF):
+    """Helper function to handle event detection from dFoF"""
+    threshold = parameters["Threshold"]
+    sampling_rate = parameters["Sampmling Rate"]
+
+    activity_trace = {}
+    floored_trace = {}
+    threshold_values = {}
+
+    for (key, df), (_, pdf) in zip(dFoF.items(), processed_dFoF.items()):
+        if key != "Dendrite Poly":
+            a_trace, f_trace, thresh = event_detection(df, threshold, sampling_rate)
+            activity_trace[key] = a_trace
+            floored_trace[key] = f_trace
+            threshold_values[key] = thresh
+        else:
+            poly_a_trace = []
+            poly_f_trace = []
+            poly_thresh = []
+            for poly_f, poly_pf in zip(df, pdf):
+                a_trace, f_trace, thresh = event_detection(
+                    poly_f, threshold, sampling_rate
+                )
+                poly_a_trace.append(a_trace)
+                poly_f_trace.append(f_trace)
+                poly_thresh.append(thresh)
+
+            activity_trace[key] = poly_a_trace
+            floored_trace[key] = poly_f_trace
+            threshold_values[key] = poly_thresh
+
+    return activity_trace, floored_trace, threshold_values
 
 
 def get_deconvolved(parent, parameters, tau):
