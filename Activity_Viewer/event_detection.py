@@ -105,10 +105,16 @@ def event_detection(dFoF, threshold, sampling_rate):
             to_exclude_2.append(any(x <= 0) or any(x > len(roi)))
         for exclude in to_exclude_2:
             thresh_low_high_raw_idx[exclude] = np.array([])
-        thresh_low_high_raw_idx = np.concatenate(thresh_low_high_raw_idx).astype(int)
+        try:
+            thresh_low_high_raw_idx = np.concatenate(thresh_low_high_raw_idx).astype(
+                int
+            )
+        except ValueError:
+            thresh_low_high_raw_idx = []
 
         # Find continuous active portions
         active_trace = np.zeros(len(roi))
+
         active_trace[thresh_low_high_raw_idx] = 1
 
         # Floor activity trace during inactive portions
