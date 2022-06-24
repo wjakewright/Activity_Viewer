@@ -154,9 +154,9 @@ def parameters_window(parent, win):
     win.thresh_input.setStyleSheet(styles.parameterInputStyle())
     win.thresh_input.setFont(styles.roi_btn_font())
     if parent.imaging_sensor == "iGluSnFr3" or parent.imaging_sensor == "RCaMP2":
-        default_thresh = 2
+        default_thresh = "2"
     else:
-        default_thresh = 3
+        default_thresh = "3"
     win.thresh_input.setText(default_thresh)
     win.thresh_input.setToolTip("Threshold multiplier for event detection over noise")
 
