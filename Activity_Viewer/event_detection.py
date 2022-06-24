@@ -143,7 +143,10 @@ def find_low_high_transitions(start_idx, stop_idx, thresh_low_start):
 def refine_start_times(idx, trace, high_thresh):
     """Helper function to help refine start times when dFoF goes above high thresh"""
     start = idx[0]
-    u1 = np.nonzero(trace[idx[0] :] > high_thresh)[0][0]
+    try:
+        u1 = np.nonzero(trace[idx[0] :] > high_thresh)[0][0]
+    except IndexError:
+        u1 = 0
     try:
         u2 = np.nonzero(trace[start + u1 : 0 : -1] < high_thresh)[0][0]
     except IndexError:
