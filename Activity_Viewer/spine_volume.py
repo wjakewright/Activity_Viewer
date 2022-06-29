@@ -38,7 +38,7 @@ def calculate_spine_volume(parent, parameters, corrected=False):
                 roi_pixels[key] = pixels
             elif key == "Dendrite":
                 dend_pixels = []
-                avg_projection = get_total_avg_projection(parent, indluce_frames=None)
+                avg_projection = get_total_avg_projection(parent, include_frames=None)
                 for v in value:
                     poly_pixels = []
                     for poly in v.roi.poly_rois:
