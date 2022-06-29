@@ -12,6 +12,8 @@ def output_data(parent):
     # make a few new attributes
     filename = parent.filename.split("/")[-1]
     mouse_id = re.search("[A-Z]{2}[0-9]{3}", parent.filename).group()
+    year = time.ctime(os.path.getctime(parent.filename))[-2:]
+    date = year + re.search("[0-9]{4}", filename).group()
     ROI_ids = {}
     for key, value in parent.ROI_fluorescence.items():
         if key != "Dendrite Poly":
@@ -39,6 +41,7 @@ def output_data(parent):
     output = Activity_Output(
         filename=filename,
         mouse_id=mouse_id,
+        date=date,
         parameters=parent.parameters,
         ROI_ids=ROI_ids,
         ROI_flags=ROI_flags,
@@ -85,6 +88,7 @@ class Activity_Output:
 
     filename: str
     mouse_id: str
+    date: str
     parameters: dict
     ROI_ids: dict
     ROI_flags: dict
