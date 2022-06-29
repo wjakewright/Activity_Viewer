@@ -469,9 +469,12 @@ def save_ROIs(parent):
                     state = v.roi.saveState()
                     rois[key].append(state)
             else:
+                r = {"Points": [], "Del": []}
                 for v in value:
                     points = v.roi.points
-                    rois[key].append(points)
+                    r["Points"] = points
+                    r["Del"] = v.roi.del_idxs
+                rois[key].append(r)
         with open(pickle_name, "wb") as f:
             pickle.dump(rois, f)
 
@@ -499,7 +502,8 @@ def load_ROIs(parent):
                 parent.ROIs[roi_type].append(roi)
         else:
             for v in value:
-                roi = ROI(parent, roi_type, v)
+                roi = ROI(parent, roi_type, v["Points"])
+                roi.del_poly_load(v["Del"])
                 parent.ROIs[roi_type].append(roi)
 
 
@@ -660,6 +664,7 @@ class Dendrite_ROI(QGraphicsItemGroup):
         self.line = None
         self.drawn_lines = []
         self.drawnLine = []
+        self.del_idxs = []
         self.previous_position = None
 
         self.selected_polys = []
@@ -765,6 +770,7 @@ class Dendrite_ROI(QGraphicsItemGroup):
     def del_poly(self, list):
         """Function to delete selected poly ROIs"""
         idxs = [int(roi.text().split(" ")[1]) - 1 for roi in list.selectedItems()]
+        self.del_idxs = idxs
         for i in idxs:
             self.GUI.display_image.removeItem(self.poly_rois[i])
         self.poly_rois = [
@@ -772,6 +778,14 @@ class Dendrite_ROI(QGraphicsItemGroup):
         ]
 
         self.poly_win.close()
+
+    def del_poly_load(self, idxs):
+        """Function to delete poly rois that were previously deleted"""
+        for i in idxs:
+            self.GUI.display_image.removeItem(self.poly_rois[i])
+        self.poly_rois = [
+            self.poly_rois[i] for i, _ in enumerate(self.poly_rois) if i not in idxs
+        ]
 
     def paint_hover_color(self):
         """Function allow for over color change over the ROI"""
