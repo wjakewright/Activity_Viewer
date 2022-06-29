@@ -503,7 +503,7 @@ def load_ROIs(parent):
         else:
             for v in value:
                 roi = ROI(parent, roi_type, v["Points"])
-                roi.del_poly_load(v["Del"])
+                roi.roi.del_poly_load(v["Del"])
                 parent.ROIs[roi_type].append(roi)
 
 
