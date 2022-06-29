@@ -28,7 +28,7 @@ class My_Viewer(QMainWindow):
         super(My_Viewer, self).__init__()
 
         # Set up some basic window properties
-        pg.setConfigOptions(imageAxisOrder="col-major")
+        pg.setConfigOptions(imageAxisOrder="row-major")
         screen_size = QtWidgets.QDesktopWidget().screenGeometry()
         win_h = int(screen_size.height() * 0.8)
         win_w = int(screen_size.width() * 0.9)
