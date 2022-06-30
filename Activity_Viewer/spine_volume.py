@@ -74,7 +74,7 @@ def get_corrected_roi_pixels(parent):
     for key, value in parent.ROIs.items():
         if key != "Soma":
             if key == "Background":
-                p = v[0].roi.getArrayRegion(
+                p = value[0].roi.getArrayRegion(
                     arr=tot_avg_projection, img=parent.current_image, axes=(0, 1)
                 )
                 roi_pixels[key] = p
