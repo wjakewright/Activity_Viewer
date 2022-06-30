@@ -469,12 +469,12 @@ def save_ROIs(parent):
                     state = v.roi.saveState()
                     rois[key].append(state)
             else:
-                r = {"Points": [], "Del": []}
                 for v in value:
+                    r = {"Points": [], "Del": []}
                     points = v.roi.points
                     r["Points"] = points
                     r["Del"] = v.roi.del_idxs
-                rois[key].append(r)
+                    rois[key].append(r)
         with open(pickle_name, "wb") as f:
             pickle.dump(rois, f)
 
