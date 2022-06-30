@@ -83,6 +83,7 @@ def get_corrected_roi_pixels(parent):
                 for i, v in enumerate(value):
                     activity = parent.activity_trace[key][:, i]
                     inactive = np.nonzero(activity == 0)[0]
+                    print(inactive.shape)
                     avg_projection = get_total_avg_projection(
                         parent, include_frames=inactive
                     )
@@ -150,7 +151,7 @@ def get_total_avg_projection(parent, include_frames=None):
             os.path.join(parent.image_directory, image), plugin="tifffile"
         )
         frame_tracker = frame_tracker + np.shape(image)[0]
-        if include_frames:
+        if include_frames is not None:
             include_frames = include_frames - frame_tracker
             include = [x for x in include_frames if x > 0 and x <= np.shape(image)[0]]
             image = image[include, :, :]
