@@ -26,7 +26,7 @@ def extract_raw_fluorescence(parent):
         if not parent.ROIs["Dendrite"]:
             messages.parent_dendrite_warning(parent)
             return
-
+    print(parent.image_directory)
     image_directory = QFileDialog.getExistingDirectory(
         parent,
         "Select Image Directory",

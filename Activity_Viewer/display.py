@@ -9,8 +9,12 @@ import numpy as np
 import pyqtgraph as pg
 from PyQt5.QtCore import QLineF, QPointF, QRectF, Qt
 from PyQt5.QtGui import QColor, QTransform
-from PyQt5.QtWidgets import (QApplication, QFileDialog, QGraphicsEllipseItem,
-                             QGraphicsLineItem)
+from PyQt5.QtWidgets import (
+    QApplication,
+    QFileDialog,
+    QGraphicsEllipseItem,
+    QGraphicsLineItem,
+)
 
 from Activity_Viewer import ROIs, images
 
@@ -44,7 +48,6 @@ def Load_File(parent):
     parent.image_directory = os.path.join(
         *os.path.normpath(filename).split(os.sep)[:-2]
     )
-    print(parent.image_directory)
     # Load the image stack
     ## Generates parent.tif_images
     images.set_display_image(parent, filename)
