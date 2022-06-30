@@ -135,8 +135,11 @@ def get_processing_params(parent, win):
             if type(txt) == list:
                 ss = []
                 for t in txt:
-                    first, last = t.split("-")
-                    s = list(range(int(first) - 1, int(last)))
+                    try:
+                        first, last = t.split("-")
+                        s = list(range(int(first) - 1, int(last)))
+                    except ValueError:
+                        s = int(t)
                     ss.append(s)
                 spines = [x for xs in ss for x in xs]
             else:
