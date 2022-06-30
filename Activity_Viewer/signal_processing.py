@@ -139,7 +139,7 @@ def get_processing_params(parent, win):
                         first, last = t.split("-")
                         s = list(range(int(first) - 1, int(last)))
                     except ValueError:
-                        s = [int(t)]
+                        s = [int(t - 1)]
                     ss.append(s)
                 spines = [x for xs in ss for x in xs]
             else:
