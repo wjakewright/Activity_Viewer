@@ -129,9 +129,19 @@ def get_processing_params(parent, win):
     dend_groupings = []
     if hasattr(win, "grouping_frame"):
         for dend in win.grouping_input_list:
-            txt = dend.text()
-            first, last = txt.split("-")
-            spines = list(range(int(first) - 1, int(last)))
+            txt = dend.text().replace(" ", "")
+            if "," in txt:
+                txt = txt.split(",")
+            if type(txt) == list:
+                ss = []
+                for t in txt:
+                    first, last = t.split("-")
+                    s = list(range(int(first) - 1, int(last)))
+                    ss.append(s)
+                spines = [x for xs in ss for x in xs]
+            else:
+                first, last = txt.split("-")
+                spines = list(range(int(first) - 1, int(last)))
             dend_groupings.append(spines)
 
     # Package parameters into dictionary
