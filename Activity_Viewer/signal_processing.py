@@ -1,5 +1,7 @@
 """Module to handle the signal processing of the activity traces"""
 
+import time
+
 import numpy as np
 from shapely.geometry import Point as ShP
 
@@ -41,6 +43,8 @@ def process_traces(parent, win):
     parent.parameters = parameters
 
     # get ROI spatial potisions
+    print("Preprocessing")
+    start_time = time.process_time()
     parent.ROI_positions = get_spatial_positions(parent, parameters)
     # subtract the time varying background from all the traces
     (
@@ -48,19 +52,25 @@ def process_traces(parent, win):
         parent.fluorescence_processed,
         parent.drifting_baseline,
     ) = preprocess.preprocess_fluorescence(parent, parameters)
+    print("--- %4fs seconds ---" % (time.process_time() - start_time))
 
     # Calculate deltaF/F if specified
     if parameters["Calculate dFoF"] is True:
+        print("Calculating dFoF")
+        start_time = time.process_time()
         parent.dFoF, parent.processed_dFoF = get_dFoF(parent, parameters)
 
         (parent.activity_trace, parent.floored_trace, threshold_values,) = get_events(
             parent, parameters, parent.processed_dFoF
         )
         parent.parameters["Threshold Values"] = threshold_values
+        print("--- %4fs seconds ---" % (time.process_time() - start_time))
 
     sensor = parameters["Imaging Sensor"]
     # Devonvolve traces if specified
     if parameters["Deconvolve"] is True and sensor != "iGluSnFr3":
+        print("Deconvolving Traces")
+        start_time = time.process_time()
         if sensor == "GCaMP6f":
             tau = 0.7
         elif sensor == "GCaMP6s":
@@ -70,8 +80,11 @@ def process_traces(parent, win):
         elif sensor == "RCaMP2":
             tau = 1.0
         parent.deconvolved_spikes = get_deconvolved(parent, parameters, tau)
+        print("--- %4fs seconds ---" % (time.process_time() - start_time))
 
     if parameters["Calculate Volume"] is True:
+        print("Estimating Spine Volume")
+        start_time = time.process_time()
         (
             parent.spine_pixel_intensity,
             parent.spine_volume,
@@ -83,6 +96,7 @@ def process_traces(parent, win):
             parent.corrected_spine_volume,
             parent.corrected_dend_seg_intensity,
         ) = spine_volume.calculate_spine_volume(parent, parameters, corrected=True)
+        print("--- %4fs seconds ---" % (time.process_time() - start_time))
 
     win.close_window()
     output_window = Output_Window(parent)
