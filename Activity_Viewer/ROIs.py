@@ -322,6 +322,7 @@ def add_flags(parent, roi, win, list):
     for flag in roi.flag:
         if flag not in selected_flags:
             roi.flag.remove(flag)
+    print(roi.flag)
     color_flags(parent, roi, roi.flag)
     win.close()
     parent.flag_ROIs = False
