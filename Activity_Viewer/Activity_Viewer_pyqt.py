@@ -55,6 +55,10 @@ class My_Viewer(QMainWindow):
         self.ROI_pen = pg.mkPen((255, 255, 255), width=2)
         self.highlight_pen = pg.mkPen((255, 255, 0), width=2)
         self.selection_pen = pg.mkPen((219, 3, 252), width=2)
+        self.flag_colors = {
+            "New Spine": pg.mkPen((78, 235, 30), width=2),
+            "Eliminated Spine": pg.mkPen((230, 0, 0), width=2),
+        }
         self.ROI_label_color = (255, 255, 255)
         self.current_ROI_type = None
         self.display_ROI_labels = True
