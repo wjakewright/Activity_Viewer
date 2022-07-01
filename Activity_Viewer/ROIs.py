@@ -332,13 +332,13 @@ def add_flags(parent, roi, win, list):
 
 def color_flags(parent, roi, flags):
     if "New Spine" in flags:
-        roi.roi.setPen = parent.flag_colors["New Spine"]
+        roi.roi.setPen(parent.flag_colors["New Spine"])
     elif "Eliminated Spine" in flags:
-        roi.roi.setPen = parent.flag_colors["Eliminated Spine"]
+        roi.roi.setPen(parent.flag_colors["Eliminated Spine"])
     elif "New Spine" in flags and "Eliminated Spine" in flags:
-        roi.roi.setPen = parent.ROI_pen
+        roi.roi.setPen(parent.ROI_pen)
     else:
-        roi.roi.setPen = parent.ROI_pen
+        roi.roi.setPen(parent.ROI_pen)
 
 
 def to_clear_ROIs(parent):
