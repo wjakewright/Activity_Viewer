@@ -3,10 +3,22 @@
 import cmapy
 import numpy as np
 import pyqtgraph as pg
-from PyQt5.QtWidgets import (QAbstractItemView, QCheckBox, QDesktopWidget,
-                             QDialog, QGridLayout, QGroupBox, QHBoxLayout,
-                             QLabel, QLineEdit, QListWidget, QListWidgetItem,
-                             QPushButton, QVBoxLayout, QWidget)
+from PyQt5.QtWidgets import (
+    QAbstractItemView,
+    QCheckBox,
+    QDesktopWidget,
+    QDialog,
+    QGridLayout,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QListWidget,
+    QListWidgetItem,
+    QPushButton,
+    QVBoxLayout,
+    QWidget,
+)
 
 from Activity_Viewer import signal_processing, styles
 
@@ -128,7 +140,7 @@ def parameters_window(parent, win):
     win.ds_win_input = QLineEdit()
     win.ds_win_input.setStyleSheet(styles.parameterInputStyle())
     win.ds_win_input.setFont(styles.roi_btn_font())
-    win.ds_win_input.setTest("20")
+    win.ds_win_input.setText("20")
     win.ds_win.input.setToolTip("Frames to downsample for baseline estimation")
 
     # Smooth Window
