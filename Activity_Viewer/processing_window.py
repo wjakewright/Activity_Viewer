@@ -141,7 +141,7 @@ def parameters_window(parent, win):
     win.ds_win_input.setStyleSheet(styles.parameterInputStyle())
     win.ds_win_input.setFont(styles.roi_btn_font())
     win.ds_win_input.setText("20")
-    win.ds_win.input.setToolTip("Frames to downsample for baseline estimation")
+    win.ds_win_input.setToolTip("Frames to downsample for baseline estimation")
 
     # Smooth Window
     win.smooth_label = QLabel("Smooth Window")
