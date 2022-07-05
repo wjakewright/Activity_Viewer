@@ -58,6 +58,7 @@ def preprocess_fluorescence(parent, parameters):
                 for i in range(np.shape(v)[1]):
                     f, b = baseline_correction(
                         data=v[:, i],
+                        ds_r=ds_ratio,
                         sampling_rate=parameters["Sampling Rate"],
                         bout_separations=seps,
                         artifact_frames=parameters["Artifact Frames"],
