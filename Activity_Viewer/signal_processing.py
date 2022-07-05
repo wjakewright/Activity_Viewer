@@ -115,7 +115,7 @@ def get_processing_params(parent, win):
     volume = win.volume_check_bx.isChecked()
     bout_sep = win.bout_sep_check_bx.isChecked()
     smooth = float(win.smooth_win_input.text())
-    ds_ratio = float(win.ds_win_input.text())
+    ds_ratio = int(win.ds_win_input.text())
     threshold = float(win.thresh_input.text())
 
     # Get artifact frames only if specified
