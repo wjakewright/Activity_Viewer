@@ -187,6 +187,8 @@ def parameters_window(parent, win):
     param_layout.addWidget(win.deconvolve_check_bx)
     param_layout.addWidget(win.volume_check_bx)
     param_layout.addWidget(win.bout_sep_check_bx)
+    param_layout.addWidget(win.ds_label)
+    param_layout.addWidget(win.ds_win_input)
     param_layout.addWidget(win.smooth_label)
     param_layout.addWidget(win.smooth_win_input)
     param_layout.addWidget(win.thresh_label)
