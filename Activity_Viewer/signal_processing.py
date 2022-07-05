@@ -115,6 +115,7 @@ def get_processing_params(parent, win):
     volume = win.volume_check_bx.isChecked()
     bout_sep = win.bout_sep_check_bx.isChecked()
     smooth = float(win.smooth_win_input.text())
+    ds_ratio = float(win.ds_win_input.text())
     threshold = float(win.thresh_input.text())
 
     # Get artifact frames only if specified
@@ -156,6 +157,7 @@ def get_processing_params(parent, win):
         "Deconvolve": deconvolve,
         "Calculate Volume": volume,
         "Correct Bout Separation": bout_sep,
+        "Ds Ratio": ds_ratio,
         "Smooth Window": smooth,
         "Threshold": threshold,
         "Artifact Frames": artifact_frames,

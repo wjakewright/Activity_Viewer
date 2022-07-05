@@ -30,7 +30,7 @@ def preprocess_fluorescence(parent, parameters):
                     v_sub = v - parent.ROI_fluorescence["Background"]
                     dend_poly.append(v_sub)
                 fluorescence_subtracted["Dendrite Poly"] = dend_poly
-
+    ds_ratio = parameters["Ds Ratio"]
     # Correct the baseline using kernel density estimation
     for key, value in fluorescence_subtracted.items():
         if key != "Dendrite Poly":
@@ -39,6 +39,7 @@ def preprocess_fluorescence(parent, parameters):
             for i in range(np.shape(value)[1]):
                 f, b = baseline_correction(
                     data=value[:, i],
+                    ds_r=ds_ratio,
                     sampling_rate=parameters["Sampling Rate"],
                     bout_separations=seps,
                     artifact_frames=parameters["Artifact Frames"],
@@ -71,7 +72,7 @@ def preprocess_fluorescence(parent, parameters):
     return fluorescence_subtracted, fluorescence_processed, drifting_basline
 
 
-def baseline_correction(data, sampling_rate, bout_separations, artifact_frames):
+def baseline_correction(data, ds_r, sampling_rate, bout_separations, artifact_frames):
     """Function to correct time varying basline and also handle correction 
         of artifact frames and imaging bout separations
         
@@ -94,7 +95,7 @@ def baseline_correction(data, sampling_rate, bout_separations, artifact_frames):
     """
 
     # Constants
-    DS_RATIO = 20
+    DS_RATIO = ds_r
     WINDOW = np.round(sampling_rate)
     STEP = 20
     SECONDS_TO_IGNORE = 10  # for bout separations only
