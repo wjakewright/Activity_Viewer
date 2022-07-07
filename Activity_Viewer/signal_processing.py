@@ -89,12 +89,14 @@ def process_traces(parent, win):
             parent.spine_pixel_intensity,
             parent.spine_volume,
             parent.dend_seg_intensity,
+            parent.spine_map,
         ) = spine_volume.calculate_spine_volume(parent, parameters)
 
         (
             parent.corrected_spine_pixel_intensity,
             parent.corrected_spine_volume,
             parent.corrected_dend_seg_intensity,
+            _,
         ) = spine_volume.calculate_spine_volume(parent, parameters, corrected=True)
         print("--- %4fs seconds ---" % (time.process_time() - start_time))
 

@@ -90,6 +90,7 @@ class My_Viewer(QMainWindow):
         self.spine_pixel_intensity = None
         self.dend_seg_intensity = None
         self.spine_volume = None
+        self.spine_map = None
         self.corrected_spine_pixel_intensity = None
         self.corrected_dend_seg_intensity = None
         self.corrected_spine_volume = None
