@@ -226,7 +226,6 @@ def mode_kde(x):
     kde = stats.gaussian_kde(x)
     pts = np.linspace(x.min(), x.max(), 200)
     f = kde(pts)
-    print(f)
     ii = np.nanargmax(f)
     ii_1 = np.amax(np.array([ii - 1, 1]))
     ii_2 = np.amin(np.array([ii + 1, len(f)]))
