@@ -27,7 +27,6 @@ def calculate_spine_volume(parent, parameters, corrected=False):
     spine_pix_intensity = []
     for spine in roi_pixels["Spine"]:
         above_background = spine[spine - background > 0] - background
-        print(spine - background)
         spine_pix_intensity.append(spine - background)
         integrated_spine_intensity.append(np.nansum(above_background))
 
