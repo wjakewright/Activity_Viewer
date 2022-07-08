@@ -16,9 +16,9 @@ def calculate_spine_volume(parent, parameters, corrected=False):
 
     # Get ROI pixels from the avg projection image
     if corrected:
-        roi_pixels, roi_coords = get_corrected_roi_pixels(parent)
+        roi_pixels = get_corrected_roi_pixels(parent)
     else:
-        roi_pixels, roi_coords = get_uncorrected_roi_pixels(parent)
+        roi_pixels = get_uncorrected_roi_pixels(parent)
 
     background = np.nanmean(roi_pixels["Background"])
 
@@ -27,7 +27,8 @@ def calculate_spine_volume(parent, parameters, corrected=False):
     spine_pix_intensity = []
     for spine in roi_pixels["Spine"]:
         above_background = spine[spine - background > 0] - background
-        spine_pix_intensity.append(above_background)
+        print(spine - background)
+        spine_pix_intensity.append(spine - background)
         integrated_spine_intensity.append(np.nansum(above_background))
 
     # Get mean intensity for each poly roi for each dendrite
@@ -64,20 +65,16 @@ def calculate_spine_volume(parent, parameters, corrected=False):
         normalized_spine_intensity.append(norm_spine)
         dend_segment_intensity.append(local_dend)
 
-        spine_map = [x for x in roi_coords["Spine"]]
-
     return (
         spine_pix_intensity,
         normalized_spine_intensity,
         dend_segment_intensity,
-        spine_map,
     )
 
 
 def get_corrected_roi_pixels(parent):
     """Helper function to get the roi pixels from the average projection"""
     roi_pixels = {}
-    roi_coords = {}
     tot_avg_projection = get_total_avg_projection(parent, include_frames=None)
     for key, value in parent.ROIs.items():
         if key != "Soma":
@@ -88,7 +85,6 @@ def get_corrected_roi_pixels(parent):
                 roi_pixels[key] = p
             elif key == "Spine":
                 pixels = []
-                coords = []
                 for i, v in enumerate(value):
                     activity = parent.activity_trace[key][:, i]
                     inactive = np.nonzero(activity == 0)[0]
@@ -97,16 +93,11 @@ def get_corrected_roi_pixels(parent):
                         parent, include_frames=inactive
                     )
 
-                    p, c = v.roi.getArrayRegion(
-                        arr=avg_projection,
-                        img=parent.current_image,
-                        axes=(0, 1),
-                        returnMappedCoords=True,
+                    p = v.roi.getArrayRegion(
+                        arr=avg_projection, img=parent.current_image, axes=(0, 1),
                     )
                     pixels.append(p)
-                    coords.append(c)
                 roi_pixels[key] = pixels
-                roi_coords[key] = coords
             elif key == "Dendrite":
                 dend_pixels = []
                 for v in value:
@@ -120,30 +111,23 @@ def get_corrected_roi_pixels(parent):
                         poly_pixels.append(p)
                     dend_pixels.append(poly_pixels)
                 roi_pixels[key] = dend_pixels
-    return roi_pixels, roi_coords
+    return roi_pixels
 
 
 def get_uncorrected_roi_pixels(parent):
     """Helper function to get the roi pixels from the average projection"""
     roi_pixels = {}
-    roi_coords = {}
     avg_projection = get_total_avg_projection(parent, include_frames=None)
     for key, value in parent.ROIs.items():
         if key != "Soma":
             if key == "Background" or key == "Spine":
                 pixels = []
-                coords = []
                 for i, v in enumerate(value):
-                    p, c = v.roi.getArrayRegion(
-                        arr=avg_projection,
-                        img=parent.current_image,
-                        axes=(0, 1),
-                        returnMappedCoords=True,
+                    p = v.roi.getArrayRegion(
+                        arr=avg_projection, img=parent.current_image, axes=(0, 1),
                     )
                     pixels.append(p)
-                    coords.append(c)
                 roi_pixels[key] = pixels
-                roi_coords[key] = coords
             elif key == "Dendrite":
                 dend_pixels = []
                 for v in value:
@@ -155,7 +139,7 @@ def get_uncorrected_roi_pixels(parent):
                         poly_pixels.append(p)
                     dend_pixels.append(poly_pixels)
                 roi_pixels[key] = dend_pixels
-    return roi_pixels, roi_coords
+    return roi_pixels
 
 
 def get_total_avg_projection(parent, include_frames=None):
