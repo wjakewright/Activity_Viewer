@@ -27,7 +27,10 @@ def calculate_spine_volume(parent, parameters, corrected=False):
     spine_pix_intensity = []
     for spine in roi_pixels["Spine"]:
         above_background = spine[spine - background > 0] - background
-        spine_pix_intensity.append(spine - background)
+        spine_pix = spine
+        spine_pix[spine_pix == 0] = background
+        spine_pix = spine_pix - background
+        spine_pix_intensity.append(spine_pix)
         integrated_spine_intensity.append(np.nansum(above_background))
 
     # Get mean intensity for each poly roi for each dendrite
