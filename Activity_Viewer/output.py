@@ -69,7 +69,7 @@ def output_data(parent):
     save_dialog.setAcceptMode(QFileDialog.AcceptSave)
     save_dialog.setDirectory(r"C:\Users\Jake\Desktop\Analyzed_data\individual")
     year = time.ctime(os.path.getctime(parent.filename))[-2:]
-    mouse = re.search("JW[0-9]{3}", filename).group()
+    mouse = re.search("[A-Z]{2}[0-9]{3}", filename).group()
     date = year + re.search("[0-9]{4}", filename).group()
     sname = f"{mouse}_{date}_imaging_data"
     save_dialog.selectFile(sname)
