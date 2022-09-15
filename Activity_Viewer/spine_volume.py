@@ -181,7 +181,7 @@ def get_total_avg_projection(parent, include_frames=None, frame_limit=10000):
     for image_file in image_files:
         if image_frames > frame_limit:
             break
-        print(f"Loading image: {image}")
+        print(f"Loading image: {image_file}")
         image = sio.imread(
             os.path.join(parent.image_directory, image_file), plugin="tifffile"
         )
