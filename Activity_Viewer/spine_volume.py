@@ -135,6 +135,8 @@ def get_uncorrected_roi_pixels(parent):
     all_frames = np.ones(parent.activity_trace["Spine"].shape[0])
     all_frames[artifact_frames] = 0
     good_frames = np.nonzero(all_frames == 1)[0]
+    print(parent.activity_trace["Spine"].shape[0])
+    print(len(good_frames))
 
     roi_pixels = {}
     avg_projection = get_total_avg_projection(
@@ -180,7 +182,7 @@ def get_total_avg_projection(parent, include_frames=None, frame_limit=10000):
     for i, image in enumerate(image_files):
         if image_frames > frame_limit:
             break
-        print(f"Loading image {i}")
+        print(f"Loading image {i}: {image}")
         image = sio.imread(
             os.path.join(parent.image_directory, image), plugin="tifffile"
         )
