@@ -89,6 +89,7 @@ def get_corrected_roi_pixels(parent):
     else:
         all_frames = np.ones(parent.activity_trace["Spine"].shape[0])
         good_frames = np.nonzero(all_frames == 1)[0]
+        artifact_frames = []
 
     roi_pixels = {}
     tot_avg_projection = get_total_avg_projection(
