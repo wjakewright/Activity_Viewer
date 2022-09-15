@@ -515,7 +515,7 @@ def load_ROIs(parent):
                 roi = ROI(parent, roi_type)
                 roi.roi.setState(v["State"])
                 flags = v["Flags"]
-                if parent.load_all_roi_flags:
+                if not parent.load_all_roi_flags:
                     new_flags = [x for x in flags if x != "New Spine"]
                 else:
                     new_flags = flags
