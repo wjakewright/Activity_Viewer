@@ -78,10 +78,12 @@ def get_corrected_roi_pixels(parent):
     """Helper function to get the roi pixels from the average projection"""
     # Arange all the artifact frames to exclude
     a_frames = parent.parameters["Artifact Frames"]
-    artifact_frames = [list(range(x[0], x[1])) for x in a_frames]
+    artifact_frames = [np.linspace(x[0], x[1], x[1] - x[0] + 1) for x in a_frames]
     artifact_frames = np.concatenate(artifact_frames)
-    all_frames = list(range(parent.activity_trace["Spine"].shape[0]))
-    good_frames = np.array([x for x in all_frames if x not in artifact_frames])
+    all_frames = np.ones(parent.activity_trace["Spine"].shape[0])
+    all_frames[artifact_frames] = 0
+    good_frames = np.nonzero(all_frames == 1)[0]
+
     roi_pixels = {}
     tot_avg_projection = get_total_avg_projection(
         parent, include_frames=good_frames, frame_limit=10000
@@ -97,10 +99,8 @@ def get_corrected_roi_pixels(parent):
                 pixels = []
                 for i, v in enumerate(value):
                     activity = parent.activity_trace[key][:, i]
+                    activity[artifact_frames] = 1
                     inactive = np.nonzero(activity == 0)[0]
-                    inactive = np.array(
-                        [x for x in inactive if x not in artifact_frames]
-                    )
                     print(inactive.shape)
                     avg_projection = get_total_avg_projection(
                         parent, include_frames=inactive, frame_limit=10000,
@@ -130,10 +130,11 @@ def get_corrected_roi_pixels(parent):
 def get_uncorrected_roi_pixels(parent):
     """Helper function to get the roi pixels from the average projection"""
     a_frames = parent.parameters["Artifact Frames"]
-    artifact_frames = [list(range(x[0], x[1])) for x in a_frames]
+    artifact_frames = [np.linspace(x[0], x[1], x[1] - x[0] + 1) for x in a_frames]
     artifact_frames = np.concatenate(artifact_frames)
-    all_frames = list(range(parent.activity_trace["Spine"].shape[0]))
-    good_frames = np.array([x for x in all_frames if x not in artifact_frames])
+    all_frames = np.ones(parent.activity_trace["Spine"].shape[0])
+    all_frames[artifact_frames] = 0
+    good_frames = np.nonzero(all_frames == 1)[0]
 
     roi_pixels = {}
     avg_projection = get_total_avg_projection(
