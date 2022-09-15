@@ -187,8 +187,8 @@ def get_total_avg_projection(parent, include_frames=None, frame_limit=10000):
         )
         frame_num = image.shape[0]
         if include_frames is not None:
-            include_frames = include_frames - frame_tracker
-            include = [x for x in include_frames if x >= 0 and x < np.shape(image)[0]]
+            curr_frames = include_frames - frame_tracker
+            include = [x for x in curr_frames if x >= 0 and x < np.shape(image)[0]]
             image = image[include, :, :]
         summed_image = np.sum(image, axis=0)
         print(np.shape(image)[0])
