@@ -176,21 +176,22 @@ def get_total_avg_projection(parent, include_frames=None, frame_limit=10000):
     frame_tracker = 0
     image_frames = 0
     summed_files = []
-    while image_frames < frame_limit:
-        for image in image_files:
-            image = sio.imread(
-                os.path.join(parent.image_directory, image), plugin="tifffile"
-            )
-            frame_tracker = frame_tracker + np.shape(image)[0]
-            if include_frames is not None:
-                include_frames = include_frames - frame_tracker
-                include = [
-                    x for x in include_frames if x > 0 and x < np.shape(image)[0]
-                ]
-                image = image[include, :, :]
-            summed_image = np.sum(image, axis=0)
-            image_frames = image_frames + np.shape(image)[0]
-            summed_files.append(summed_image)
+
+    for i, image in enumerate(image_files):
+        if image_frames > frame_limit:
+            break
+        print(f"Loading image {i}")
+        image = sio.imread(
+            os.path.join(parent.image_directory, image), plugin="tifffile"
+        )
+        frame_tracker = frame_tracker + np.shape(image)[0]
+        if include_frames is not None:
+            include_frames = include_frames - frame_tracker
+            include = [x for x in include_frames if x > 0 and x < np.shape(image)[0]]
+            image = image[include, :, :]
+        summed_image = np.sum(image, axis=0)
+        image_frames = image_frames + np.shape(image)[0]
+        summed_files.append(summed_image)
 
     average_projection = np.sum(summed_files, axis=0) / image_frames
 
