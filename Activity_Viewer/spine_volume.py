@@ -103,7 +103,7 @@ def get_corrected_roi_pixels(parent):
                     inactive = np.nonzero(activity == 0)[0]
                     print(inactive.shape)
                     avg_projection = get_total_avg_projection(
-                        parent, include_frames=inactive, frame_limit=10000,
+                        parent, include_frames=inactive, frame_limit=20000,
                     )
 
                     p = v.roi.getArrayRegion(
@@ -132,14 +132,14 @@ def get_uncorrected_roi_pixels(parent):
     a_frames = parent.parameters["Artifact Frames"]
     artifact_frames = [np.linspace(x[0], x[1], x[1] - x[0] + 1) for x in a_frames]
     artifact_frames = np.concatenate(artifact_frames).astype(int)
-    print(artifact_frames)
     all_frames = np.ones(parent.activity_trace["Spine"].shape[0])
     all_frames[artifact_frames] = 0
     good_frames = np.nonzero(all_frames == 1)[0]
+    print(good_frames)
 
     roi_pixels = {}
     avg_projection = get_total_avg_projection(
-        parent, include_frames=good_frames, frame_limit=10000
+        parent, include_frames=good_frames, frame_limit=20000
     )
     for key, value in parent.ROIs.items():
         if key != "Soma":
@@ -189,7 +189,6 @@ def get_total_avg_projection(parent, include_frames=None, frame_limit=10000):
         if include_frames is not None:
             include_frames = include_frames - frame_tracker
             include = [x for x in include_frames if x >= 0 and x < np.shape(image)[0]]
-            print(include)
             image = image[include, :, :]
         summed_image = np.sum(image, axis=0)
         print(np.shape(image)[0])
