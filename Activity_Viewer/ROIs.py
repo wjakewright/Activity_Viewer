@@ -500,7 +500,7 @@ def save_ROIs(parent):
 
 def load_ROIs(parent):
     # Function to load ROIs
-
+    messages.load_ROI_flags_message(parent)
     if parent.tif_stack is None:
         messages.load_image_warning(parent)
 
