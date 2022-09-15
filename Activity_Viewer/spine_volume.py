@@ -139,7 +139,7 @@ def get_uncorrected_roi_pixels(parent):
 
     roi_pixels = {}
     avg_projection = get_total_avg_projection(
-        parent, include_frames=good_frames, frame_limit=20000
+        parent, include_frames=None, frame_limit=20000
     )
     for key, value in parent.ROIs.items():
         if key != "Soma":
