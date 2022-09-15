@@ -66,6 +66,7 @@ class My_Viewer(QMainWindow):
         self.select_ROIs = False
         self.shift_ROIs = False
         self.flag_ROIs = False
+        self.load_all_roi_flags = False
         self.selected_ROIs = {
             "Background": [],
             "Soma": [],

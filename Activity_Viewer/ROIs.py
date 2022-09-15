@@ -500,6 +500,7 @@ def save_ROIs(parent):
 
 def load_ROIs(parent):
     # Function to load ROIs
+
     if parent.tif_stack is None:
         messages.load_image_warning(parent)
 
@@ -514,7 +515,10 @@ def load_ROIs(parent):
                 roi = ROI(parent, roi_type)
                 roi.roi.setState(v["State"])
                 flags = v["Flags"]
-                new_flags = [x for x in flags if x != "New Spine"]
+                if parent.load_all_roi_flags:
+                    new_flags = [x for x in flags if x != "New Spine"]
+                else:
+                    new_flags = flags
                 roi.flag = new_flags
                 color_flags(parent, roi, roi.flag)
                 parent.ROIs[roi_type].append(roi)
@@ -522,6 +526,11 @@ def load_ROIs(parent):
             for v in value:
                 roi = ROI(parent, roi_type, v)
                 parent.ROIs[roi_type].append(roi)
+
+
+def set_flag_loading(parent, input):
+    # Function to toggle loading of roi flags
+    parent.load_all_roi_flags = input
 
 
 class ROI:

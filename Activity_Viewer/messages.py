@@ -154,3 +154,21 @@ def save_output_warning(parent):
     warning.addButton(save_btn, QMessageBox.ActionRole)
     warning.setStandardButtons(QMessageBox.Close)
     retval = warning.exec()
+
+
+def load_ROI_flags_message(parent):
+    # Message to ask if you wish to load all ROI flags intact
+    warning = QMessageBox()
+    warning.setIcon(QMessageBox.Question)
+    warning.setText("Load New Spine ROI Flags?")
+    warning.setInformativeText("If not, still loads other flags")
+    warning.setWindowTitle("Load ROI Flags")
+    # Yes button
+    yes_btn = QPushButton("Yes")
+    yes_btn.clicked.connect(lambda: ROIs.set_flag_loading(parent, True))
+    warning.addButton(yes_btn, QMessageBox.ActionRole)
+    # No button
+    no_btn = QPushButton("No")
+    no_btn.clicked.connect(lambda: ROIs.set_flag_loading(parent, False))
+    warning.addButton(no_btn, QMessageBox.ActionRole)
+    retval = warning.exec()
