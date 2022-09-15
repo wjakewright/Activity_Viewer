@@ -76,8 +76,16 @@ def calculate_spine_volume(parent, parameters, corrected=False):
 
 def get_corrected_roi_pixels(parent):
     """Helper function to get the roi pixels from the average projection"""
+    # Arange all the artifact frames to exclude
+    a_frames = parent.parameters["Artifact Frames"]
+    artifact_frames = [list(range(x[0], x[1])) for x in a_frames]
+    artifact_frames = np.concatenate(artifact_frames)
+    all_frames = list(range(parent.activity_trace["Spine"].shape[0]))
+    good_frames = np.array([x for x in all_frames if x not in artifact_frames])
     roi_pixels = {}
-    tot_avg_projection = get_total_avg_projection(parent, include_frames=None)
+    tot_avg_projection = get_total_avg_projection(
+        parent, include_frames=good_frames, frame_limit=10000
+    )
     for key, value in parent.ROIs.items():
         if key != "Soma":
             if key == "Background":
@@ -90,9 +98,12 @@ def get_corrected_roi_pixels(parent):
                 for i, v in enumerate(value):
                     activity = parent.activity_trace[key][:, i]
                     inactive = np.nonzero(activity == 0)[0]
+                    inactive = np.array(
+                        [x for x in inactive if x not in artifact_frames]
+                    )
                     print(inactive.shape)
                     avg_projection = get_total_avg_projection(
-                        parent, include_frames=inactive
+                        parent, include_frames=inactive, frame_limit=10000,
                     )
 
                     p = v.roi.getArrayRegion(
@@ -118,8 +129,16 @@ def get_corrected_roi_pixels(parent):
 
 def get_uncorrected_roi_pixels(parent):
     """Helper function to get the roi pixels from the average projection"""
+    a_frames = parent.parameters["Artifact Frames"]
+    artifact_frames = [list(range(x[0], x[1])) for x in a_frames]
+    artifact_frames = np.concatenate(artifact_frames)
+    all_frames = list(range(parent.activity_trace["Spine"].shape[0]))
+    good_frames = np.array([x for x in all_frames if x not in artifact_frames])
+
     roi_pixels = {}
-    avg_projection = get_total_avg_projection(parent, include_frames=None)
+    avg_projection = get_total_avg_projection(
+        parent, include_frames=good_frames, frame_limit=10000
+    )
     for key, value in parent.ROIs.items():
         if key != "Soma":
             if key == "Background" or key == "Spine":
@@ -144,8 +163,11 @@ def get_uncorrected_roi_pixels(parent):
     return roi_pixels
 
 
-def get_total_avg_projection(parent, include_frames=None):
+def get_total_avg_projection(parent, include_frames=None, frame_limit=10000):
     """Helper function to get the average projection across all tif images"""
+    # Set frame limit to not exceed total number of frames
+    if parent.activity_trace["Spine"].shape[0] < frame_limit:
+        frame_limit = parent.activity_trace["Spine"].shape[0]
     # Get image file names
     image_files = [
         img for img in os.listdir(parent.image_directory) if img.endswith(".tif")
@@ -153,18 +175,21 @@ def get_total_avg_projection(parent, include_frames=None):
     frame_tracker = 0
     image_frames = 0
     summed_files = []
-    for image in image_files:
-        image = sio.imread(
-            os.path.join(parent.image_directory, image), plugin="tifffile"
-        )
-        frame_tracker = frame_tracker + np.shape(image)[0]
-        if include_frames is not None:
-            include_frames = include_frames - frame_tracker
-            include = [x for x in include_frames if x > 0 and x < np.shape(image)[0]]
-            image = image[include, :, :]
-        summed_image = np.sum(image, axis=0)
-        image_frames = image_frames + np.shape(image)[0]
-        summed_files.append(summed_image)
+    while image_frames < frame_limit:
+        for image in image_files:
+            image = sio.imread(
+                os.path.join(parent.image_directory, image), plugin="tifffile"
+            )
+            frame_tracker = frame_tracker + np.shape(image)[0]
+            if include_frames is not None:
+                include_frames = include_frames - frame_tracker
+                include = [
+                    x for x in include_frames if x > 0 and x < np.shape(image)[0]
+                ]
+                image = image[include, :, :]
+            summed_image = np.sum(image, axis=0)
+            image_frames = image_frames + np.shape(image)[0]
+            summed_files.append(summed_image)
 
     average_projection = np.sum(summed_files, axis=0) / image_frames
 
