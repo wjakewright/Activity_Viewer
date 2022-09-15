@@ -80,11 +80,15 @@ def get_corrected_roi_pixels(parent):
     """Helper function to get the roi pixels from the average projection"""
     # Arange all the artifact frames to exclude
     a_frames = parent.parameters["Artifact Frames"]
-    artifact_frames = [np.linspace(x[0], x[1], x[1] - x[0] + 1) for x in a_frames]
-    artifact_frames = np.concatenate(artifact_frames).astype(int)
-    all_frames = np.ones(parent.activity_trace["Spine"].shape[0])
-    all_frames[artifact_frames] = 0
-    good_frames = np.nonzero(all_frames == 1)[0]
+    if a_frames:
+        artifact_frames = [np.linspace(x[0], x[1], x[1] - x[0] + 1) for x in a_frames]
+        artifact_frames = np.concatenate(artifact_frames).astype(int)
+        all_frames = np.ones(parent.activity_trace["Spine"].shape[0])
+        all_frames[artifact_frames] = 0
+        good_frames = np.nonzero(all_frames == 1)[0]
+    else:
+        all_frames = np.ones(parent.activity_trace["Spine"].shape[0])
+        good_frames = np.nonzero(all_frames == 1)[0]
 
     roi_pixels = {}
     tot_avg_projection = get_total_avg_projection(
@@ -133,11 +137,15 @@ def get_corrected_roi_pixels(parent):
 def get_uncorrected_roi_pixels(parent):
     """Helper function to get the roi pixels from the average projection"""
     a_frames = parent.parameters["Artifact Frames"]
-    artifact_frames = [np.linspace(x[0], x[1], x[1] - x[0] + 1) for x in a_frames]
-    artifact_frames = np.concatenate(artifact_frames).astype(int)
-    all_frames = np.ones(parent.activity_trace["Spine"].shape[0])
-    all_frames[artifact_frames] = 0
-    good_frames = np.nonzero(all_frames == 1)[0]
+    if a_frames:
+        artifact_frames = [np.linspace(x[0], x[1], x[1] - x[0] + 1) for x in a_frames]
+        artifact_frames = np.concatenate(artifact_frames).astype(int)
+        all_frames = np.ones(parent.activity_trace["Spine"].shape[0])
+        all_frames[artifact_frames] = 0
+        good_frames = np.nonzero(all_frames == 1)[0]
+    else:
+        all_frames = np.ones(parent.activity_trace["Spine"].shape[0])
+        good_frames = np.nonzero(all_frames == 1)[0]
 
     roi_pixels = {}
     avg_projection = get_total_avg_projection(
