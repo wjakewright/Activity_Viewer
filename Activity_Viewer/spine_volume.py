@@ -16,8 +16,10 @@ def calculate_spine_volume(parent, parameters, corrected=False):
 
     # Get ROI pixels from the avg projection image
     if corrected:
+        print("---Performing corrected estimation")
         roi_pixels = get_corrected_roi_pixels(parent)
     else:
+        print("---Performing uncorrected")
         roi_pixels = get_uncorrected_roi_pixels(parent)
 
     background = np.nanmean(roi_pixels["Background"])
@@ -97,11 +99,12 @@ def get_corrected_roi_pixels(parent):
                 roi_pixels[key] = p
             elif key == "Spine":
                 pixels = []
+                spine_num = len(value)
                 for i, v in enumerate(value):
                     activity = parent.activity_trace[key][:, i]
                     activity[artifact_frames] = 1
                     inactive = np.nonzero(activity == 0)[0]
-                    print(f"Estimating Spine {i}")
+                    print(f"Estimating Spine {i}/{spine_num}")
                     avg_projection = get_total_avg_projection(
                         parent, include_frames=inactive, frame_limit=10000,
                     )
@@ -180,7 +183,6 @@ def get_total_avg_projection(parent, include_frames=None, frame_limit=10000):
     for image_file in image_files:
         if image_frames > frame_limit:
             break
-        print(f"Loading image: {image_file}")
         image = sio.imread(
             os.path.join(parent.image_directory, image_file), plugin="tifffile"
         )
