@@ -61,7 +61,7 @@ def calculate_spine_volume(parent, parameters, corrected=False):
             np.array(parent_dend_pos) - parent.ROI_positions["Spine"][i]
         )
         local_dend_idx = np.where(
-            (parent_dend_pos_to_spine > -10) & (parent_dend_pos_to_spine < 10)
+            (parent_dend_pos_to_spine > -DEND_LEN) & (parent_dend_pos_to_spine < DEND_LEN)
         )[0]
 
         local_dend = np.nanmean(np.array(parent_dend)[local_dend_idx])
