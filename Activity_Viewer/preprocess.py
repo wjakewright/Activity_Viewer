@@ -38,6 +38,7 @@ def preprocess_fluorescence(parent, parameters):
             temp_f = np.zeros(np.shape(value))
             temp_b = np.zeros(np.shape(value))
             for i in range(np.shape(value)[1]):
+                print(i)
                 f, b = baseline_correction(
                     data=value[:, i],
                     ds_r=ds_ratio,
