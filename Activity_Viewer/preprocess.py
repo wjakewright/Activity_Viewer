@@ -206,7 +206,9 @@ def baseline_kde(x, ds_ratio, window, step):
 
     i_steps = []
     b_steps = []
+    print(len(np.arange(0, len(x_ds), step)))
     for i in np.arange(0, len(x_ds), step):
+        print(i)
         r = int(np.amax(np.array([0, i - h])))
         l = int(np.amin(np.array([len(x_ds), i + step - 1 + h])))
         i_steps.append(
