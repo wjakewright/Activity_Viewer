@@ -33,6 +33,7 @@ def preprocess_fluorescence(parent, parameters):
     ds_ratio = parameters["Ds Ratio"]
     # Correct the baseline using kernel density estimation
     for key, value in fluorescence_subtracted.items():
+        print(key)
         if key != "Dendrite Poly":
             temp_f = np.zeros(np.shape(value))
             temp_b = np.zeros(np.shape(value))
