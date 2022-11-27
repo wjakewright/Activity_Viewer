@@ -222,7 +222,9 @@ def baseline_kde(x, ds_ratio, window, step):
 
 def mode_kde(x):
     # Helper function to perform the baseline kernel density estimation
+    print(f"first x: {x}")
     x = x[~np.isnan(x)]
+    print(f"second x: {x}")
     kde = stats.gaussian_kde(x)
     pts = np.linspace(x.min(), x.max(), 200)
     f = kde(pts)
