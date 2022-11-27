@@ -33,12 +33,11 @@ def preprocess_fluorescence(parent, parameters):
     ds_ratio = parameters["Ds Ratio"]
     # Correct the baseline using kernel density estimation
     for key, value in fluorescence_subtracted.items():
-        print(key)
         if key != "Dendrite Poly":
             temp_f = np.zeros(np.shape(value))
             temp_b = np.zeros(np.shape(value))
             for i in range(np.shape(value)[1]):
-                print(i)
+
                 f, b = baseline_correction(
                     data=value[:, i],
                     ds_r=ds_ratio,
@@ -206,9 +205,7 @@ def baseline_kde(x, ds_ratio, window, step):
 
     i_steps = []
     b_steps = []
-    print(len(np.arange(0, len(x_ds), step)))
     for i in np.arange(0, len(x_ds), step):
-        print(i)
         r = int(np.amax(np.array([0, i - h])))
         l = int(np.amin(np.array([len(x_ds), i + step - 1 + h])))
         i_steps.append(
@@ -226,9 +223,7 @@ def baseline_kde(x, ds_ratio, window, step):
 
 def mode_kde(x):
     # Helper function to perform the baseline kernel density estimation
-    print(f"first x: {x}")
     x = x[~np.isnan(x)]
-    print(f"second x: {x}")
     kde = stats.gaussian_kde(x)
     pts = np.linspace(x.min(), x.max(), 200)
     f = kde(pts)
