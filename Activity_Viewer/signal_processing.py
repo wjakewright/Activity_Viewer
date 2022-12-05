@@ -5,8 +5,13 @@ import time
 import numpy as np
 from shapely.geometry import Point as ShP
 
-from Activity_Viewer import (calculate_dFoF, deconvolve_calcium, messages,
-                             preprocess, spine_volume)
+from Activity_Viewer import (
+    calculate_dFoF,
+    deconvolve_calcium,
+    messages,
+    preprocess,
+    spine_volume,
+)
 from Activity_Viewer.display import convert_pixels_to_um
 from Activity_Viewer.event_detection import event_detection
 from Activity_Viewer.output_window import Output_Window
@@ -292,7 +297,7 @@ def get_events(parent, parameters, dFoF):
     """Helper function to handle event detection from dFoF"""
     threshold = parameters["Threshold"]
     sampling_rate = parameters["Sampling Rate"]
-    sensor= parameters["Imaging Sensor"]
+    sensor = parameters["Imaging Sensor"]
 
     activity_trace = {}
     floored_trace = {}
@@ -300,7 +305,9 @@ def get_events(parent, parameters, dFoF):
 
     for key, df in dFoF.items():
         if key != "Dendrite Poly":
-            a_trace, f_trace, thresh = event_detection(df, threshold, sensor, sampling_rate)
+            a_trace, f_trace, thresh = event_detection(
+                df, threshold, sensor, sampling_rate
+            )
             activity_trace[key] = a_trace
             floored_trace[key] = f_trace
             threshold_values[key] = thresh
@@ -310,7 +317,7 @@ def get_events(parent, parameters, dFoF):
             poly_thresh = []
             for poly_f in df:
                 a_trace, f_trace, thresh = event_detection(
-                    poly_f, threshold, sampling_rate
+                    poly_f, threshold, sensor, sampling_rate
                 )
                 poly_a_trace.append(a_trace)
                 poly_f_trace.append(f_trace)
