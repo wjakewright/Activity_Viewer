@@ -56,7 +56,7 @@ def event_detection(dFoF, threshold, sensor, sampling_rate):
         below_zero = roi[roi < 0]
         noise_est = np.nanstd(np.concatenate((below_zero, -below_zero)))
         if LOWER_LIMIT is None:
-            l_limit = np.nanmax(roi) * 0.2
+            l_limit = np.nanmax(roi) * 0.1
         else:
             l_limit = LOWER_LIMIT
         # Set threshold values
