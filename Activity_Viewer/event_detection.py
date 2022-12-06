@@ -5,7 +5,7 @@ import numpy as np
 import scipy.signal as sysignal
 
 
-def event_detection(dFoF, threshold, sensor, sampling_rate):
+def event_detection(dFoF, threshold, sampling_rate):
     """Function to indentify periods of activity. Used a threshold multiplier
         to find periods above the estimated noise of the trace
     
