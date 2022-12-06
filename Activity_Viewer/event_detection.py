@@ -5,7 +5,7 @@ import numpy as np
 import scipy.signal as sysignal
 
 
-def event_detection(dFoF, threshold, sampling_rate):
+def event_detection(dFoF, threshold, sensor, sampling_rate):
     """Function to indentify periods of activity. Used a threshold multiplier
         to find periods above the estimated noise of the trace
     
@@ -30,9 +30,14 @@ def event_detection(dFoF, threshold, sampling_rate):
     """
     # Set the lower limit of the traces to consider
     #### Important for silent ROIs
-    LOWER_THRESH = 1
-    LOWER_LIMIT = 0.2
-    SEC_TO_SMOOTH = 0.5
+    if sensor == "iGluSnFr3":
+        LOWER_THRESH = 1
+        LOWER_LIMIT = 0.2
+        SEC_TO_SMOOTH = 0.5
+    else:
+        LOWER_THRESH = 1
+        LOWER_THRESH = None
+        SEC_TO_SMOOTH = 0.5
 
     smooth_window = int(sampling_rate * SEC_TO_SMOOTH)
     # Make sure smooth window is odd
@@ -50,7 +55,10 @@ def event_detection(dFoF, threshold, sampling_rate):
         # Estimate the noise of the traces using the mirrored below-zero trace
         below_zero = roi[roi < 0]
         noise_est = np.nanstd(np.concatenate((below_zero, -below_zero)))
-
+        if LOWER_LIMIT is None:
+            l_limit = np.nanmax(roi) * 0.2
+        else:
+            l_limit = LOWER_LIMIT
         # Set threshold values
         high_thresh = noise_est * threshold
         low_thresh = noise_est * LOWER_THRESH
@@ -58,8 +66,8 @@ def event_detection(dFoF, threshold, sampling_rate):
         artifact_limit = np.absolute(np.percentile(below_zero, 5))
         if high_thresh < artifact_limit:
             high_thresh = artifact_limit
-        if high_thresh < LOWER_LIMIT:
-            high_thresh = LOWER_LIMIT
+        if high_thresh < l_limit:
+            high_thresh = l_limit
 
         thresh_values["Upper Threshold"].append(high_thresh)
         thresh_values["Lower Threshold"].append(low_thresh)
