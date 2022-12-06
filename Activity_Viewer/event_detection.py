@@ -36,7 +36,7 @@ def event_detection(dFoF, threshold, sensor, sampling_rate):
         SEC_TO_SMOOTH = 0.5
     else:
         LOWER_THRESH = 1
-        LOWER_THRESH = None
+        LOWER_LIMIT = None
         SEC_TO_SMOOTH = 0.5
 
     smooth_window = int(sampling_rate * SEC_TO_SMOOTH)
