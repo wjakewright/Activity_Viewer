@@ -103,6 +103,7 @@ def event_detection(dFoF, threshold, sensor, sampling_rate):
             to_exclude.append(any(x <= 0) or any(x > len(roi)))
 
         # Refine start times of activity when dFoF goes above high thresh
+        print(thresh_low_high_smooth_idx)
         thresh_low_high_smooth_idx = np.array(thresh_low_high_smooth_idx, dtype=object)
         thresh_low_high_raw_idx = []
         for idx in thresh_low_high_smooth_idx[[not x for x in to_exclude]]:
@@ -151,7 +152,7 @@ def find_low_high_transitions(start_idx, stop_idx, thresh_low_start):
 
 def refine_start_times(idx, trace, high_thresh):
     """Helper function to help refine start times when dFoF goes above high thresh"""
-    print(idx[0])
+    print(idx)
     start = idx[0]
     try:
         u1 = np.nonzero(trace[idx[0] :] > high_thresh)[0][0]
