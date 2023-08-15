@@ -156,10 +156,11 @@ def get_roi_fluorescence(parent, roi_type, rois, arr):
             neuropil_region, neuropil_coords = neuropil.getArrayRegion(
                 arr=arr, img=parent.current_image, axes=(1, 2), returnMappedCoords=True,
             )
-            neuropil_coords[:, 1:-1, 1:-1] = 0
-            for i in range(array_coords.shape[0]):
-                print(f"full coords {array_coords[i, :, :]}")
-                print(f"neuropil coords {neuropil_coords[i, :, :]}")
+            neuropil_region[:, 2:-2, 2:-2] = np.nan
+            for i in range(array_region.shape[0]):
+                print(f"Slice {i}")
+                print(f"full coords {array_region[i, :, :]}")
+                print(f"neuropil coords {neuropil_region[i, :, :]}")
 
             # Remove neuropil roi
             # parent.display_image.removeItem(neuropil)
