@@ -158,11 +158,11 @@ def get_roi_fluorescence(parent, roi_type, rois, arr):
             # Remove neuropil roi
             parent.display_image.removeItem(neuropil)
             del neuropil
-            print(f"array: {array_region.shape}")
+            print(f"full coords: {array_coords}")
             print(f"coords: {array_coords.shape}")
-            print(f"neuropil: {neuropil_region.shape}")
+            print(f"full n coords: {neuropil_coords}")
             print(f"n coords: {neuropil_coords.shape}")
-            roi_regions.append(array_region.sum(axis=(1,2)))
+            roi_regions.append(array_region.sum(axis=(1, 2)))
             print(f"roi region: {array_region.sum(axis=(1,2)).shape}")
         roi_regions = np.vstack(roi_regions).T
         print(f"stack region: {roi_regions.shape}")
