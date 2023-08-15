@@ -156,20 +156,17 @@ def get_roi_fluorescence(parent, roi_type, rois, arr):
             neuropil_region, neuropil_coords = neuropil.getArrayRegion(
                 arr=arr, img=parent.current_image, axes=(1, 2), returnMappedCoords=True,
             )
-            overlap_coords = np.isin(neuropil_coords, array_coords)
-            print(f"overlap coords {overlap_coords}")
-            print(f"overlap coord shape {overlap_coords.shape}")
+            neuropil_coords = neuropil_coords[:, [0, 1, -2, -1], [0, 1, -2, -2]]
+            print(f"full coords {array_coords}")
+            print(f"full coords shape {array_coords.shape}")
+            print(f"neuropil coords {neuropil_coords}")
+            print(f"neuropil coords shape {neuropil_coords.shape}")
+
             # Remove neuropil roi
             # parent.display_image.removeItem(neuropil)
             # del neuropil
-            print(f"full axis: {array_coords}")
-            print(f"coords: {array_coords.shape}")
-            print(f"full n coords: {neuropil_coords}")
-            print(f"n coords: {neuropil_coords.shape}")
             roi_regions.append(array_region.sum(axis=(1, 2)))
-            print(f"roi region: {array_region.sum(axis=(1,2)).shape}")
         roi_regions = np.vstack(roi_regions).T
-        print(f"stack region: {roi_regions.shape}")
 
     elif roi_type == "Background":
         array_region = rois[0].roi.getArrayRegion(
