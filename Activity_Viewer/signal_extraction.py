@@ -147,7 +147,7 @@ def get_roi_fluorescence(parent, roi_type, rois, arr):
             )
             # Create ROI to get the neuropil
             neuropil = pg.EllipseROI(
-                pos=(roi.roi.pos()[0], roi.roi.pos()[1]),
+                pos=(roi.roi.pos()[0]-2, roi.roi.pos()[1]-2),
                 size=(roi.roi.size()[0] + 4, roi.roi.size()[1] + 4),
                 parent=parent.current_image,
                 pen=parent.ROI_pen,
