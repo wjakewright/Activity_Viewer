@@ -157,7 +157,7 @@ def get_roi_fluorescence(parent, roi_type, rois, arr):
                 arr=arr, img=parent.current_image, axes=(1, 2), returnMappedCoords=True,
             )
             neuropil_coords[:, 1:-1, 1:-1] = 0
-            for i in array_coords.shape[0]:
+            for i in range(array_coords.shape[0]):
                 print(f"full coords {array_coords[i, :, :]}")
                 print(f"neuropil coords {neuropil_coords[i, :, :]}")
 
