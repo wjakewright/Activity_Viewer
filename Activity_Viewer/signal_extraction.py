@@ -159,8 +159,8 @@ def get_roi_fluorescence(parent, roi_type, rois, arr):
             )
             neuropil_region[:, 2:-2, 2:-2] = np.nan
             # Remove neuropil roi
-            # parent.display_image.removeItem(neuropil)
-            # del neuropil
+            parent.display_image.removeItem(neuropil)
+            del neuropil
             summed_array_region = array_region.sum(axis=(1, 2))
             summed_neuropil_region = np.nansum(neuropil_region, axis=(1, 2))
             # Substract neuropil
