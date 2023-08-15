@@ -147,7 +147,7 @@ def get_roi_fluorescence(parent, roi_type, rois, arr):
             )
             # Create ROI to get the neuropil
             neuropil = pg.EllipseROI(
-                pos=(roi.roi.pos()[0]-2, roi.roi.pos()[1]-2),
+                pos=(roi.roi.pos()[0] - 2, roi.roi.pos()[1] - 2),
                 size=(roi.roi.size()[0] + 4, roi.roi.size()[1] + 4),
                 parent=parent.current_image,
                 pen=parent.ROI_pen,
@@ -156,10 +156,13 @@ def get_roi_fluorescence(parent, roi_type, rois, arr):
             neuropil_region, neuropil_coords = neuropil.getArrayRegion(
                 arr=arr, img=parent.current_image, axes=(1, 2), returnMappedCoords=True,
             )
+            overlap_coords = np.nonzero(neuropil_coords == array_coords)[0]
+            print(f"overlap coords {overlap_coords}")
+            print(f"overlap coord shape {overlap_coords.shape}")
             # Remove neuropil roi
             # parent.display_image.removeItem(neuropil)
             # del neuropil
-            print(f"full coords: {array_coords}")
+            print(f"full axis: {array_coords}")
             print(f"coords: {array_coords.shape}")
             print(f"full n coords: {neuropil_coords}")
             print(f"n coords: {neuropil_coords.shape}")
