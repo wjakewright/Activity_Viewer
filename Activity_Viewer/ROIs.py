@@ -301,7 +301,7 @@ def to_flag_ROIs(parent):
     for key, value in parent.ROIs.items():
         if not value:
             continue
-        if key == "Spine":
+        if key == "Spine" or key == "Soma":
             for v in value:
                 v.roi.setAcceptedMouseButtons(Qt.MouseButton.LeftButton)
     parent.select_ROIs = True

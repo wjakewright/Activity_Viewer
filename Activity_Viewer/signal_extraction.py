@@ -129,7 +129,7 @@ def extract_raw_fluorescence(parent):
 def get_roi_fluorescence(parent, roi_type, rois, arr):
     """Helper function to extract the fluorscence of ROIs from a single
         imaging frame"""
-    if roi_type == "Soma" or roi_type == "Spine":
+    if roi_type == "Spine":
         roi_regions = []
         for roi in rois:
             array_region = roi.roi.getArrayRegion(
@@ -138,6 +138,30 @@ def get_roi_fluorescence(parent, roi_type, rois, arr):
             roi_regions.append(array_region.sum(axis=(1, 2)))
         roi_regions = np.vstack(roi_regions).T
         return roi_regions
+
+    if roi_type == "Soma":
+        roi_regions = []
+        for roi in rois:
+            array_region, array_coords = roi.roi.getArrayRegion(
+                arr=arr, img=parent.current_image, axes=(1, 2), returnMappedCoords=True,
+            )
+            # Create ROI to get the neuropil
+            neuropil = pg.EllipseROI(
+                pos=(roi.roi.pos[0], roi.roi.pos[1]),
+                size=(roi.roi.size[0] + 2, roi.roi.size[1] + 2),
+                parent=parent.current_image,
+                removable=True,
+            )
+            neuropil_region, neuropil_coords = neuropil.getArrayRegion(
+                arr=arr, img=parent.current_image, axes=(1, 2), returnMappedCoords=True,
+            )
+            # Remove neuropil roi
+            parent.current_image.removeItem(neuropil)
+            del neuropil
+            print(f"array: {array_region}")
+            print(f"coords: {array_coords}")
+            print(f"neuropil: {neuropil_region}")
+            print(f"n coords: {neuropil_coords}")
 
     elif roi_type == "Background":
         array_region = rois[0].roi.getArrayRegion(
