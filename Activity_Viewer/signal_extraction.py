@@ -143,8 +143,8 @@ def get_roi_fluorescence(parent, roi_type, rois, arr):
     if roi_type == "Soma":
         roi_regions = []
         for roi in rois:
-            array_region, array_coords = roi.roi.getArrayRegion(
-                arr=arr, img=parent.current_image, axes=(1, 2), returnMappedCoords=True,
+            array_region = roi.roi.getArrayRegion(
+                arr=arr, img=parent.current_image, axes=(1, 2),
             )
             # Create ROI to get the neuropil
             neuropil = pg.EllipseROI(
@@ -154,20 +154,20 @@ def get_roi_fluorescence(parent, roi_type, rois, arr):
                 pen=parent.ROI_pen,
                 removable=True,
             )
-            neuropil_region, neuropil_coords = neuropil.getArrayRegion(
-                arr=arr, img=parent.current_image, axes=(1, 2), returnMappedCoords=True,
+            neuropil_region = neuropil.getArrayRegion(
+                arr=arr, img=parent.current_image, axes=(1, 2),
             )
             neuropil_region[:, 2:-2, 2:-2] = np.nan
-            for i in range(array_region.shape[0]):
-                print(f"Slice {i}")
-                print(f"full coords {pd.DataFrame(array_region[i, :, :])}")
-                print(f"neuropil coords {pd.DataFrame(neuropil_region[i, :, :])}")
-
             # Remove neuropil roi
             # parent.display_image.removeItem(neuropil)
             # del neuropil
-            roi_regions.append(array_region.sum(axis=(1, 2)))
+            summed_array_region = array_region.sum(axis=(1, 2))
+            summed_neuropil_region = np.nansum(neuropil_region, axis=(1, 2))
+            # Substract neuropil
+            sub_array_region = summed_array_region - (0.7 * summed_neuropil_region)
+            roi_regions.append(sub_array_region)
         roi_regions = np.vstack(roi_regions).T
+        return roi_regions
 
     elif roi_type == "Background":
         array_region = rois[0].roi.getArrayRegion(
