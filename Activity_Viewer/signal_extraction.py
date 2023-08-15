@@ -149,7 +149,7 @@ def get_roi_fluorescence(parent, roi_type, rois, arr):
             neuropil = pg.EllipseROI(
                 pos=(roi.roi.pos()[0], roi.roi.pos()[1]),
                 size=(roi.roi.size()[0] + 2, roi.roi.size()[1] + 2),
-                parent=None,
+                parent=parent.current_image,
                 removable=True,
             )
             neuropil_region, neuropil_coords = neuropil.getArrayRegion(
