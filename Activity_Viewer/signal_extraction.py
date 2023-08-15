@@ -3,6 +3,7 @@
 import os
 
 import numpy as np
+import pandas as pd
 import pyqtgraph as pg
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QFileDialog, QProgressDialog
@@ -159,8 +160,8 @@ def get_roi_fluorescence(parent, roi_type, rois, arr):
             neuropil_region[:, 2:-2, 2:-2] = np.nan
             for i in range(array_region.shape[0]):
                 print(f"Slice {i}")
-                print(f"full coords {array_region[i, :, :]}")
-                print(f"neuropil coords {neuropil_region[i, :, :]}")
+                print(f"full coords {pd.DataFrame(array_region[i, :, :])}")
+                print(f"neuropil coords {pd.DataFrame(neuropil_region[i, :, :])}")
 
             # Remove neuropil roi
             # parent.display_image.removeItem(neuropil)
