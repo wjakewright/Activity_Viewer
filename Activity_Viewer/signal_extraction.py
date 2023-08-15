@@ -156,7 +156,7 @@ def get_roi_fluorescence(parent, roi_type, rois, arr):
             neuropil_region, neuropil_coords = neuropil.getArrayRegion(
                 arr=arr, img=parent.current_image, axes=(1, 2), returnMappedCoords=True,
             )
-            overlap_coords = np.nonzero(neuropil_coords == array_coords)[0]
+            overlap_coords = np.isin(neuropil_coords, array_coords)
             print(f"overlap coords {overlap_coords}")
             print(f"overlap coord shape {overlap_coords.shape}")
             # Remove neuropil roi
