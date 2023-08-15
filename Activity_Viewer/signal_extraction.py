@@ -164,7 +164,7 @@ def get_roi_fluorescence(parent, roi_type, rois, arr):
             summed_array_region = array_region.sum(axis=(1, 2))
             summed_neuropil_region = np.nansum(neuropil_region, axis=(1, 2))
             # Substract neuropil
-            sub_array_region = summed_array_region - (0.7 * summed_neuropil_region)
+            sub_array_region = summed_array_region - summed_neuropil_region
             roi_regions.append(sub_array_region)
         roi_regions = np.vstack(roi_regions).T
         return roi_regions
