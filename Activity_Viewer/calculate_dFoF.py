@@ -2,6 +2,7 @@
    Utilizes a drifting baseline across the entire session"""
 
 import numpy as np
+import scipy.signal as sysignal
 
 
 def calulate_dFoF(data, baseline, sampling_rate, smooth_window=0.5):
@@ -41,7 +42,8 @@ def calulate_dFoF(data, baseline, sampling_rate, smooth_window=0.5):
     pad_end = np.nanstd(dFoF) * np.random.randn(SMOOTH_PAD_LENGTH)
 
     padded_dFoF = np.concatenate((pad_start, dFoF, pad_end))
-    padded_smoothed = matlab_smooth(padded_dFoF, SMOOTH_WINDOW)
+    padded_smoothed = sysignal.savgol_filter(padded_dFoF, SMOOTH_WINDOW, 2)
+    #padded_smoothed = matlab_smooth(padded_dFoF, SMOOTH_WINDOW)
 
     processed_dFoF = padded_smoothed[SMOOTH_PAD_LENGTH:-SMOOTH_PAD_LENGTH]
 
