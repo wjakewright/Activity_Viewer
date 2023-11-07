@@ -28,6 +28,8 @@ def calulate_dFoF(data, baseline, sampling_rate, smooth_window=0.5):
     # Constants
     SMOOTH_PAD_LENGTH = 500
     SMOOTH_WINDOW = int(smooth_window * np.round(sampling_rate))
+    if SMOOTH_WINDOW % 2:
+        SMOOTH_WINDOW = SMOOTH_WINDOW + 1
 
     # Baseline Division (since using raw fluorescence traces)
     if np.nanmedian(baseline) != 0:
