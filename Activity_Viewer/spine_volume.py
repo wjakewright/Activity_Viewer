@@ -1,6 +1,7 @@
 """Module to calculate the volume of individual spines"""
 
 import os
+from copy import deepcopy
 
 import numpy as np
 from skimage import io as sio
@@ -61,7 +62,8 @@ def calculate_spine_volume(parent, parameters, corrected=False):
             np.array(parent_dend_pos) - parent.ROI_positions["Spine"][i]
         )
         local_dend_idx = np.where(
-            (parent_dend_pos_to_spine > -DEND_LEN) & (parent_dend_pos_to_spine < DEND_LEN)
+            (parent_dend_pos_to_spine > -DEND_LEN)
+            & (parent_dend_pos_to_spine < DEND_LEN)
         )[0]
 
         local_dend = np.nanmean(np.array(parent_dend)[local_dend_idx])
@@ -99,23 +101,29 @@ def get_corrected_roi_pixels(parent):
         if key != "Soma":
             if key == "Background":
                 p = value[0].roi.getArrayRegion(
-                    arr=tot_avg_projection, img=parent.current_image, axes=(0, 1),
+                    arr=tot_avg_projection,
+                    img=parent.current_image,
+                    axes=(0, 1),
                 )
                 roi_pixels[key] = p
             elif key == "Spine":
                 pixels = []
                 spine_num = len(value)
                 for i, v in enumerate(value):
-                    activity = parent.activity_trace[key][:, i]
+                    activity = deepcopy(parent.activity_trace[key][:, i])
                     activity[artifact_frames] = 1
                     inactive = np.nonzero(activity == 0)[0]
                     print(f"Estimating Spine {i}/{spine_num}")
                     avg_projection = get_total_avg_projection(
-                        parent, include_frames=inactive, frame_limit=10000,
+                        parent,
+                        include_frames=inactive,
+                        frame_limit=10000,
                     )
 
                     p = v.roi.getArrayRegion(
-                        arr=avg_projection, img=parent.current_image, axes=(0, 1),
+                        arr=avg_projection,
+                        img=parent.current_image,
+                        axes=(0, 1),
                     )
                     pixels.append(p)
                 roi_pixels[key] = pixels
@@ -158,7 +166,9 @@ def get_uncorrected_roi_pixels(parent):
                 pixels = []
                 for i, v in enumerate(value):
                     p = v.roi.getArrayRegion(
-                        arr=avg_projection, img=parent.current_image, axes=(0, 1),
+                        arr=avg_projection,
+                        img=parent.current_image,
+                        axes=(0, 1),
                     )
                     pixels.append(p)
                 roi_pixels[key] = pixels
