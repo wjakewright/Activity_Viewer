@@ -153,7 +153,7 @@ def get_uncorrected_roi_pixels(parent):
         all_frames[artifact_frames] = 0
         good_frames = np.nonzero(all_frames == 1)[0]
     else:
-        all_frames = np.ones(parent.activity_trace["Spine"].shape[0])
+        all_frames = np.ones(parent.ROI_fluorescence["Spine"].shape[0])
         good_frames = np.nonzero(all_frames == 1)[0]
 
     roi_pixels = {}
