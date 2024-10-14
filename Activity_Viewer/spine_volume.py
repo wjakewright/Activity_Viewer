@@ -189,8 +189,8 @@ def get_uncorrected_roi_pixels(parent):
 def get_total_avg_projection(parent, include_frames=None, frame_limit=10000):
     """Helper function to get the average projection across all tif images"""
     # Set frame limit to not exceed total number of frames
-    if parent.activity_trace["Spine"].shape[0] < frame_limit:
-        frame_limit = parent.activity_trace["Spine"].shape[0]
+    if parent.ROI_fluorescence["Spine"].shape[0] < frame_limit:
+        frame_limit = parent.ROI_fluorescence["Spine"].shape[0]
     # Get image file names
     image_files = [
         img for img in os.listdir(parent.image_directory) if img.endswith(".tif")
