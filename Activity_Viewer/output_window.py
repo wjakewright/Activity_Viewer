@@ -152,12 +152,13 @@ def make_roi_plots(parent, win):
         # for fluorescence
         roi_type, idx = roi.split(" ")
         idx = int(idx) - 1
-        data = parent.fluorescence_processed[roi_type][:, idx]
-        data = (data - data.min()) / (data.max() - data.min())
-        p = pg.PlotDataItem(data, name=f"{roi_type} {idx+1}")
-        p.setPen(pg.mkPen(tuple(colors[c_idx]), width=1))
-        roi_plots["Fluorescence"].append(p)
-        roi_data["Fluorescence"].append(data)
+        if parent.fluorescence_processed is not None:
+            data = parent.fluorescence_processed[roi_type][:, idx]
+            data = (data - data.min()) / (data.max() - data.min())
+            p = pg.PlotDataItem(data, name=f"{roi_type} {idx+1}")
+            p.setPen(pg.mkPen(tuple(colors[c_idx]), width=1))
+            roi_plots["Fluorescence"].append(p)
+            roi_data["Fluorescence"].append(data)
         # for dFoF
         if parent.dFoF is not None:
             data_d = parent.dFoF[roi_type][:, idx]
