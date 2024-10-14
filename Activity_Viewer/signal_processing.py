@@ -20,9 +20,9 @@ from Activity_Viewer.processing_window import Processing_Window
 
 def trigger_processing(parent):
     """Function to trigger processing the extracted signals
-        
-        Generates new window to allow inspection of the raw traces and 
-        to specify information related to processing the activity traces
+
+    Generates new window to allow inspection of the raw traces and
+    to specify information related to processing the activity traces
     """
     processing_window = Processing_Window(parent)
     processing_window.show()
@@ -30,7 +30,7 @@ def trigger_processing(parent):
 
 def process_traces(parent, win):
     """Function to process the traces based on the parameters
-        specified in the processing window"""
+    specified in the processing window"""
     # Check to make sure required inputs are there
     if hasattr(win, "grouping_frame"):
         for dend in win.grouping_input_list:
@@ -47,12 +47,13 @@ def process_traces(parent, win):
     start_time = time.process_time()
     parent.ROI_positions = get_spatial_positions(parent, parameters)
     # subtract the time varying background from all the traces
-    (
-        parent.fluorescence_subtracted,
-        parent.fluorescence_processed,
-        parent.drifting_baseline,
-    ) = preprocess.preprocess_fluorescence(parent, parameters)
-    print("--- %4fs seconds ---" % (time.process_time() - start_time))
+    if parameters["Calculate dFoF"] is True:
+        (
+            parent.fluorescence_subtracted,
+            parent.fluorescence_processed,
+            parent.drifting_baseline,
+        ) = preprocess.preprocess_fluorescence(parent, parameters)
+        print("--- %4fs seconds ---" % (time.process_time() - start_time))
 
     # Calculate deltaF/F if specified
     if parameters["Calculate dFoF"] is True:
@@ -60,9 +61,11 @@ def process_traces(parent, win):
         start_time = time.process_time()
         parent.dFoF, parent.processed_dFoF = get_dFoF(parent, parameters)
 
-        (parent.activity_trace, parent.floored_trace, threshold_values,) = get_events(
-            parent, parameters, parent.processed_dFoF
-        )
+        (
+            parent.activity_trace,
+            parent.floored_trace,
+            threshold_values,
+        ) = get_events(parent, parameters, parent.processed_dFoF)
         parent.parameters["Threshold Values"] = threshold_values
         print("--- %4fs seconds ---" % (time.process_time() - start_time))
 
@@ -91,11 +94,12 @@ def process_traces(parent, win):
             parent.dend_seg_intensity,
         ) = spine_volume.calculate_spine_volume(parent, parameters)
 
-        (
-            parent.corrected_spine_pixel_intensity,
-            parent.corrected_spine_volume,
-            parent.corrected_dend_seg_intensity,
-        ) = spine_volume.calculate_spine_volume(parent, parameters, corrected=True)
+        if parameters["Calculate dFoF"] is True:
+            (
+                parent.corrected_spine_pixel_intensity,
+                parent.corrected_spine_volume,
+                parent.corrected_dend_seg_intensity,
+            ) = spine_volume.calculate_spine_volume(parent, parameters, corrected=True)
         print("--- %4fs seconds ---" % (time.process_time() - start_time))
 
     win.close_window()
@@ -169,7 +173,7 @@ def get_processing_params(parent, win):
 
 def get_spatial_positions(parent, parameters):
     """Function to handel extracting the spatial positions for each roi
-        Transforms pixel locations in to um values"""
+    Transforms pixel locations in to um values"""
     roi_positions = {}
     spine_groupings = parameters["Spine Groupings"]
     # Get um to pix conversion factors
@@ -216,8 +220,8 @@ def get_spatial_positions(parent, parameters):
 
 
 def get_dend_coords(parent, roi, pix_conv):
-    """Function to get position of each dendrite poly roi along the 
-        length of the dendrite"""
+    """Function to get position of each dendrite poly roi along the
+    length of the dendrite"""
     dend_line = roi.roi.line
     roi_pos = []
     for poly in roi.roi.poly_rois:
@@ -233,7 +237,7 @@ def get_dend_coords(parent, roi, pix_conv):
 
 def get_spine_coords(parent, roi, group, pix_conv):
     """Function to get spine positiotns along the length of its parent
-        dendrite"""
+    dendrite"""
     dend = parent.ROIs["Dendrite"][group]
     dend_line = dend.roi.line
     roi_rect = roi.mapRectToParent(roi.boundingRect())
@@ -332,7 +336,7 @@ def get_events(parent, parameters, dFoF):
 
 def get_deconvolved(parent, parameters, tau):
     """Helper function to handel estimating deconvolved spikes
-        from calcium fluorescence"""
+    from calcium fluorescence"""
     sampling_rate = parameters["Sampling Rate"]
     fluorescence = parent.fluorescence_processed
     batch_size = 500
@@ -341,7 +345,10 @@ def get_deconvolved(parent, parameters, tau):
     for key, fluo in fluorescence.items():
         if key != "Dendrite Poly":
             dspikes = deconvolve_calcium.oasis(
-                fluo=fluo, batch_size=batch_size, tau=tau, sampling_rate=sampling_rate,
+                fluo=fluo,
+                batch_size=batch_size,
+                tau=tau,
+                sampling_rate=sampling_rate,
             )
             deconvolved_spikes[key] = dspikes
         else:
