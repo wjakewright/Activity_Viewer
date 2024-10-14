@@ -212,8 +212,8 @@ def update_roi_plots(win):
 
 
 def display_control_window(parent, win):
-    """Makes the display control window that allows you to determine 
-        what data you wish to visualize"""
+    """Makes the display control window that allows you to determine
+    what data you wish to visualize"""
     control_layout = QVBoxLayout()
     win.control_widget = QGroupBox(win, title="Display Data")
     win.control_widget.setStyleSheet(styles.roiFrameStyle())
@@ -279,7 +279,7 @@ def display_control_window(parent, win):
 
 def roi_list_display(parent, win):
     """Layout to display list of all the rois that can be selected to display
-       in the plots"""
+    in the plots"""
 
     # Make the layout
     roi_list_layout = QVBoxLayout()
@@ -300,7 +300,7 @@ def roi_list_display(parent, win):
         spine_groupings = parent.parameters["Spine Groupings"]
     else:
         spine_groupings = [range(len(parent.ROIs["Spine"]))]
-    for key, value in parent.dFoF.items():
+    for key, value in parent.ROI_fluorescence.items():
         if key == "Soma":
             for i in range(np.shape(value)[1]):
                 label = f"{key} {i+1}"
