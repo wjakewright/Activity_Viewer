@@ -9,26 +9,14 @@ import time
 import numpy as np
 import pyqtgraph as pg
 import pyqtgraph.exporters
-from PyQt5.QtCore import QLineF, Qt, pyqtSignal
+from PyQt5.QtCore import QLineF, QPointF, Qt, pyqtSignal
 from PyQt5.QtGui import QColor, QCursor, QTransform
-from PyQt5.QtWidgets import (
-    QAbstractItemView,
-    QApplication,
-    QColorDialog,
-    QDesktopWidget,
-    QDialog,
-    QFileDialog,
-    QGraphicsItem,
-    QGraphicsItemGroup,
-    QGraphicsLineItem,
-    QGraphicsTextItem,
-    QGridLayout,
-    QInputDialog,
-    QListWidget,
-    QListWidgetItem,
-    QPushButton,
-    QVBoxLayout,
-)
+from PyQt5.QtWidgets import (QAbstractItemView, QApplication, QColorDialog,
+                             QDesktopWidget, QDialog, QFileDialog,
+                             QGraphicsItem, QGraphicsItemGroup,
+                             QGraphicsLineItem, QGraphicsTextItem, QGridLayout,
+                             QInputDialog, QListWidget, QListWidgetItem,
+                             QPushButton, QVBoxLayout)
 from shapely.geometry import LineString as ShLS
 from shapely.geometry import Point as ShP
 
@@ -453,7 +441,14 @@ def shift_ROIs(parent, roi):
                 for v in value:
                     if v.roi != roi:
                         v.roi.moveBy(diff.x(), diff.y())
-
+                        new_points = []
+                        print(f"Original points {v.roi.points}")
+                        for point in v.roi.points:
+                            new_point = point + diff
+                            new_points.append(new_point)
+                        v.roi.points = new_points
+                        v.roi.create_line()
+                        print(f"New points {v.roi.points}")
     else:
         pass
 
