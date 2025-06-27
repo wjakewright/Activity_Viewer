@@ -429,6 +429,15 @@ def shift_ROIs(parent, roi):
             start = roi.previous_position
             curr = roi.pos()
             diff = curr - start
+            print(f"Original points {roi.points}")
+            new_points = []
+            for point in roi.points:
+                new_point = point + diff
+                new_points.append(new_point)
+            roi.points = new_points
+            roi.create_line()
+            print(f"New points {roi.points}")
+            print(f"New line {roi.line}")
         for key, value in parent.ROIs.items():
             if key != "Dendrite":
                 for v in value:
@@ -442,13 +451,11 @@ def shift_ROIs(parent, roi):
                     if v.roi != roi:
                         v.roi.moveBy(diff.x(), diff.y())
                         new_points = []
-                        print(f"Original points {v.roi.points}")
                         for point in v.roi.points:
                             new_point = point + diff
                             new_points.append(new_point)
                         v.roi.points = new_points
                         v.roi.create_line()
-                        print(f"New points {v.roi.points}")
     else:
         pass
 
