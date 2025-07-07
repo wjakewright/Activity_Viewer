@@ -38,6 +38,7 @@ def extract_raw_fluorescence(parent):
     image_files = [
         img for img in os.listdir(parent.image_directory) if img.endswith(".tif")
     ]
+    image_files = sorted(image_files)
     print(image_files)
     approximate_frames = len(image_files) * 800
 
