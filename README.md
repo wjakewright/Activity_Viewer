@@ -10,6 +10,11 @@ Upon opening the GUI load a reference image. This can be a single tif image or a
 
 After drawing ROIs, extract the traces. You will be prompted to select the directory where your time series images are located. Raw fluorescence is then extracted and a new window will popup. This will allow you to inspect the traces and specify any further processing you wish you perform. After processing, a final window will popup for inspecting the final outputs which can be saved in a dataclass. 
 
+## WARNING
+This GUI has only been tested for specific use cases. Certain sequences may break functionality as not all steps of processing have fail safes for every scenario. Also loading and sorting of image files may not behave as expected depending on file naming convention. Double check files are loaded in correct order. 
+
+Certain features depend on file name conventions and microscope this was designed for. For example, the bout separation depends on the file name keeping track of the different bouts, and pixel to um conversion is calibrated to the specific objective and microsope this was designed for. 
+
 ## Functionality
 
 ### ROI Drawing
